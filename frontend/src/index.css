@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --color-primary: #2f5d73;
+  --color-secondary: #a7c4b5;
+  --color-cream: #f7f4ee;
+  --color-sand: #ddd3c3;
+  --color-accent: #d98c7a;
+  --color-text: #2e2e2e;
+  --color-panel: #f9f6f2;
+  --color-panel-muted: #eef3f2;
+  --shadow-soft: 0 24px 80px rgba(47, 93, 115, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  background: var(--color-cream);
+  color: var(--color-text);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.public-gradient {
+  background:
+    radial-gradient(circle at top left, rgba(217, 140, 122, 0.16), transparent 35%),
+    radial-gradient(circle at top right, rgba(167, 196, 181, 0.26), transparent 25%),
+    linear-gradient(180deg, rgba(247, 244, 238, 1) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.panel-gradient {
+  background:
+    linear-gradient(180deg, rgba(248, 244, 238, 1) 0%, rgba(241, 246, 245, 1) 100%);
+}
+
+.surface-card {
+  border: 1px solid rgba(47, 93, 115, 0.12);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--shadow-soft);
+}
+
+.field-input {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(47, 93, 115, 0.16);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.9rem 1rem;
+  color: var(--color-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field-input-with-icon {
+  padding-left: 3rem;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(47, 93, 115, 0.1);
+}
+
+.heading-display {
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: -0.02em;
+}
+
+.rbc-calendar {
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  min-height: 680px;
+}
+
+.rbc-toolbar button {
+  border-radius: 999px;
+  border: 1px solid rgba(47, 93, 115, 0.18);
+  color: var(--color-primary);
+}
+
+.rbc-toolbar button.rbc-active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
