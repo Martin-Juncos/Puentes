@@ -27,10 +27,21 @@ export const updateChild = (id, data) =>
     select: childSelect,
   })
 
+export const deleteChild = (id) =>
+  prisma.child.delete({
+    where: { id },
+    select: childSelect,
+  })
+
 export const upsertAssignment = ({ childId, ...data }) =>
   prisma.childProfessionalAssignment.create({
     data: {
       childId,
       ...data,
     },
+  })
+
+export const deleteAssignmentsByChild = (childId) =>
+  prisma.childProfessionalAssignment.deleteMany({
+    where: { childId },
   })

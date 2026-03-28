@@ -2,6 +2,9 @@ import bcrypt from 'bcryptjs'
 
 import { PrismaClient } from '@prisma/client'
 
+import { DEFAULT_SERVICES_CATALOG } from '../src/config/defaultServicesCatalog.js'
+import { DEFAULT_APP_SETTINGS } from '../src/config/defaultAppSettings.js'
+
 const prisma = new PrismaClient()
 
 const buildDate = (dayOffset, hour, minute = 0) => {
@@ -24,7 +27,12 @@ const main = async () => {
   await prisma.professionalProfile.deleteMany()
   await prisma.service.deleteMany()
   await prisma.contactInquiry.deleteMany()
+  await prisma.appSettings.deleteMany()
   await prisma.user.deleteMany()
+
+  await prisma.appSettings.create({
+    data: DEFAULT_APP_SETTINGS,
+  })
 
   const users = await Promise.all([
     prisma.user.create({
@@ -86,32 +94,25 @@ const main = async () => {
     }),
   ])
 
-  const [serviceOne, serviceTwo, serviceThree] = await Promise.all([
-    prisma.service.create({
-      data: {
-        name: 'Evaluación interdisciplinaria',
-        description: 'Proceso inicial de valoración y orientación para diseñar el acompañamiento.',
-        durationMinutes: 60,
-        colorTag: '#2F5D73',
+  await prisma.service.createMany({
+    data: DEFAULT_SERVICES_CATALOG,
+  })
+
+  const seededServices = await prisma.service.findMany({
+    where: {
+      name: {
+        in: [
+          'Evaluación interdisciplinaria',
+          'Acompañamiento psicopedagógico',
+          'Orientación a familias',
+        ],
       },
-    }),
-    prisma.service.create({
-      data: {
-        name: 'Acompañamiento psicopedagógico',
-        description: 'Espacio de trabajo individual y articulado con la familia y el equipo.',
-        durationMinutes: 45,
-        colorTag: '#A7C4B5',
-      },
-    }),
-    prisma.service.create({
-      data: {
-        name: 'Orientación a familias',
-        description: 'Encuentros de acompañamiento, escucha y estrategias para la vida cotidiana.',
-        durationMinutes: 50,
-        colorTag: '#D98C7A',
-      },
-    }),
-  ])
+    },
+  })
+
+  const serviceOne = seededServices.find((service) => service.name === 'Evaluación interdisciplinaria')
+  const serviceTwo = seededServices.find((service) => service.name === 'Acompañamiento psicopedagógico')
+  const serviceThree = seededServices.find((service) => service.name === 'Orientación a familias')
 
   const family = await prisma.family.create({
     data: {
@@ -218,8 +219,8 @@ const main = async () => {
   console.log(`- coordinacion@puentes.local / Puentes2026! (${coordinationUser.role})`)
   console.log(`- secretaria@puentes.local / Puentes2026! (${secretaryUser.role})`)
   console.log(`- profesional@puentes.local / Puentes2026! (${professionalUser.role})`)
-  console.log(`- Servicio institucional destacado: ${serviceOne.name}`)
-  console.log(`- Servicio operativo destacado: ${serviceThree.name}`)
+  console.log(`- Servicio institucional destacado: ${serviceOne?.name ?? 'No encontrado'}`)
+  console.log(`- Servicio operativo destacado: ${serviceThree?.name ?? 'No encontrado'}`)
 }
 
 main()

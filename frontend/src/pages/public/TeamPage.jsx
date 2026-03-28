@@ -12,7 +12,7 @@ export const TeamPage = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <div className="public-shell py-16 lg:py-24">
       <SectionHeading
         description="El equipo se organiza para que la experiencia institucional, el vínculo con las familias y la operación del centro estén verdaderamente articulados."
         eyebrow="Equipo"

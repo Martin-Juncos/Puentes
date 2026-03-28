@@ -27,3 +27,10 @@ export const calendarMessages = {
   event: 'Sesión',
   noEventsInRange: 'No hay sesiones en este rango.',
 }
+
+export const calendarFormats = {
+  dayFormat: (date, culture, localizer) => localizer.format(date, 'EEEE d', culture),
+  dayHeaderFormat: (date, culture, localizer) => localizer.format(date, 'EEEE d', culture),
+  weekdayFormat: (date, culture, localizer) => localizer.format(date, 'EEE d', culture),
+  timeGutterFormat: (date, culture, localizer) => localizer.format(date, 'HH:mm', culture),
+}

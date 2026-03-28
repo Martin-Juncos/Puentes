@@ -1,6 +1,12 @@
 import { sendSuccess } from '../../utils/response.js'
 
-import { createServiceRecord, getManageServices, getPublicServices, updateServiceRecord } from './service.js'
+import {
+  createServiceRecord,
+  deleteServiceRecord,
+  getManageServices,
+  getPublicServices,
+  updateServiceRecord,
+} from './service.js'
 
 export const listPublicServicesController = async (_req, res) =>
   sendSuccess(res, await getPublicServices())
@@ -13,3 +19,6 @@ export const createServiceController = async (req, res) =>
 
 export const updateServiceController = async (req, res) =>
   sendSuccess(res, await updateServiceRecord(req.params.id, req.body))
+
+export const deleteServiceController = async (req, res) =>
+  sendSuccess(res, await deleteServiceRecord(req.params.id))

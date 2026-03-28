@@ -101,7 +101,7 @@ model Service {
   name            String          @unique
   description     String
   status          ServiceStatus   @default(ACTIVE)
-  durationMinutes Int             @default(45)
+  durationMinutes Int             @default(60)
   colorTag        String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -245,4 +245,19 @@ model ContactInquiry {
   updatedAt DateTime             @updatedAt
 
   @@index([status, createdAt])
+}
+
+model AppSettings {
+  id                            String   @id
+  centerName                    String   @default("Puentes")
+  institutionalEmail            String   @default("contacto@puentes.local")
+  institutionalPhone            String   @default("+54 11 5555 0000")
+  whatsappUrl                   String   @default("https://wa.me/5491100000000?text=Hola%20Puentes")
+  address                       String   @default("Buenos Aires, Argentina")
+  businessHoursSummary          String   @default("Lunes a viernes de 8 a 20 h.")
+  defaultServiceDurationMinutes Int      @default(60)
+  defaultSessionDurationMinutes Int      @default(45)
+  slotIntervalMinutes           Int      @default(30)
+  createdAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
 }

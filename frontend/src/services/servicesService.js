@@ -5,4 +5,5 @@ export const servicesService = {
   listManage: () => apiClient.get('/services/manage'),
   create: (payload) => apiClient.post('/services', payload),
   update: (id, payload) => apiClient.patch(`/services/${id}`, payload),
+  remove: (id) => apiClient.delete(`/services/${id}`),
 }

@@ -1,6 +1,6 @@
 import { sendSuccess } from '../../utils/response.js'
 
-import { createFamilyRecord, getFamilies, getFamilyById, updateFamilyRecord } from './service.js'
+import { createFamilyRecord, deleteFamilyRecord, getFamilies, getFamilyById, updateFamilyRecord } from './service.js'
 
 export const listFamiliesController = async (_req, res) => sendSuccess(res, await getFamilies())
 
@@ -12,3 +12,6 @@ export const createFamilyController = async (req, res) =>
 
 export const updateFamilyController = async (req, res) =>
   sendSuccess(res, await updateFamilyRecord(req.params.id, req.body))
+
+export const deleteFamilyController = async (req, res) =>
+  sendSuccess(res, await deleteFamilyRecord(req.params.id))

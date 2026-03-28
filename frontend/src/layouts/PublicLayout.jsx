@@ -52,12 +52,12 @@ export const PublicLayout = () => {
   return (
     <div className="public-gradient min-h-screen">
       <header className="sticky top-0 z-30 border-b border-[rgba(47,93,115,0.08)] bg-[rgba(247,244,238,0.9)] backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="public-shell flex flex-wrap items-center justify-between gap-4 py-4">
           <NavLink className="flex items-center gap-3" to="/">
             <img alt="Puentes" className="h-10 w-10 rounded-full bg-white/80 p-1" src="/media/logo.png" />
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-[rgba(47,93,115,0.65)]">Centro interdisciplinario</p>
-              <p className="text-lg font-semibold text-[var(--color-primary)]">Puentes</p>
+              <p className="text-[0.65rem] uppercase tracking-[0.42em] text-[rgba(47,93,115,0.6)]">Centro interdisciplinario</p>
+              <p className="text-[1.85rem] font-semibold leading-none text-[var(--color-primary)] sm:text-[2.1rem]">Puentes</p>
             </div>
           </NavLink>
 
@@ -124,7 +124,7 @@ export const PublicLayout = () => {
       </MotionMain>
 
       <footer className="border-t border-[rgba(47,93,115,0.1)] bg-white/60">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.5fr_1fr_1fr] lg:px-8">
+        <div className="public-shell grid gap-8 py-10 lg:grid-cols-[1.5fr_1fr_1fr]">
           <div>
             <p className="heading-display text-3xl font-semibold text-[var(--color-primary)]">Puentes</p>
             <p className="mt-3 max-w-xl text-sm leading-7 text-[rgba(46,46,46,0.72)]">

@@ -2,7 +2,7 @@ import { PanelCard } from '@/components/ui/PanelCard'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 
 export const NewsPage = () => (
-  <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+  <div className="public-shell py-16 lg:py-24">
     <SectionHeading
       description="La estructura del sitio ya deja preparada esta sección para crecer hacia novedades, recursos y materiales institucionales administrables."
       eyebrow="Base preparada"

@@ -21,6 +21,10 @@ export const updateChildSchema = {
   body: childBodySchema.partial(),
 }
 
+export const deleteChildSchema = {
+  params: idParamSchema,
+}
+
 export const createAssignmentSchema = {
   params: idParamSchema,
   body: z.object({

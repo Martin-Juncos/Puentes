@@ -8,11 +8,13 @@ import { validate } from '../../middleware/validate.js'
 import {
   createAssignmentController,
   createChildController,
+  deleteAssignmentsController,
+  deleteChildController,
   getChildController,
   listChildrenController,
   updateChildController,
 } from './controller.js'
-import { createAssignmentSchema, createChildSchema, updateChildSchema } from './validation.js'
+import { createAssignmentSchema, createChildSchema, deleteChildSchema, updateChildSchema } from './validation.js'
 
 export const childrenRouter = Router()
 
@@ -27,9 +29,21 @@ childrenRouter.patch(
   validate(updateChildSchema),
   asyncHandler(updateChildController),
 )
+childrenRouter.delete(
+  '/:id',
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY'),
+  validate(deleteChildSchema),
+  asyncHandler(deleteChildController),
+)
 childrenRouter.post(
   '/:id/assignments',
   authorize('ADMIN', 'COORDINATION', 'SECRETARY'),
   validate(createAssignmentSchema),
   asyncHandler(createAssignmentController),
+)
+childrenRouter.delete(
+  '/:id/assignments',
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY'),
+  validate(deleteChildSchema),
+  asyncHandler(deleteAssignmentsController),
 )

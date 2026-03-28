@@ -26,3 +26,9 @@ export const updateFamily = (id, data) =>
     data,
     select: familySelect,
   })
+
+export const deleteFamily = (id) =>
+  prisma.family.delete({
+    where: { id },
+    select: familySelect,
+  })

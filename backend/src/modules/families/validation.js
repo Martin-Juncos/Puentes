@@ -21,3 +21,7 @@ export const updateFamilySchema = {
   params: idParamSchema,
   body: familyBodySchema.partial(),
 }
+
+export const deleteFamilySchema = {
+  params: idParamSchema,
+}

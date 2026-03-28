@@ -12,6 +12,7 @@ import { attendancesRouter } from '../modules/attendances/routes.js'
 import { paymentsRouter } from '../modules/payments/routes.js'
 import { followUpsRouter } from '../modules/follow-ups/routes.js'
 import { dashboardRouter } from '../modules/dashboard/routes.js'
+import { settingsRouter } from '../modules/settings/routes.js'
 
 export const apiRouter = Router()
 
@@ -31,3 +32,4 @@ apiRouter.use('/attendances', attendancesRouter)
 apiRouter.use('/payments', paymentsRouter)
 apiRouter.use('/follow-ups', followUpsRouter)
 apiRouter.use('/dashboard', dashboardRouter)
+apiRouter.use('/settings', settingsRouter)

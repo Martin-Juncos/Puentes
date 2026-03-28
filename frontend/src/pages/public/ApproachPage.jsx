@@ -3,7 +3,7 @@ import { SectionHeading } from '@/components/ui/SectionHeading'
 import { approachPillars } from '@/constants/siteContent'
 
 export const ApproachPage = () => (
-  <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+  <div className="public-shell py-16 lg:py-24">
     <SectionHeading
       description="La modalidad de acompañamiento se sostiene en el vínculo con cada niño, en la articulación con adultos referentes y en una organización interna capaz de dar continuidad a los procesos."
       eyebrow="Modalidad de acompañamiento"

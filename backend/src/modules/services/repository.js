@@ -8,6 +8,12 @@ export const listServices = (where = {}) =>
     select: serviceSelect,
   })
 
+export const getService = (id) =>
+  prisma.service.findUnique({
+    where: { id },
+    select: serviceSelect,
+  })
+
 export const createService = (data) =>
   prisma.service.create({
     data,
@@ -18,5 +24,11 @@ export const updateService = (id, data) =>
   prisma.service.update({
     where: { id },
     data,
+    select: serviceSelect,
+  })
+
+export const deleteService = (id) =>
+  prisma.service.delete({
+    where: { id },
     select: serviceSelect,
   })

@@ -11,7 +11,7 @@ const MotionDiv = motion.div
 
 export const HomePage = () => (
   <div>
-    <section className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-24">
+    <section className="public-shell grid gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
       <div className="flex flex-col justify-center">
         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--color-primary)]">
           Plataforma institucional y operativa
@@ -57,13 +57,13 @@ export const HomePage = () => (
       </MotionDiv>
     </section>
 
-    <section className="mx-auto grid max-w-7xl gap-5 px-4 py-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-4 lg:px-8">
+    <section className="public-shell grid gap-5 py-4 sm:grid-cols-2 lg:grid-cols-4">
       {publicStats.map((stat, index) => (
         <StatCard accent={index === 0} key={stat.label} label={stat.label} value={stat.value} />
       ))}
     </section>
 
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+    <section className="public-shell py-20">
       <SectionHeading
         description="La plataforma nace con una dualidad explícita: sostener la imagen institucional del centro y ordenar la operación interna diaria sin convertir la experiencia en un simple sistema de turnos."
         eyebrow="Doble foco"
@@ -80,7 +80,7 @@ export const HomePage = () => (
       </div>
     </section>
 
-    <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+    <section className="public-shell pb-20">
       <div className="grid gap-6 lg:grid-cols-3">
         {homeSections.map((item, index) => (
           <PanelCard className={index === 1 ? 'bg-[rgba(47,93,115,0.92)] text-white' : ''} key={item.title}>

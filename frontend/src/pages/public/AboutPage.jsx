@@ -9,7 +9,7 @@ const values = [
 ]
 
 export const AboutPage = () => (
-  <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+  <div className="public-shell py-16 lg:py-24">
     <SectionHeading
       description="Puentes acompaña procesos de desarrollo infantil poniendo en relación la clínica cotidiana, la orientación a familias y la organización del trabajo del equipo."
       eyebrow="Sobre Puentes"

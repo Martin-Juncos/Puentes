@@ -3,8 +3,13 @@ import { Calendar } from 'react-big-calendar'
 
 import { PanelCard } from '@/components/ui/PanelCard'
 
-import { calendarLocalizer, calendarMessages } from './calendarLocalizer'
+import { CalendarDayHeader } from './CalendarDayHeader'
+import { calendarFormats, calendarLocalizer, calendarMessages } from './calendarLocalizer'
 import { CalendarToolbar } from './CalendarToolbar'
+
+const visibleDayStart = new Date(1970, 0, 1, 7, 0, 0)
+const visibleDayEnd = new Date(1970, 0, 1, 22, 0, 0)
+const initialScrollTime = new Date(1970, 0, 1, 7, 0, 0)
 
 export const RoleCalendar = ({ sessions }) => {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -23,9 +28,11 @@ export const RoleCalendar = ({ sessions }) => {
       <Calendar
         components={{
           toolbar: CalendarToolbar,
+          header: CalendarDayHeader,
         }}
         culture="es"
         date={currentDate}
+        formats={calendarFormats}
         eventPropGetter={(event) => ({
           style: {
             backgroundColor:
@@ -39,8 +46,13 @@ export const RoleCalendar = ({ sessions }) => {
         events={events}
         localizer={calendarLocalizer}
         messages={calendarMessages}
+        min={visibleDayStart}
+        max={visibleDayEnd}
         onNavigate={setCurrentDate}
         onView={setCurrentView}
+        scrollToTime={initialScrollTime}
+        step={30}
+        timeslots={2}
         view={currentView}
         endAccessor="end"
         startAccessor="start"

@@ -28,3 +28,7 @@ export const updateServiceSchema = {
       message: 'Debes enviar al menos un campo para actualizar.',
     }),
 }
+
+export const deleteServiceSchema = {
+  params: idParamSchema,
+}

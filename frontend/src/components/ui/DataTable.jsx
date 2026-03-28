@@ -1,4 +1,12 @@
-export const DataTable = ({ columns, rows, emptyText = 'Todavía no hay registros.' }) => {
+import { cn } from '@/utils/cn'
+
+export const DataTable = ({
+  columns,
+  rows,
+  emptyText = 'Todavía no hay registros.',
+  onRowClick,
+  getRowClassName,
+}) => {
   if (!rows?.length) {
     return (
       <div className="rounded-3xl border border-dashed border-[rgba(47,93,115,0.2)] p-8 text-sm text-[rgba(46,46,46,0.66)]">
@@ -21,7 +29,14 @@ export const DataTable = ({ columns, rows, emptyText = 'Todavía no hay registro
         </thead>
         <tbody className="divide-y divide-[rgba(47,93,115,0.06)] bg-white">
           {rows.map((row, rowIndex) => (
-            <tr key={row.id ?? rowIndex}>
+            <tr
+              key={row.id ?? rowIndex}
+              className={cn(
+                onRowClick ? 'cursor-pointer transition-colors hover:bg-[rgba(47,93,115,0.04)]' : '',
+                getRowClassName?.(row),
+              )}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+            >
               {columns.map((column) => (
                 <td key={column.key} className="px-4 py-3 align-top text-[rgba(46,46,46,0.84)]">
                   {column.render ? column.render(row) : row[column.key]}

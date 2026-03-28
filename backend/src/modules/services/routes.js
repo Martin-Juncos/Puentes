@@ -7,11 +7,12 @@ import { validate } from '../../middleware/validate.js'
 
 import {
   createServiceController,
+  deleteServiceController,
   listManageServicesController,
   listPublicServicesController,
   updateServiceController,
 } from './controller.js'
-import { createServiceSchema, updateServiceSchema } from './validation.js'
+import { createServiceSchema, deleteServiceSchema, updateServiceSchema } from './validation.js'
 
 export const servicesRouter = Router()
 
@@ -35,4 +36,11 @@ servicesRouter.patch(
   authorize('ADMIN', 'COORDINATION'),
   validate(updateServiceSchema),
   asyncHandler(updateServiceController),
+)
+servicesRouter.delete(
+  '/:id',
+  authenticate,
+  authorize('ADMIN', 'COORDINATION'),
+  validate(deleteServiceSchema),
+  asyncHandler(deleteServiceController),
 )

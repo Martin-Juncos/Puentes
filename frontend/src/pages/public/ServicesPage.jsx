@@ -12,7 +12,7 @@ export const ServicesPage = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <div className="public-shell py-16 lg:py-24">
       <SectionHeading
         description="Los servicios del centro se presentan como una red de trabajo articulada: orientación inicial, acompañamiento sostenido y encuentros con familias."
         eyebrow="Servicios"
