@@ -149,7 +149,13 @@ export const sessionSelect = {
 
 export const followUpSelect = {
   id: true,
+  childId: true,
+  professionalId: true,
+  authorUserId: true,
+  sessionId: true,
+  followUpDate: true,
   title: true,
+  summary: true,
   note: true,
   createdAt: true,
   child: {

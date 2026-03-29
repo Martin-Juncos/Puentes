@@ -94,10 +94,112 @@ select {
   padding-left: 3rem;
 }
 
+.field-input-with-action {
+  padding-right: 3.5rem;
+}
+
 .field-input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 4px rgba(47, 93, 115, 0.1);
+}
+
+.rich-text-editor {
+  min-height: 20rem;
+  padding: 1rem 1.1rem;
+  color: var(--color-text);
+  line-height: 1.7;
+  outline: none;
+}
+
+.rich-text-editor:focus {
+  box-shadow: inset 0 0 0 1px rgba(47, 93, 115, 0.2);
+}
+
+.rich-text-editor[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(46, 46, 46, 0.45);
+  pointer-events: none;
+}
+
+.rich-text-editor p,
+.rich-text-editor ul,
+.rich-text-editor ol {
+  margin: 0 0 0.85rem;
+}
+
+.rich-text-editor p:last-child,
+.rich-text-editor ul:last-child,
+.rich-text-editor ol:last-child {
+  margin-bottom: 0;
+}
+
+.rich-text-editor ul,
+.rich-text-editor ol {
+  padding-left: 1.45rem;
+}
+
+.rich-text-editor ul {
+  list-style: disc;
+}
+
+.rich-text-editor ol {
+  list-style: decimal;
+}
+
+.rich-text-editor li {
+  margin-bottom: 0.35rem;
+}
+
+.rich-text-editor li::marker {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.follow-up-report-body p,
+.follow-up-report-body ul,
+.follow-up-report-body ol {
+  margin: 0 0 1rem;
+}
+
+.follow-up-report-body p:last-child,
+.follow-up-report-body ul:last-child,
+.follow-up-report-body ol:last-child {
+  margin-bottom: 0;
+}
+
+.follow-up-report-body ul,
+.follow-up-report-body ol {
+  padding-left: 1.55rem;
+}
+
+.follow-up-report-body ul {
+  list-style: disc;
+}
+
+.follow-up-report-body ol {
+  list-style: decimal;
+}
+
+.follow-up-report-body li {
+  margin-bottom: 0.42rem;
+}
+
+.follow-up-report-body li::marker {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.follow-up-report-body strong {
+  color: var(--color-primary);
+}
+
+.follow-up-report-body em {
+  font-style: italic;
+}
+
+.follow-up-report-body u {
+  text-underline-offset: 0.18em;
 }
 
 .heading-display {
@@ -236,5 +338,49 @@ select {
 
   .calendar-day-header__date {
     font-size: 0.88rem;
+  }
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    background: white;
+  }
+
+  .panel-shell,
+  .panel-gradient {
+    background: white !important;
+  }
+
+  .panel-sidebar,
+  .panel-topbar,
+  .follow-up-print-actions {
+    display: none !important;
+  }
+
+  .panel-content {
+    width: 100%;
+  }
+
+  .surface-card,
+  .follow-up-report-card {
+    border: none !important;
+    box-shadow: none !important;
+    background: white !important;
+  }
+
+  .follow-up-print-page {
+    padding: 0;
+  }
+
+  .follow-up-report-sheet {
+    padding: 0 !important;
+  }
+
+  .follow-up-report-body {
+    color: #1d1d1d !important;
   }
 }

@@ -22,28 +22,33 @@ childrenRouter.use(authenticate, authorize('ADMIN', 'COORDINATION', 'SECRETARY',
 
 childrenRouter.get('/', asyncHandler(listChildrenController))
 childrenRouter.get('/:id', validate({ params: updateChildSchema.params }), asyncHandler(getChildController))
-childrenRouter.post('/', authorize('ADMIN', 'COORDINATION', 'SECRETARY'), validate(createChildSchema), asyncHandler(createChildController))
+childrenRouter.post(
+  '/',
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'),
+  validate(createChildSchema),
+  asyncHandler(createChildController),
+)
 childrenRouter.patch(
   '/:id',
-  authorize('ADMIN', 'COORDINATION', 'SECRETARY'),
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'),
   validate(updateChildSchema),
   asyncHandler(updateChildController),
 )
 childrenRouter.delete(
   '/:id',
-  authorize('ADMIN', 'COORDINATION', 'SECRETARY'),
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'),
   validate(deleteChildSchema),
   asyncHandler(deleteChildController),
 )
 childrenRouter.post(
   '/:id/assignments',
-  authorize('ADMIN', 'COORDINATION', 'SECRETARY'),
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'),
   validate(createAssignmentSchema),
   asyncHandler(createAssignmentController),
 )
 childrenRouter.delete(
   '/:id/assignments',
-  authorize('ADMIN', 'COORDINATION', 'SECRETARY'),
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'),
   validate(deleteChildSchema),
   asyncHandler(deleteAssignmentsController),
 )

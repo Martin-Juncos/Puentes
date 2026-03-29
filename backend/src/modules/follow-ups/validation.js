@@ -1,6 +1,21 @@
 import { z } from 'zod'
 
-import { preprocessOptionalString } from '../../utils/validation.js'
+import {
+  idParamSchema,
+  preprocessNullableString,
+  preprocessOptionalString,
+  requiredDateInputSchema,
+  stripHtmlToText,
+} from '../../utils/validation.js'
+
+const followUpNoteSchema = z.string().trim().superRefine((value, context) => {
+  if (stripHtmlToText(value).length < 10) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'La nota debe tener al menos 10 caracteres.',
+    })
+  }
+})
 
 export const followUpQuerySchema = {
   query: z.object({
@@ -15,7 +30,29 @@ export const createFollowUpSchema = {
     childId: z.string().trim().min(1),
     professionalId: z.string().trim().min(1).optional(),
     sessionId: z.string().trim().min(1).optional(),
+    followUpDate: requiredDateInputSchema,
     title: preprocessOptionalString(),
-    note: z.string().trim().min(10),
+    summary: preprocessOptionalString(),
+    note: followUpNoteSchema,
   }),
+}
+
+export const updateFollowUpSchema = {
+  params: idParamSchema,
+  body: z.object({
+    childId: z.string().trim().min(1),
+    professionalId: z.string().trim().min(1).optional(),
+    followUpDate: requiredDateInputSchema,
+    title: preprocessNullableString(),
+    summary: preprocessNullableString(),
+    note: followUpNoteSchema,
+  }),
+}
+
+export const deleteFollowUpSchema = {
+  params: idParamSchema,
+}
+
+export const getFollowUpSchema = {
+  params: idParamSchema,
 }

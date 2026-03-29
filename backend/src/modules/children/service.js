@@ -28,24 +28,11 @@ export const getChildren = async (user) => {
   return listChildren()
 }
 
-export const getChildById = async (id, user) => {
+export const getChildById = async (id) => {
   const child = await getChild(id)
 
   if (!child) {
     throw new AppError(404, 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
-  }
-
-  if (user.role === 'PROFESSIONAL') {
-    const professionalId = await resolveProfessionalProfileId(user.id)
-    const isAssigned = child.assignments.some((assignment) => assignment.professional.id === professionalId)
-
-    if (!isAssigned) {
-      throw new AppError(
-        403,
-        'FORBIDDEN',
-        'No tienes permisos para acceder a un caso no asignado a tu perfil profesional.',
-      )
-    }
   }
 
   return child
@@ -171,7 +158,7 @@ export const deleteChildRecord = async (id) => {
   return deleteChild(id)
 }
 
-export const clearAssignmentsForChild = async (id, user) => {
+export const clearAssignmentsForChild = async (id) => {
   const child = await prisma.child.findUnique({
     where: { id },
     select: { id: true },
@@ -183,13 +170,10 @@ export const clearAssignmentsForChild = async (id, user) => {
 
   await deleteAssignmentsByChild(id)
 
-  return getChildById(id, user)
+  return getChildById(id)
 }
 
-export const assignProfessionalToChild = async (
-  { childId, professionalId, serviceId, notes, assignedByUserId },
-  user,
-) => {
+export const assignProfessionalToChild = async ({ childId, professionalId, serviceId, notes, assignedByUserId }) => {
   const [child, professional] = await Promise.all([
     prisma.child.findUnique({ where: { id: childId }, select: { id: true } }),
     prisma.professionalProfile.findUnique({
@@ -230,5 +214,5 @@ export const assignProfessionalToChild = async (
     )
   }
 
-  return getChildById(childId, user)
+  return getChildById(childId)
 }

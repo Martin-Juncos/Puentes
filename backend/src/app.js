@@ -10,9 +10,24 @@ import { notFoundHandler } from './middleware/notFound.js'
 
 export const app = express()
 
+const allowedOrigins = new Set([env.frontendUrl])
+const localhostPattern = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/i
+
 app.use(
   cors({
-    origin: env.frontendUrl,
+    origin: (origin, callback) => {
+      if (!origin) {
+        callback(null, true)
+        return
+      }
+
+      if (allowedOrigins.has(origin) || (!env.isProduction && localhostPattern.test(origin))) {
+        callback(null, true)
+        return
+      }
+
+      callback(new Error(`Origen no permitido por CORS: ${origin}`))
+    },
     credentials: true,
   }),
 )

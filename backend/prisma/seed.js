@@ -199,6 +199,8 @@ const main = async () => {
       professionalId: professionalProfile.id,
       authorUserId: professionalUser.id,
       sessionId: sessionOne.id,
+      followUpDate: sessionOne.startsAt,
+      summary: 'Primer registro del proceso y acuerdos iniciales.',
       title: 'Observación inicial',
       note: 'Buena disposición al vínculo. Se acuerdan objetivos de trabajo con la familia.',
     },

@@ -11,9 +11,9 @@ export const PrivateLayout = () => {
   const items = privateNavigation.filter((item) => item.roles.includes(user.role))
 
   return (
-    <div className="panel-gradient min-h-screen">
+    <div className="panel-gradient panel-shell min-h-screen">
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-5 sm:px-6 lg:flex-row lg:px-8">
-        <aside className="surface-card h-fit w-full shrink-0 p-5 lg:w-72">
+        <aside className="panel-sidebar surface-card h-fit w-full shrink-0 p-5 lg:w-72">
           <div className="flex items-center gap-3">
             <img alt="Puentes" className="h-11 w-11 rounded-full bg-white/80 p-1" src="/media/logo.png" />
             <div>
@@ -65,8 +65,8 @@ export const PrivateLayout = () => {
           </Button>
         </aside>
 
-        <div className="flex-1">
-          <div className="mb-6 flex flex-col gap-4 rounded-[2rem] border border-[rgba(47,93,115,0.1)] bg-white/70 px-6 py-5 backdrop-blur-xl md:flex-row md:items-center md:justify-between">
+        <div className="panel-content flex-1">
+          <div className="panel-topbar mb-6 flex flex-col gap-4 rounded-[2rem] border border-[rgba(47,93,115,0.1)] bg-white/70 px-6 py-5 backdrop-blur-xl md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[rgba(47,93,115,0.58)]">Operación diaria</p>
               <h1 className="mt-2 text-2xl font-semibold text-[var(--color-primary)]">

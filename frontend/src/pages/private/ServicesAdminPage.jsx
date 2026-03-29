@@ -81,7 +81,7 @@ export const ServicesAdminPage = () => {
     loadSettings()
   }, [])
 
-  const canManage = ['ADMIN', 'COORDINATION'].includes(user.role)
+  const canManage = ['ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'].includes(user.role)
   const selectedService = useMemo(
     () => services.find((service) => service.id === updateForm.id) ?? null,
     [services, updateForm.id],

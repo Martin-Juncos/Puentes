@@ -26,21 +26,21 @@ servicesRouter.get(
 servicesRouter.post(
   '/',
   authenticate,
-  authorize('ADMIN', 'COORDINATION'),
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'),
   validate(createServiceSchema),
   asyncHandler(createServiceController),
 )
 servicesRouter.patch(
   '/:id',
   authenticate,
-  authorize('ADMIN', 'COORDINATION'),
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'),
   validate(updateServiceSchema),
   asyncHandler(updateServiceController),
 )
 servicesRouter.delete(
   '/:id',
   authenticate,
-  authorize('ADMIN', 'COORDINATION'),
+  authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'),
   validate(deleteServiceSchema),
   asyncHandler(deleteServiceController),
 )

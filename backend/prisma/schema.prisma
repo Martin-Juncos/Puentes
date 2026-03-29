@@ -192,7 +192,9 @@ model FollowUpNote {
   professionalId String
   authorUserId   String
   sessionId      String?
+  followUpDate   DateTime
   title          String?
+  summary        String?
   note           String
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
@@ -200,6 +202,8 @@ model FollowUpNote {
   professional   ProfessionalProfile @relation("ProfessionalFollowUps", fields: [professionalId], references: [id], onDelete: Cascade)
   authorUser     User                @relation("FollowUpAuthoredBy", fields: [authorUserId], references: [id])
   session        Session?            @relation(fields: [sessionId], references: [id])
+
+  @@index([followUpDate])
 }
 
 model AttendanceRecord {

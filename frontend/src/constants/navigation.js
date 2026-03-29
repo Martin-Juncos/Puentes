@@ -37,7 +37,7 @@ export const privateNavigation = [
     to: '/app/familias',
     label: 'Familias',
     icon: FiUsers,
-    roles: ['ADMIN', 'COORDINATION', 'SECRETARY'],
+    roles: ['ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'],
   },
   {
     to: '/app/ninos',
@@ -55,7 +55,7 @@ export const privateNavigation = [
     to: '/app/servicios',
     label: 'Servicios',
     icon: FiLayers,
-    roles: ['ADMIN', 'COORDINATION', 'SECRETARY'],
+    roles: ['ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'],
   },
   {
     to: '/app/cobros',

@@ -16,7 +16,7 @@ import { createFamilySchema, deleteFamilySchema, updateFamilySchema } from './va
 
 export const familiesRouter = Router()
 
-familiesRouter.use(authenticate, authorize('ADMIN', 'COORDINATION', 'SECRETARY'))
+familiesRouter.use(authenticate, authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'))
 
 familiesRouter.get('/', asyncHandler(listFamiliesController))
 familiesRouter.get('/:id', validate({ params: updateFamilySchema.params }), asyncHandler(getFamilyController))

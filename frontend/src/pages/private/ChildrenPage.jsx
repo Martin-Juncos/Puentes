@@ -84,7 +84,7 @@ export const ChildrenPage = () => {
   const { data: professionals } = useAsyncData(() => professionalsService.listManage(), [])
   const { data: services } = useAsyncData(() => servicesService.listManage(), [])
 
-  const canManageChildren = ['ADMIN', 'COORDINATION', 'SECRETARY'].includes(user.role)
+  const canManageChildren = ['ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'].includes(user.role)
   const selectedChild = useMemo(
     () => children.find((child) => child.id === childUpdateForm.id) ?? null,
     [children, childUpdateForm.id],

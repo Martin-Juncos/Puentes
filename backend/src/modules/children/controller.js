@@ -13,7 +13,7 @@ import {
 export const listChildrenController = async (req, res) => sendSuccess(res, await getChildren(req.user))
 
 export const getChildController = async (req, res) =>
-  sendSuccess(res, await getChildById(req.params.id, req.user))
+  sendSuccess(res, await getChildById(req.params.id))
 
 export const createChildController = async (req, res) =>
   sendSuccess(res, await createChildRecord(req.body), undefined, 201)
@@ -25,7 +25,7 @@ export const deleteChildController = async (req, res) =>
   sendSuccess(res, await deleteChildRecord(req.params.id))
 
 export const deleteAssignmentsController = async (req, res) =>
-  sendSuccess(res, await clearAssignmentsForChild(req.params.id, req.user))
+  sendSuccess(res, await clearAssignmentsForChild(req.params.id))
 
 export const createAssignmentController = async (req, res) =>
   sendSuccess(
@@ -34,5 +34,5 @@ export const createAssignmentController = async (req, res) =>
       childId: req.params.id,
       ...req.body,
       assignedByUserId: req.user.id,
-    }, req.user),
+    }),
   )

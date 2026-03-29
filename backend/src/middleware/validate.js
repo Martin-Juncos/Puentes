@@ -9,11 +9,19 @@ export const validate =
       }
 
       if (schemas.query) {
-        req.query = schemas.query.parse(req.query)
+        const parsedQuery = schemas.query.parse(req.query)
+        Object.keys(req.query).forEach((key) => {
+          delete req.query[key]
+        })
+        Object.assign(req.query, parsedQuery)
       }
 
       if (schemas.params) {
-        req.params = schemas.params.parse(req.params)
+        const parsedParams = schemas.params.parse(req.params)
+        Object.keys(req.params).forEach((key) => {
+          delete req.params[key]
+        })
+        Object.assign(req.params, parsedParams)
       }
 
       next()

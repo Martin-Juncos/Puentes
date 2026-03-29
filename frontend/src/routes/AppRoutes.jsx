@@ -14,6 +14,7 @@ import { AgendaPage } from '@/pages/private/AgendaPage'
 import { ChildrenPage } from '@/pages/private/ChildrenPage'
 import { DashboardPage } from '@/pages/private/DashboardPage'
 import { FamiliesPage } from '@/pages/private/FamiliesPage'
+import { FollowUpReportPage } from '@/pages/private/FollowUpReportPage'
 import { FollowUpsPage } from '@/pages/private/FollowUpsPage'
 import { PaymentsPage } from '@/pages/private/PaymentsPage'
 import { ProfessionalsPage } from '@/pages/private/ProfessionalsPage'
@@ -52,6 +53,7 @@ export const AppRoutes = () => (
         </Route>
         <Route element={<RoleGate allowedRoles={['COORDINATION', 'PROFESSIONAL']} />}>
           <Route path="seguimientos" element={<FollowUpsPage />} />
+          <Route path="seguimientos/:id/informe" element={<FollowUpReportPage />} />
         </Route>
         <Route element={<RoleGate allowedRoles={['ADMIN']} />}>
           <Route path="usuarios" element={<UsersPage />} />

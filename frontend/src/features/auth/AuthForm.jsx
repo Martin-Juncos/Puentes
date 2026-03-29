@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FiLock, FiLogIn, FiMail } from 'react-icons/fi'
+import { FiEye, FiEyeOff, FiLock, FiLogIn, FiMail } from 'react-icons/fi'
 
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
@@ -15,6 +15,7 @@ export const AuthForm = ({
   const [credentials, setCredentials] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   const updateField = (field) => (event) =>
     setCredentials((current) => ({
@@ -63,13 +64,25 @@ export const AuthForm = ({
             className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[rgba(47,93,115,0.55)]"
           />
           <input
-            className="field-input field-input-with-icon"
+            className="field-input field-input-with-icon field-input-with-action"
             onChange={updateField('password')}
             placeholder="Tu contraseña"
             required
-            type="password"
+            type={isPasswordVisible ? 'text' : 'password'}
             value={credentials.password}
           />
+          <button
+            aria-label={isPasswordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            className="absolute right-3 top-1/2 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full text-[rgba(47,93,115,0.68)] transition-colors hover:bg-[rgba(47,93,115,0.08)] hover:text-[var(--color-primary)]"
+            onClick={() => setIsPasswordVisible((current) => !current)}
+            type="button"
+          >
+            {isPasswordVisible ? (
+              <FiEyeOff aria-hidden="true" className="size-4" />
+            ) : (
+              <FiEye aria-hidden="true" className="size-4" />
+            )}
+          </button>
         </div>
       </Field>
 
