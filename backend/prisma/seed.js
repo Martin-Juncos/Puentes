@@ -17,6 +17,10 @@ const buildDate = (dayOffset, hour, minute = 0) => {
 const main = async () => {
   const passwordHash = await bcrypt.hash('Puentes2026!', 10)
 
+  await prisma.notification.deleteMany()
+  await prisma.message.deleteMany()
+  await prisma.messageParticipant.deleteMany()
+  await prisma.messageThread.deleteMany()
   await prisma.paymentRecord.deleteMany()
   await prisma.attendanceRecord.deleteMany()
   await prisma.followUpNote.deleteMany()

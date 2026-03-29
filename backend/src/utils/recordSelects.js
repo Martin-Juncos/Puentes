@@ -62,6 +62,19 @@ export const userSelect = {
   },
 }
 
+export const messagingUserSelect = {
+  id: true,
+  fullName: true,
+  role: true,
+  status: true,
+  professionalProfile: {
+    select: {
+      id: true,
+      discipline: true,
+    },
+  },
+}
+
 export const professionalSelect = {
   ...professionalMiniSelect,
   bio: true,
@@ -221,4 +234,103 @@ export const contactInquirySelect = {
   message: true,
   status: true,
   createdAt: true,
+}
+
+const messageSelect = {
+  id: true,
+  body: true,
+  createdAt: true,
+  authorUser: {
+    select: messagingUserSelect,
+  },
+}
+
+const messageThreadBaseSelect = {
+  id: true,
+  contextType: true,
+  subject: true,
+  status: true,
+  priority: true,
+  createdAt: true,
+  updatedAt: true,
+  child: {
+    select: childMiniSelect,
+  },
+  createdByUser: {
+    select: messagingUserSelect,
+  },
+  participants: {
+    select: {
+      id: true,
+      lastReadAt: true,
+      createdAt: true,
+      user: {
+        select: messagingUserSelect,
+      },
+    },
+  },
+}
+
+export const messageThreadSummarySelect = (userId) => ({
+  ...messageThreadBaseSelect,
+  messages: {
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: 1,
+    select: messageSelect,
+  },
+  notifications: {
+    where: {
+      userId,
+      readAt: null,
+    },
+    select: {
+      id: true,
+    },
+  },
+})
+
+export const messageThreadDetailSelect = (userId) => ({
+  ...messageThreadBaseSelect,
+  messages: {
+    orderBy: {
+      createdAt: 'asc',
+    },
+    select: messageSelect,
+  },
+  notifications: {
+    where: {
+      userId,
+      readAt: null,
+    },
+    select: {
+      id: true,
+    },
+  },
+})
+
+export const notificationSelect = {
+  id: true,
+  type: true,
+  title: true,
+  bodyPreview: true,
+  threadId: true,
+  childId: true,
+  readAt: true,
+  createdAt: true,
+  actorUser: {
+    select: messagingUserSelect,
+  },
+  child: {
+    select: childMiniSelect,
+  },
+  thread: {
+    select: {
+      id: true,
+      subject: true,
+      priority: true,
+      status: true,
+    },
+  },
 }

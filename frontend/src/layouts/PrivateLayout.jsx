@@ -1,14 +1,183 @@
-import { FiHome, FiLogOut, FiUser } from 'react-icons/fi'
-import { NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { FiBell, FiHome, FiLogOut, FiUser } from 'react-icons/fi'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
+import { NotificationsPanel } from '@/components/private/NotificationsPanel'
 import { Button } from '@/components/ui/Button'
 import { privateNavigation } from '@/constants/navigation'
 import { ROLE_LABELS } from '@/constants/roles'
 import { useAuth } from '@/hooks/useAuth'
+import { usePolling } from '@/hooks/usePolling'
+import { notificationsService } from '@/services/notificationsService'
+import { emitNotificationsSync, PANEL_NOTIFICATIONS_SYNC_EVENT } from '@/utils/panelEvents'
+
+const rolesWithMessaging = ['COORDINATION', 'SECRETARY', 'PROFESSIONAL']
 
 export const PrivateLayout = () => {
   const { logout, user } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const items = privateNavigation.filter((item) => item.roles.includes(user.role))
+  const canUseMessaging = rolesWithMessaging.includes(user.role)
+  const notificationsRef = useRef(null)
+
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [notificationsError, setNotificationsError] = useState('')
+  const [isNotificationsLoading, setIsNotificationsLoading] = useState(false)
+
+  const syncNotifications = async ({ includeList = false, silent = false } = {}) => {
+    if (!canUseMessaging) {
+      return
+    }
+
+    if (includeList && !silent) {
+      setIsNotificationsLoading(true)
+    }
+
+    try {
+      const [countResult, notificationsResult] = await Promise.all([
+        notificationsService.getUnreadCount(),
+        includeList ? notificationsService.list(10) : Promise.resolve(null),
+      ])
+
+      setUnreadCount(countResult.unreadCount ?? 0)
+
+      if (notificationsResult) {
+        setNotifications(notificationsResult)
+      }
+
+      setNotificationsError('')
+    } catch (error) {
+      setNotificationsError(error.message)
+    } finally {
+      if (includeList && !silent) {
+        setIsNotificationsLoading(false)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!canUseMessaging) {
+      setNotifications([])
+      setUnreadCount(0)
+      setIsNotificationsOpen(false)
+      return
+    }
+
+    void syncNotifications({ includeList: isNotificationsOpen })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canUseMessaging, isNotificationsOpen])
+
+  useEffect(() => {
+    if (!canUseMessaging) {
+      return
+    }
+
+    const handleSync = () => {
+      void syncNotifications({ includeList: isNotificationsOpen, silent: true })
+    }
+
+    window.addEventListener(PANEL_NOTIFICATIONS_SYNC_EVENT, handleSync)
+
+    return () => {
+      window.removeEventListener(PANEL_NOTIFICATIONS_SYNC_EVENT, handleSync)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canUseMessaging, isNotificationsOpen])
+
+  useEffect(() => {
+    setIsNotificationsOpen(false)
+  }, [location.pathname, location.search])
+
+  useEffect(() => {
+    if (!isNotificationsOpen) {
+      return undefined
+    }
+
+    const handlePointerDown = (event) => {
+      if (!notificationsRef.current?.contains(event.target)) {
+        setIsNotificationsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+    }
+  }, [isNotificationsOpen])
+
+  usePolling(
+    () => syncNotifications({ includeList: isNotificationsOpen, silent: true }),
+    {
+      enabled: canUseMessaging,
+      intervalMs: 30000,
+    },
+  )
+
+  const handleToggleNotifications = () => {
+    const nextValue = !isNotificationsOpen
+    setIsNotificationsOpen(nextValue)
+
+    if (nextValue) {
+      void syncNotifications({ includeList: true })
+    }
+  }
+
+  const handleMarkNotificationRead = async (notificationId) => {
+    try {
+      const updatedNotification = await notificationsService.markRead(notificationId)
+
+      setNotifications((current) =>
+        current.map((notification) =>
+          notification.id === notificationId ? updatedNotification : notification,
+        ),
+      )
+      setUnreadCount((current) => Math.max(0, current - 1))
+      emitNotificationsSync()
+    } catch (error) {
+      setNotificationsError(error.message)
+    }
+  }
+
+  const handleMarkAllNotificationsRead = async () => {
+    try {
+      await notificationsService.markAllRead()
+      setNotifications((current) =>
+        current.map((notification) => ({
+          ...notification,
+          isRead: true,
+          readAt: notification.readAt ?? new Date().toISOString(),
+        })),
+      )
+      setUnreadCount(0)
+      emitNotificationsSync()
+    } catch (error) {
+      setNotificationsError(error.message)
+    }
+  }
+
+  const handleOpenNotification = async (notification) => {
+    if (!notification.isRead) {
+      await handleMarkNotificationRead(notification.id)
+    }
+
+    setIsNotificationsOpen(false)
+
+    if (notification.threadId) {
+      navigate(`/app/mensajes?threadId=${notification.threadId}`)
+      return
+    }
+
+    if (notification.childId) {
+      navigate(`/app/mensajes?childId=${notification.childId}&compose=1`)
+      return
+    }
+
+    navigate('/app/mensajes')
+  }
 
   return (
     <div className="panel-gradient panel-shell min-h-screen">
@@ -65,8 +234,8 @@ export const PrivateLayout = () => {
           </Button>
         </aside>
 
-        <div className="panel-content flex-1">
-          <div className="panel-topbar mb-6 flex flex-col gap-4 rounded-[2rem] border border-[rgba(47,93,115,0.1)] bg-white/70 px-6 py-5 backdrop-blur-xl md:flex-row md:items-center md:justify-between">
+        <div className="panel-content relative flex-1 overflow-visible">
+          <div className="panel-topbar relative z-40 mb-6 flex flex-col gap-4 overflow-visible rounded-[2rem] border border-[rgba(47,93,115,0.1)] bg-white/70 px-6 py-5 backdrop-blur-xl md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-[rgba(47,93,115,0.58)]">Operación diaria</p>
               <h1 className="mt-2 text-2xl font-semibold text-[var(--color-primary)]">
@@ -85,6 +254,37 @@ export const PrivateLayout = () => {
                 </div>
               </div>
 
+              {canUseMessaging ? (
+                <div className="relative z-50" ref={notificationsRef}>
+                  <button
+                    aria-expanded={isNotificationsOpen}
+                    aria-haspopup="dialog"
+                    className="relative flex size-12 items-center justify-center rounded-full border border-[rgba(47,93,115,0.12)] bg-white/85 text-[var(--color-primary)] transition-colors hover:bg-[rgba(47,93,115,0.06)]"
+                    onClick={handleToggleNotifications}
+                    type="button"
+                  >
+                    <FiBell aria-hidden="true" className="size-5" />
+                    {unreadCount > 0 ? (
+                      <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-[var(--color-accent)] px-1.5 py-1 text-[10px] font-semibold text-white">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    ) : null}
+                  </button>
+
+                  {isNotificationsOpen ? (
+                    <NotificationsPanel
+                      error={notificationsError}
+                      isLoading={isNotificationsLoading}
+                      notifications={notifications}
+                      onMarkAllRead={handleMarkAllNotificationsRead}
+                      onMarkRead={handleMarkNotificationRead}
+                      onOpenNotification={handleOpenNotification}
+                      unreadCount={unreadCount}
+                    />
+                  ) : null}
+                </div>
+              ) : null}
+
               <Button as={NavLink} className="gap-2" to="/" variant="outline">
                 <FiHome aria-hidden="true" className="size-4" />
                 Volver al inicio
@@ -92,7 +292,9 @@ export const PrivateLayout = () => {
             </div>
           </div>
 
-          <Outlet />
+          <div className="relative z-0">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

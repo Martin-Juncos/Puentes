@@ -5,6 +5,7 @@ import {
   FiCreditCard,
   FiGrid,
   FiLayers,
+  FiMessageSquare,
   FiSettings,
   FiShield,
   FiUser,
@@ -62,6 +63,12 @@ export const privateNavigation = [
     label: 'Cobros y asistencia',
     icon: FiCreditCard,
     roles: ['COORDINATION', 'SECRETARY'],
+  },
+  {
+    to: '/app/mensajes',
+    label: 'Mensajes',
+    icon: FiMessageSquare,
+    roles: ['COORDINATION', 'SECRETARY', 'PROFESSIONAL'],
   },
   {
     to: '/app/seguimientos',

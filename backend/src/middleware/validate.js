@@ -1,27 +1,43 @@
 import { AppError } from '../utils/AppError.js'
 
+const replaceRequestSegment = (req, key, value) => {
+  try {
+    Object.defineProperty(req, key, {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value,
+    })
+    return
+  } catch {
+    // Fallback for request shapes that don't allow redefining the property.
+  }
+
+  if (req[key] && typeof req[key] === 'object') {
+    Object.keys(req[key]).forEach((segmentKey) => {
+      delete req[key][segmentKey]
+    })
+    Object.assign(req[key], value)
+    return
+  }
+
+  req[key] = value
+}
+
 export const validate =
   (schemas) =>
   (req, _res, next) => {
     try {
       if (schemas.body) {
-        req.body = schemas.body.parse(req.body)
+        replaceRequestSegment(req, 'body', schemas.body.parse(req.body))
       }
 
       if (schemas.query) {
-        const parsedQuery = schemas.query.parse(req.query)
-        Object.keys(req.query).forEach((key) => {
-          delete req.query[key]
-        })
-        Object.assign(req.query, parsedQuery)
+        replaceRequestSegment(req, 'query', schemas.query.parse(req.query))
       }
 
       if (schemas.params) {
-        const parsedParams = schemas.params.parse(req.params)
-        Object.keys(req.params).forEach((key) => {
-          delete req.params[key]
-        })
-        Object.assign(req.params, parsedParams)
+        replaceRequestSegment(req, 'params', schemas.params.parse(req.params))
       }
 
       next()

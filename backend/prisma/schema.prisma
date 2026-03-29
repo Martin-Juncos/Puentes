@@ -62,6 +62,28 @@ enum ContactInquiryStatus {
   RESOLVED
 }
 
+enum MessageThreadStatus {
+  OPEN
+  ARCHIVED
+}
+
+enum MessagePriority {
+  NORMAL
+  HIGH
+}
+
+enum MessageThreadContextType {
+  CHILD_CASE
+  CONSULTA
+  REPORTE
+  INFORMACION
+}
+
+enum NotificationType {
+  MESSAGE_NEW
+  THREAD_ASSIGNED
+}
+
 model User {
   id                    String                      @id @default(cuid())
   fullName              String
@@ -79,6 +101,11 @@ model User {
   paymentRecords        PaymentRecord[]             @relation("PaymentRegisteredBy")
   authoredFollowUpNotes FollowUpNote[]              @relation("FollowUpAuthoredBy")
   assignedChildLinks    ChildProfessionalAssignment[] @relation("ChildAssignedBy")
+  createdMessageThreads MessageThread[]             @relation("MessageThreadCreatedBy")
+  threadParticipations  MessageParticipant[]
+  authoredMessages      Message[]                   @relation("MessageAuthoredBy")
+  notifications         Notification[]              @relation("NotificationUser")
+  actedNotifications    Notification[]              @relation("NotificationActor")
 }
 
 model ProfessionalProfile {
@@ -141,6 +168,8 @@ model Child {
   sessions    Session[]
   payments    PaymentRecord[]
   followUps   FollowUpNote[]
+  messageThreads MessageThread[]
+  notifications Notification[]
 
   @@index([lastName])
 }
@@ -204,6 +233,72 @@ model FollowUpNote {
   session        Session?            @relation(fields: [sessionId], references: [id])
 
   @@index([followUpDate])
+}
+
+model MessageThread {
+  id              String              @id @default(cuid())
+  childId         String?
+  contextType     MessageThreadContextType @default(CHILD_CASE)
+  subject         String
+  createdByUserId String
+  status          MessageThreadStatus @default(OPEN)
+  priority        MessagePriority     @default(NORMAL)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  child           Child?              @relation(fields: [childId], references: [id], onDelete: Cascade)
+  createdByUser   User                @relation("MessageThreadCreatedBy", fields: [createdByUserId], references: [id])
+  participants    MessageParticipant[]
+  messages        Message[]
+  notifications   Notification[]
+
+  @@index([childId, updatedAt])
+  @@index([status, updatedAt])
+}
+
+model MessageParticipant {
+  id         String        @id @default(cuid())
+  threadId    String
+  userId      String
+  lastReadAt  DateTime?
+  createdAt   DateTime     @default(now())
+  thread      MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id])
+
+  @@unique([threadId, userId])
+  @@index([userId, lastReadAt])
+}
+
+model Message {
+  id           String        @id @default(cuid())
+  threadId      String
+  authorUserId  String
+  body          String
+  createdAt     DateTime      @default(now())
+  thread        MessageThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorUser    User           @relation("MessageAuthoredBy", fields: [authorUserId], references: [id])
+
+  @@index([threadId, createdAt])
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  type        NotificationType
+  title       String
+  bodyPreview String?
+  threadId    String?
+  childId     String?
+  actorUserId String?
+  readAt      DateTime?
+  createdAt   DateTime         @default(now())
+  user        User             @relation("NotificationUser", fields: [userId], references: [id], onDelete: Cascade)
+  thread      MessageThread?   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  child       Child?           @relation(fields: [childId], references: [id], onDelete: Cascade)
+  actorUser   User?            @relation("NotificationActor", fields: [actorUserId], references: [id])
+
+  @@index([userId, readAt, createdAt])
+  @@index([threadId])
+  @@index([childId])
 }
 
 model AttendanceRecord {

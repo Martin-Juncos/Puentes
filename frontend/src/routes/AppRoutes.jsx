@@ -16,6 +16,7 @@ import { DashboardPage } from '@/pages/private/DashboardPage'
 import { FamiliesPage } from '@/pages/private/FamiliesPage'
 import { FollowUpReportPage } from '@/pages/private/FollowUpReportPage'
 import { FollowUpsPage } from '@/pages/private/FollowUpsPage'
+import { MessagesPage } from '@/pages/private/MessagesPage'
 import { PaymentsPage } from '@/pages/private/PaymentsPage'
 import { ProfessionalsPage } from '@/pages/private/ProfessionalsPage'
 import { ServicesAdminPage } from '@/pages/private/ServicesAdminPage'
@@ -48,6 +49,9 @@ export const AppRoutes = () => (
         <Route path="ninos" element={<ChildrenPage />} />
         <Route path="profesionales" element={<ProfessionalsPage />} />
         <Route path="servicios" element={<ServicesAdminPage />} />
+        <Route element={<RoleGate allowedRoles={['COORDINATION', 'SECRETARY', 'PROFESSIONAL']} />}>
+          <Route path="mensajes" element={<MessagesPage />} />
+        </Route>
         <Route element={<RoleGate allowedRoles={['COORDINATION', 'SECRETARY']} />}>
           <Route path="cobros" element={<PaymentsPage />} />
         </Route>

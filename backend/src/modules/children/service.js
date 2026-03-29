@@ -95,6 +95,11 @@ export const deleteChildRecord = async (id) => {
           id: true,
         },
       },
+      messageThreads: {
+        select: {
+          id: true,
+        },
+      },
     },
   })
 
@@ -102,7 +107,13 @@ export const deleteChildRecord = async (id) => {
     throw new AppError(404, 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
   }
 
-  if (child.assignments.length || child.sessions.length || child.payments.length || child.followUps.length) {
+  if (
+    child.assignments.length ||
+    child.sessions.length ||
+    child.payments.length ||
+    child.followUps.length ||
+    child.messageThreads.length
+  ) {
     const blockers = []
 
     if (child.assignments.length) {
@@ -141,10 +152,19 @@ export const deleteChildRecord = async (id) => {
       })
     }
 
+    if (child.messageThreads.length) {
+      blockers.push({
+        key: 'messageThreads',
+        label: 'Conversaciones internas',
+        count: child.messageThreads.length,
+        solution: 'MantenÃ© el caso para conservar la mensajerÃ­a y las alertas vinculadas.',
+      })
+    }
+
     throw new AppError(
       409,
       'CHILD_DELETE_BLOCKED',
-      'No se puede eliminar un caso con asignaciones, sesiones, pagos o seguimientos asociados.',
+      'No se puede eliminar un caso con asignaciones, sesiones, pagos, seguimientos o conversaciones asociadas.',
       {
         blockers,
         nextSteps: [

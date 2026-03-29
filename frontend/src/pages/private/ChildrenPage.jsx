@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { FiClipboard, FiTrash2, FiUserPlus } from 'react-icons/fi'
+import { FiClipboard, FiMessageSquare, FiTrash2, FiUserPlus } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal } from '@/components/ui/ConfirmDeleteModal'
@@ -66,6 +67,7 @@ const childStatusClasses = {
 
 export const ChildrenPage = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [childCreateForm, setChildCreateForm] = useState(childCreateInitial)
   const [childUpdateForm, setChildUpdateForm] = useState(childUpdateInitial)
   const [assignmentForm, setAssignmentForm] = useState(assignmentInitial)
@@ -111,6 +113,10 @@ export const ChildrenPage = () => {
   const selectChildForUpdate = (child) => {
     setChildUpdateForm(buildChildUpdateForm(child))
     setChildUpdateError('')
+  }
+
+  const openChildMessages = (childId) => {
+    navigate(`/app/mensajes?childId=${childId}&compose=1`)
   }
 
   const handleChildSelection = (event) => {
@@ -414,6 +420,15 @@ export const ChildrenPage = () => {
                   </p>
                   <p className="mt-1">Familia: {selectedChild.family.displayName}</p>
                   <p className="mt-1">Asignaciones: {selectedChild.assignments.length}</p>
+                  <Button
+                    className="mt-3 gap-2 px-3 py-2 text-xs"
+                    onClick={() => openChildMessages(selectedChild.id)}
+                    type="button"
+                    variant="outline"
+                  >
+                    <FiMessageSquare aria-hidden="true" className="size-4" />
+                    Abrir mensajes
+                  </Button>
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-3 text-sm text-[rgba(46,46,46,0.64)]">
@@ -610,9 +625,28 @@ export const ChildrenPage = () => {
                 key: 'action',
                 label: 'Acción',
                 render: (row) => (
-                  <Button className="px-3 py-2 text-xs" onClick={() => selectChildForUpdate(row)} type="button" variant="outline">
-                    {childUpdateForm.id === row.id ? 'Seleccionado' : 'Editar'}
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      className="px-3 py-2 text-xs"
+                      onClick={() => selectChildForUpdate(row)}
+                      type="button"
+                      variant="outline"
+                    >
+                      {childUpdateForm.id === row.id ? 'Seleccionado' : 'Editar'}
+                    </Button>
+                    <Button
+                      className="gap-1 px-3 py-2 text-xs"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        openChildMessages(row.id)
+                      }}
+                      type="button"
+                      variant="ghost"
+                    >
+                      <FiMessageSquare aria-hidden="true" className="size-4" />
+                      Mensajes
+                    </Button>
+                  </div>
                 ),
               },
             ]}

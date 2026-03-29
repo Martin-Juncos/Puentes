@@ -13,6 +13,8 @@ import { paymentsRouter } from '../modules/payments/routes.js'
 import { followUpsRouter } from '../modules/follow-ups/routes.js'
 import { dashboardRouter } from '../modules/dashboard/routes.js'
 import { settingsRouter } from '../modules/settings/routes.js'
+import { messagesRouter } from '../modules/messages/routes.js'
+import { notificationsRouter } from '../modules/notifications/routes.js'
 
 export const apiRouter = Router()
 
@@ -33,3 +35,5 @@ apiRouter.use('/payments', paymentsRouter)
 apiRouter.use('/follow-ups', followUpsRouter)
 apiRouter.use('/dashboard', dashboardRouter)
 apiRouter.use('/settings', settingsRouter)
+apiRouter.use('/messages', messagesRouter)
+apiRouter.use('/notifications', notificationsRouter)
