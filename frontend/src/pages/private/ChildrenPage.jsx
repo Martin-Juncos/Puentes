@@ -1,11 +1,16 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { FiClipboard, FiMessageSquare, FiTrash2, FiUserPlus } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 
+import { PanelAccessNotice } from '@/components/private/PanelAccessNotice'
+import { PanelSectionHeader } from '@/components/private/PanelSectionHeader'
+import { PanelTableHeader } from '@/components/private/PanelTableHeader'
+import { SelectionStateCard } from '@/components/private/SelectionStateCard'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal } from '@/components/ui/ConfirmDeleteModal'
 import { DataTable } from '@/components/ui/DataTable'
 import { Field } from '@/components/ui/Field'
+import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { useAuth } from '@/hooks/useAuth'
 import { useAsyncData } from '@/hooks/useAsyncData'
@@ -115,9 +120,84 @@ export const ChildrenPage = () => {
     setChildUpdateError('')
   }
 
-  const openChildMessages = (childId) => {
-    navigate(`/app/mensajes?childId=${childId}&compose=1`)
-  }
+  const openChildMessages = useCallback(
+    (childId) => {
+      navigate(`/app/mensajes?childId=${childId}&compose=1`)
+    },
+    [navigate],
+  )
+
+  const childColumns = useMemo(
+    () => [
+      {
+        key: 'name',
+        label: 'Niño / niña',
+        render: (row) => `${row.firstName} ${row.lastName}`,
+      },
+      {
+        key: 'family',
+        label: 'Familia',
+        render: (row) => row.family.displayName,
+      },
+      {
+        key: 'birthDate',
+        label: 'Nacimiento',
+        render: (row) => formatDate(row.birthDate),
+      },
+      {
+        key: 'status',
+        label: 'Estado',
+        render: (row) => (
+          <span
+            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${childStatusClasses[row.status]}`}
+          >
+            {childStatusLabels[row.status] ?? row.status}
+          </span>
+        ),
+      },
+      {
+        key: 'assignments',
+        label: 'Asignaciones',
+        render: (row) =>
+          row.assignments
+            .map((assignment) =>
+              `${assignment.professional.user.fullName}${
+                assignment.service ? ` · ${assignment.service.name}` : ''
+              }`,
+            )
+            .join(', ') || 'Sin asignación',
+      },
+      {
+        key: 'action',
+        label: 'Acción',
+        render: (row) => (
+          <div className="flex flex-wrap gap-2">
+            <Button
+              className="px-3 py-2 text-xs"
+              onClick={() => selectChildForUpdate(row)}
+              type="button"
+              variant="outline"
+            >
+              {childUpdateForm.id === row.id ? 'Seleccionado' : 'Editar'}
+            </Button>
+            <Button
+              className="gap-1 px-3 py-2 text-xs"
+              onClick={(event) => {
+                event.stopPropagation()
+                openChildMessages(row.id)
+              }}
+              type="button"
+              variant="ghost"
+            >
+              <FiMessageSquare aria-hidden="true" className="size-4" />
+              Mensajes
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [childUpdateForm.id, openChildMessages],
+  )
 
   const handleChildSelection = (event) => {
     const nextChild = children.find((child) => child.id === event.target.value)
@@ -230,17 +310,20 @@ export const ChildrenPage = () => {
     try {
       setResolutionActionKey('clear-assignments')
       const updatedChild = await childrenService.clearAssignments(selectedChild.id)
+
       setChildUpdateForm(buildChildUpdateForm(updatedChild))
       setChildUpdateError('')
       setDeleteStatusNotice(null)
       setDeleteErrorDetails((currentDetails) => {
-        const remainingBlockers = currentDetails?.blockers?.filter((blocker) => blocker.key !== 'assignments') ?? []
+        const remainingBlockers =
+          currentDetails?.blockers?.filter((blocker) => blocker.key !== 'assignments') ?? []
 
         if (!remainingBlockers.length) {
           setDeleteError('')
           setDeleteStatusNotice({
             title: 'Listo para eliminar',
-            description: 'Las asignaciones se quitaron correctamente. Si no quedan otras relaciones pendientes, ya podés confirmar la eliminación.',
+            description:
+              'Las asignaciones se quitaron correctamente. Si no quedan otras relaciones pendientes, ya podés confirmar la eliminación.',
           })
           return null
         }
@@ -269,6 +352,7 @@ export const ChildrenPage = () => {
     try {
       setResolutionActionKey(`status-${status}`)
       const updatedChild = await childrenService.update(selectedChild.id, { status })
+
       setChildUpdateForm(buildChildUpdateForm(updatedChild))
       setChildUpdateError('')
       setDeleteError('')
@@ -288,11 +372,14 @@ export const ChildrenPage = () => {
   const deleteResolutionActions = []
 
   if (deleteErrorDetails) {
-      if (deleteErrorDetails.blockers?.some((blocker) => blocker.key === 'assignments')) {
-        deleteResolutionActions.push({
-          key: 'clear-assignments',
-          label: resolutionActionKey === 'clear-assignments' ? 'Quitando asignaciones...' : 'Quitar asignaciones',
-          onClick: handleClearAssignments,
+    if (deleteErrorDetails.blockers?.some((blocker) => blocker.key === 'assignments')) {
+      deleteResolutionActions.push({
+        key: 'clear-assignments',
+        label:
+          resolutionActionKey === 'clear-assignments'
+            ? 'Quitando asignaciones...'
+            : 'Quitar asignaciones',
+        onClick: handleClearAssignments,
         disabled: Boolean(resolutionActionKey),
       })
     }
@@ -300,13 +387,15 @@ export const ChildrenPage = () => {
     deleteResolutionActions.push(
       {
         key: 'status-paused',
-        label: resolutionActionKey === 'status-PAUSED' ? 'Marcando en pausa...' : 'Marcar en pausa',
+        label:
+          resolutionActionKey === 'status-PAUSED' ? 'Marcando en pausa...' : 'Marcar en pausa',
         onClick: () => handleResolveWithStatus('PAUSED'),
         disabled: Boolean(resolutionActionKey),
       },
       {
         key: 'status-discharged',
-        label: resolutionActionKey === 'status-DISCHARGED' ? 'Marcando alta...' : 'Marcar alta',
+        label:
+          resolutionActionKey === 'status-DISCHARGED' ? 'Marcando alta...' : 'Marcar alta',
         onClick: () => handleResolveWithStatus('DISCHARGED'),
         disabled: Boolean(resolutionActionKey),
       },
@@ -317,36 +406,51 @@ export const ChildrenPage = () => {
     <div className="grid gap-6">
       <div className="grid gap-6 xl:grid-cols-2">
         <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-[rgba(47,93,115,0.08)] p-3 text-[var(--color-primary)]">
-              <FiClipboard aria-hidden="true" className="size-5" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Alta de niño o niña</h2>
-              <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-                Registro inicial del caso con familia asociada y datos básicos.
-              </p>
-            </div>
-          </div>
+          <PanelSectionHeader
+            description="Registro inicial del caso con familia asociada y datos básicos."
+            icon={FiClipboard}
+            title="Alta de niño o niña"
+          />
 
           {!canManageChildren ? (
-            <p className="mt-6 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-              Como profesional, esta vista queda orientada a consulta de casos asignados. Las altas, ediciones y bajas
-              corresponden a secretaría o coordinación.
-            </p>
+            <PanelAccessNotice>
+              Como profesional, esta vista queda orientada a consulta de casos asignados. Las altas,
+              ediciones y bajas corresponden a secretaría o coordinación.
+            </PanelAccessNotice>
           ) : (
             <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleChildCreate}>
               <Field label="Nombre">
-                <input className="field-input" onChange={updateCreateField('firstName')} required value={childCreateForm.firstName} />
+                <input
+                  className="field-input"
+                  onChange={updateCreateField('firstName')}
+                  required
+                  value={childCreateForm.firstName}
+                />
               </Field>
               <Field label="Apellido">
-                <input className="field-input" onChange={updateCreateField('lastName')} required value={childCreateForm.lastName} />
+                <input
+                  className="field-input"
+                  onChange={updateCreateField('lastName')}
+                  required
+                  value={childCreateForm.lastName}
+                />
               </Field>
               <Field label="Fecha de nacimiento">
-                <input className="field-input" onChange={updateCreateField('birthDate')} required type="date" value={childCreateForm.birthDate} />
+                <input
+                  className="field-input"
+                  onChange={updateCreateField('birthDate')}
+                  required
+                  type="date"
+                  value={childCreateForm.birthDate}
+                />
               </Field>
               <Field label="Familia asociada">
-                <select className="field-input" onChange={updateCreateField('familyId')} required value={childCreateForm.familyId}>
+                <select
+                  className="field-input"
+                  onChange={updateCreateField('familyId')}
+                  required
+                  value={childCreateForm.familyId}
+                >
                   <option value="">Seleccionar familia</option>
                   {families.map((family) => (
                     <option key={family.id} value={family.id}>
@@ -356,16 +460,24 @@ export const ChildrenPage = () => {
                 </select>
               </Field>
               <Field label="Escuela">
-                <input className="field-input" onChange={updateCreateField('schoolName')} value={childCreateForm.schoolName} />
+                <input
+                  className="field-input"
+                  onChange={updateCreateField('schoolName')}
+                  value={childCreateForm.schoolName}
+                />
               </Field>
               <Field label="Observaciones básicas">
-                <textarea className="field-input min-h-24" onChange={updateCreateField('notes')} value={childCreateForm.notes} />
+                <textarea
+                  className="field-input min-h-24"
+                  onChange={updateCreateField('notes')}
+                  value={childCreateForm.notes}
+                />
               </Field>
+
               {childCreateError ? (
-                <div className="md:col-span-2 rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">
-                  {childCreateError}
-                </div>
+                <FormErrorAlert className="md:col-span-2">{childCreateError}</FormErrorAlert>
               ) : null}
+
               <div className="md:col-span-2">
                 <Button type="submit">Guardar niño</Button>
               </div>
@@ -374,35 +486,37 @@ export const ChildrenPage = () => {
         </PanelCard>
 
         <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Actualizar o eliminar</h2>
-              <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-                Seleccioná un caso para cargar sus datos en edición.
-              </p>
-            </div>
-            {selectedChild && canManageChildren ? (
-              <Button
-                className="px-4 py-2"
-                onClick={() => {
-                  setChildUpdateForm(childUpdateInitial)
-                  setChildUpdateError('')
-                }}
-                type="button"
-                variant="ghost"
-              >
-                Limpiar selección
-              </Button>
-            ) : null}
-          </div>
+          <PanelSectionHeader
+            actions={
+              selectedChild && canManageChildren ? (
+                <Button
+                  className="px-4 py-2"
+                  onClick={() => {
+                    setChildUpdateForm(childUpdateInitial)
+                    setChildUpdateError('')
+                  }}
+                  type="button"
+                  variant="ghost"
+                >
+                  Limpiar selección
+                </Button>
+              ) : null
+            }
+            description="Seleccioná un caso para cargar sus datos en edición."
+            title="Actualizar o eliminar"
+          />
 
           {!canManageChildren ? (
-            <p className="mt-6 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-              La edición y la baja de casos solo están disponibles para secretaría, coordinación y administración.
-            </p>
+            <PanelAccessNotice>
+              La edición y la baja de casos solo están disponibles para secretaría, coordinación y
+              administración.
+            </PanelAccessNotice>
           ) : (
             <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleChildUpdate}>
-              <Field hint="También podés hacer clic sobre una fila del listado inferior." label="Caso seleccionado">
+              <Field
+                hint="También podés hacer clic sobre una fila del listado inferior."
+                label="Caso seleccionado"
+              >
                 <select className="field-input" onChange={handleChildSelection} value={childUpdateForm.id}>
                   <option value="">Seleccionar caso</option>
                   {children.map((child) => (
@@ -413,42 +527,66 @@ export const ChildrenPage = () => {
                 </select>
               </Field>
 
-              {selectedChild ? (
-                <div className="rounded-2xl border border-[rgba(47,93,115,0.1)] bg-[rgba(47,93,115,0.04)] px-4 py-3 text-sm text-[rgba(46,46,46,0.74)]">
-                  <p className="font-semibold text-[var(--color-primary)]">
-                    {selectedChild.firstName} {selectedChild.lastName}
-                  </p>
-                  <p className="mt-1">Familia: {selectedChild.family.displayName}</p>
-                  <p className="mt-1">Asignaciones: {selectedChild.assignments.length}</p>
-                  <Button
-                    className="mt-3 gap-2 px-3 py-2 text-xs"
-                    onClick={() => openChildMessages(selectedChild.id)}
-                    type="button"
-                    variant="outline"
-                  >
-                    <FiMessageSquare aria-hidden="true" className="size-4" />
-                    Abrir mensajes
-                  </Button>
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-3 text-sm text-[rgba(46,46,46,0.64)]">
-                  Seleccioná un caso para habilitar la edición.
-                </div>
-              )}
+              <SelectionStateCard
+                action={
+                  selectedChild ? (
+                    <Button
+                      className="gap-2 px-3 py-2 text-xs"
+                      onClick={() => openChildMessages(selectedChild.id)}
+                      type="button"
+                      variant="outline"
+                    >
+                      <FiMessageSquare aria-hidden="true" className="size-4" />
+                      Abrir mensajes
+                    </Button>
+                  ) : null
+                }
+                emptyText="Seleccioná un caso para habilitar la edición."
+                lines={
+                  selectedChild
+                    ? [
+                        `Familia: ${selectedChild.family.displayName}`,
+                        `Asignaciones: ${selectedChild.assignments.length}`,
+                      ]
+                    : []
+                }
+                title={selectedChild ? `${selectedChild.firstName} ${selectedChild.lastName}` : ''}
+              />
 
               {selectedChild ? (
                 <>
                   <Field label="Nombre">
-                    <input className="field-input" onChange={updateChildField('firstName')} required value={childUpdateForm.firstName} />
+                    <input
+                      className="field-input"
+                      onChange={updateChildField('firstName')}
+                      required
+                      value={childUpdateForm.firstName}
+                    />
                   </Field>
                   <Field label="Apellido">
-                    <input className="field-input" onChange={updateChildField('lastName')} required value={childUpdateForm.lastName} />
+                    <input
+                      className="field-input"
+                      onChange={updateChildField('lastName')}
+                      required
+                      value={childUpdateForm.lastName}
+                    />
                   </Field>
                   <Field label="Fecha de nacimiento">
-                    <input className="field-input" onChange={updateChildField('birthDate')} required type="date" value={childUpdateForm.birthDate} />
+                    <input
+                      className="field-input"
+                      onChange={updateChildField('birthDate')}
+                      required
+                      type="date"
+                      value={childUpdateForm.birthDate}
+                    />
                   </Field>
                   <Field label="Familia asociada">
-                    <select className="field-input" onChange={updateChildField('familyId')} required value={childUpdateForm.familyId}>
+                    <select
+                      className="field-input"
+                      onChange={updateChildField('familyId')}
+                      required
+                      value={childUpdateForm.familyId}
+                    >
                       <option value="">Seleccionar familia</option>
                       {families.map((family) => (
                         <option key={family.id} value={family.id}>
@@ -458,7 +596,11 @@ export const ChildrenPage = () => {
                     </select>
                   </Field>
                   <Field label="Escuela">
-                    <input className="field-input" onChange={updateChildField('schoolName')} value={childUpdateForm.schoolName} />
+                    <input
+                      className="field-input"
+                      onChange={updateChildField('schoolName')}
+                      value={childUpdateForm.schoolName}
+                    />
                   </Field>
                   <Field label="Estado">
                     <select className="field-input" onChange={updateChildField('status')} value={childUpdateForm.status}>
@@ -468,15 +610,17 @@ export const ChildrenPage = () => {
                     </select>
                   </Field>
                   <Field label="Observaciones básicas">
-                    <textarea className="field-input min-h-24" onChange={updateChildField('notes')} value={childUpdateForm.notes} />
+                    <textarea
+                      className="field-input min-h-24"
+                      onChange={updateChildField('notes')}
+                      value={childUpdateForm.notes}
+                    />
                   </Field>
                 </>
               ) : null}
 
               {childUpdateError ? (
-                <div className="md:col-span-2 rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">
-                  {childUpdateError}
-                </div>
+                <FormErrorAlert className="md:col-span-2">{childUpdateError}</FormErrorAlert>
               ) : null}
 
               {selectedChild ? (
@@ -506,26 +650,26 @@ export const ChildrenPage = () => {
       </div>
 
       <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
-        <div className="flex items-center gap-3">
-          <div className="rounded-2xl bg-[rgba(47,93,115,0.08)] p-3 text-[var(--color-primary)]">
-            <FiUserPlus aria-hidden="true" className="size-5" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Asignar profesional</h2>
-            <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-              Las asignaciones se definen desde secretaría o coordinación para sostener una agenda centralizada.
-            </p>
-          </div>
-        </div>
+        <PanelSectionHeader
+          description="Las asignaciones se definen desde secretaría o coordinación para sostener una agenda centralizada."
+          icon={FiUserPlus}
+          title="Asignar profesional"
+        />
 
         {!canManageChildren ? (
-          <p className="mt-6 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-            Esta sección queda visible para consulta, pero las asignaciones nuevas no están habilitadas para perfiles profesionales.
-          </p>
+          <PanelAccessNotice>
+            Esta sección queda visible para consulta, pero las asignaciones nuevas no están habilitadas
+            para perfiles profesionales.
+          </PanelAccessNotice>
         ) : (
           <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleAssignmentSubmit}>
             <Field label="Caso">
-              <select className="field-input" onChange={updateAssignmentField('childId')} required value={assignmentForm.childId}>
+              <select
+                className="field-input"
+                onChange={updateAssignmentField('childId')}
+                required
+                value={assignmentForm.childId}
+              >
                 <option value="">Seleccionar</option>
                 {children.map((child) => (
                   <option key={child.id} value={child.id}>
@@ -535,7 +679,12 @@ export const ChildrenPage = () => {
               </select>
             </Field>
             <Field label="Profesional">
-              <select className="field-input" onChange={updateAssignmentField('professionalId')} required value={assignmentForm.professionalId}>
+              <select
+                className="field-input"
+                onChange={updateAssignmentField('professionalId')}
+                required
+                value={assignmentForm.professionalId}
+              >
                 <option value="">Seleccionar</option>
                 {professionals.map((professional) => (
                   <option key={professional.id} value={professional.id}>
@@ -545,7 +694,11 @@ export const ChildrenPage = () => {
               </select>
             </Field>
             <Field label="Servicio">
-              <select className="field-input" onChange={updateAssignmentField('serviceId')} value={assignmentForm.serviceId}>
+              <select
+                className="field-input"
+                onChange={updateAssignmentField('serviceId')}
+                value={assignmentForm.serviceId}
+              >
                 <option value="">Opcional</option>
                 {services.map((service) => (
                   <option key={service.id} value={service.id}>
@@ -555,13 +708,17 @@ export const ChildrenPage = () => {
               </select>
             </Field>
             <Field label="Notas de asignación">
-              <textarea className="field-input min-h-24" onChange={updateAssignmentField('notes')} value={assignmentForm.notes} />
+              <textarea
+                className="field-input min-h-24"
+                onChange={updateAssignmentField('notes')}
+                value={assignmentForm.notes}
+              />
             </Field>
+
             {assignmentError ? (
-              <div className="md:col-span-2 rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">
-                {assignmentError}
-              </div>
+              <FormErrorAlert className="md:col-span-2">{assignmentError}</FormErrorAlert>
             ) : null}
+
             <div className="md:col-span-2">
               <Button type="submit" variant="secondary">
                 Asignar profesional
@@ -572,86 +729,19 @@ export const ChildrenPage = () => {
       </PanelCard>
 
       <PanelCard>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Casos registrados</h2>
-            <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-              Hacé clic sobre una fila para cargar el caso en actualización.
-            </p>
-          </div>
-          <div className="rounded-full bg-[rgba(47,93,115,0.08)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
-            {children.length} casos
-          </div>
-        </div>
+        <PanelTableHeader
+          countLabel={`${children.length} casos`}
+          description="Hacé clic sobre una fila para cargar el caso en actualización."
+          title="Casos registrados"
+        />
 
         <div className="mt-6">
           <DataTable
-            columns={[
-              {
-                key: 'name',
-                label: 'Niño / niña',
-                render: (row) => `${row.firstName} ${row.lastName}`,
-              },
-              {
-                key: 'family',
-                label: 'Familia',
-                render: (row) => row.family.displayName,
-              },
-              {
-                key: 'birthDate',
-                label: 'Nacimiento',
-                render: (row) => formatDate(row.birthDate),
-              },
-              {
-                key: 'status',
-                label: 'Estado',
-                render: (row) => (
-                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${childStatusClasses[row.status]}`}>
-                    {childStatusLabels[row.status] ?? row.status}
-                  </span>
-                ),
-              },
-              {
-                key: 'assignments',
-                label: 'Asignaciones',
-                render: (row) =>
-                  row.assignments
-                    .map((assignment) =>
-                      `${assignment.professional.user.fullName}${assignment.service ? ` · ${assignment.service.name}` : ''}`,
-                    )
-                    .join(', ') || 'Sin asignación',
-              },
-              {
-                key: 'action',
-                label: 'Acción',
-                render: (row) => (
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      className="px-3 py-2 text-xs"
-                      onClick={() => selectChildForUpdate(row)}
-                      type="button"
-                      variant="outline"
-                    >
-                      {childUpdateForm.id === row.id ? 'Seleccionado' : 'Editar'}
-                    </Button>
-                    <Button
-                      className="gap-1 px-3 py-2 text-xs"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        openChildMessages(row.id)
-                      }}
-                      type="button"
-                      variant="ghost"
-                    >
-                      <FiMessageSquare aria-hidden="true" className="size-4" />
-                      Mensajes
-                    </Button>
-                  </div>
-                ),
-              },
-            ]}
+            columns={childColumns}
             getRowClassName={(row) =>
-              childUpdateForm.id === row.id ? 'bg-[rgba(47,93,115,0.06)] ring-1 ring-inset ring-[rgba(47,93,115,0.12)]' : ''
+              childUpdateForm.id === row.id
+                ? 'bg-[rgba(47,93,115,0.06)] ring-1 ring-inset ring-[rgba(47,93,115,0.12)]'
+                : ''
             }
             onRowClick={selectChildForUpdate}
             rows={children}
@@ -670,7 +760,9 @@ export const ChildrenPage = () => {
         onConfirm={handleDelete}
         resolutionActions={deleteResolutionActions}
         statusNotice={deleteStatusNotice}
-        subjectMeta={selectedChild ? `${selectedChild.family.displayName} · ${formatDate(selectedChild.birthDate)}` : ''}
+        subjectMeta={
+          selectedChild ? `${selectedChild.family.displayName} · ${formatDate(selectedChild.birthDate)}` : ''
+        }
         subjectName={selectedChild ? `${selectedChild.firstName} ${selectedChild.lastName}` : ''}
         title="Eliminar caso"
       />

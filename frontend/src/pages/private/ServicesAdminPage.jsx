@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FiLayers, FiTrash2 } from 'react-icons/fi'
 
+import { PanelAccessNotice } from '@/components/private/PanelAccessNotice'
+import { PanelSectionHeader } from '@/components/private/PanelSectionHeader'
+import { PanelTableHeader } from '@/components/private/PanelTableHeader'
+import { SelectionStateCard } from '@/components/private/SelectionStateCard'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal } from '@/components/ui/ConfirmDeleteModal'
 import { DataTable } from '@/components/ui/DataTable'
 import { Field } from '@/components/ui/Field'
+import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { useAuth } from '@/hooks/useAuth'
 import { useAsyncData } from '@/hooks/useAsyncData'
@@ -78,7 +83,7 @@ export const ServicesAdminPage = () => {
       }
     }
 
-    loadSettings()
+    void loadSettings()
   }, [])
 
   const canManage = ['ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'].includes(user.role)
@@ -104,6 +109,44 @@ export const ServicesAdminPage = () => {
     setUpdateError('')
   }
 
+  const serviceColumns = useMemo(
+    () => [
+      { key: 'name', label: 'Servicio' },
+      { key: 'description', label: 'Descripción' },
+      {
+        key: 'durationMinutes',
+        label: 'Duración',
+        render: (row) => `${row.durationMinutes} min`,
+      },
+      {
+        key: 'status',
+        label: 'Estado',
+        render: (row) => (
+          <span
+            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[row.status]}`}
+          >
+            {statusLabels[row.status] ?? row.status}
+          </span>
+        ),
+      },
+      {
+        key: 'action',
+        label: 'Acción',
+        render: (row) => (
+          <Button
+            className="px-3 py-2 text-xs"
+            onClick={() => selectServiceForUpdate(row)}
+            type="button"
+            variant="outline"
+          >
+            {updateForm.id === row.id ? 'Seleccionado' : 'Editar'}
+          </Button>
+        ),
+      },
+    ],
+    [updateForm.id],
+  )
+
   const handleSelectionChange = (event) => {
     const nextService = services.find((service) => service.id === event.target.value)
 
@@ -124,6 +167,7 @@ export const ServicesAdminPage = () => {
         ...createForm,
         durationMinutes: Number(createForm.durationMinutes),
       })
+
       setCreateForm({
         ...createInitial,
         durationMinutes: defaultServiceDuration,
@@ -202,13 +246,15 @@ export const ServicesAdminPage = () => {
     try {
       setResolutionActionKey('inactivate-service')
       const updatedService = await servicesService.update(selectedService.id, { status: 'INACTIVE' })
+
       setUpdateForm(buildUpdateForm(updatedService))
       setUpdateError('')
       setDeleteError('')
       setDeleteErrorDetails(null)
       setDeleteStatusNotice({
         title: 'Servicio inactivado',
-        description: 'El servicio quedó inactivo para preservar historial sin seguir ofreciéndolo en nuevas operaciones.',
+        description:
+          'El servicio quedó inactivo para preservar historial sin seguir ofreciéndolo en nuevas operaciones.',
       })
       await reload()
     } catch (error) {
@@ -224,7 +270,10 @@ export const ServicesAdminPage = () => {
     ? [
         {
           key: 'inactivate-service',
-          label: resolutionActionKey === 'inactivate-service' ? 'Inactivando servicio...' : 'Inactivar servicio',
+          label:
+            resolutionActionKey === 'inactivate-service'
+              ? 'Inactivando servicio...'
+              : 'Inactivar servicio',
           onClick: handleInactivateService,
           disabled: Boolean(resolutionActionKey),
         },
@@ -234,36 +283,46 @@ export const ServicesAdminPage = () => {
   return (
     <div className="grid gap-6">
       <PanelCard>
-        <div className="flex items-start gap-4">
-          <div className="rounded-2xl bg-[rgba(47,93,115,0.08)] p-3 text-[var(--color-primary)]">
-            <FiLayers aria-hidden="true" className="size-5" />
-          </div>
-          <div className="max-w-4xl">
-            <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Servicios del centro</h2>
-            <p className="mt-2 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-              Los perfiles profesionales describen especialidades del equipo, mientras que los servicios representan las
-              prestaciones concretas que el centro ofrece. Un profesional puede participar en distintos servicios y un
-              servicio puede sostenerse con más de un perfil disciplinar según el abordaje.
-            </p>
-          </div>
-        </div>
+        <PanelSectionHeader
+          description="Los perfiles profesionales describen especialidades del equipo, mientras que los servicios representan las prestaciones concretas que el centro ofrece."
+          icon={FiLayers}
+          title="Servicios del centro"
+        />
+        <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
+          Un profesional puede participar en distintos servicios y un servicio puede sostenerse con más
+          de un perfil disciplinar según el abordaje institucional.
+        </p>
       </PanelCard>
 
       <div className="grid gap-6 2xl:grid-cols-[1fr_1fr]">
         <PanelCard className={!canManage ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
-          <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Crear servicio</h2>
+          <PanelSectionHeader
+            description="Configurá nombre, descripción operativa, duración y color de referencia."
+            title="Crear servicio"
+          />
+
           {!canManage ? (
-            <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-              Esta sección queda visible para consulta operativa, pero la creación y edición de servicios corresponde a
-              coordinación o administración.
-            </p>
+            <PanelAccessNotice>
+              Esta sección queda visible para consulta operativa, pero la creación y edición de servicios
+              corresponde a coordinación o administración.
+            </PanelAccessNotice>
           ) : (
             <form className="mt-6 grid gap-4" onSubmit={handleCreate}>
               <Field label="Nombre">
-                <input className="field-input" onChange={updateCreateField('name')} required value={createForm.name} />
+                <input
+                  className="field-input"
+                  onChange={updateCreateField('name')}
+                  required
+                  value={createForm.name}
+                />
               </Field>
               <Field label="Descripción">
-                <textarea className="field-input min-h-28" onChange={updateCreateField('description')} required value={createForm.description} />
+                <textarea
+                  className="field-input min-h-28"
+                  onChange={updateCreateField('description')}
+                  required
+                  value={createForm.description}
+                />
               </Field>
               <Field label="Duración en minutos">
                 <input
@@ -276,46 +335,52 @@ export const ServicesAdminPage = () => {
                 />
               </Field>
               <Field label="Color de referencia">
-                <input className="field-input h-14" onChange={updateCreateField('colorTag')} type="color" value={createForm.colorTag} />
+                <input
+                  className="field-input h-14"
+                  onChange={updateCreateField('colorTag')}
+                  type="color"
+                  value={createForm.colorTag}
+                />
               </Field>
-              {createError ? (
-                <div className="rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{createError}</div>
-              ) : null}
+
+              {createError ? <FormErrorAlert>{createError}</FormErrorAlert> : null}
+
               <Button type="submit">Guardar servicio</Button>
             </form>
           )}
         </PanelCard>
 
         <PanelCard className={!canManage ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Actualizar o eliminar</h2>
-              <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-                Seleccioná un servicio existente para editarlo o retirarlo de operación.
-              </p>
-            </div>
-            {selectedService ? (
-              <Button
-                className="px-4 py-2"
-                onClick={() => {
-                  setUpdateForm(updateInitial)
-                  setUpdateError('')
-                }}
-                type="button"
-                variant="ghost"
-              >
-                Limpiar selección
-              </Button>
-            ) : null}
-          </div>
+          <PanelSectionHeader
+            actions={
+              selectedService ? (
+                <Button
+                  className="px-4 py-2"
+                  onClick={() => {
+                    setUpdateForm(updateInitial)
+                    setUpdateError('')
+                  }}
+                  type="button"
+                  variant="ghost"
+                >
+                  Limpiar selección
+                </Button>
+              ) : null
+            }
+            description="Seleccioná un servicio existente para editarlo o retirarlo de operación."
+            title="Actualizar o eliminar"
+          />
 
           {!canManage ? (
-            <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
+            <PanelAccessNotice>
               La gestión de servicios queda reservada a coordinación o administración.
-            </p>
+            </PanelAccessNotice>
           ) : (
             <form className="mt-6 grid gap-4" onSubmit={handleUpdate}>
-              <Field hint="También podés hacer clic sobre una fila del listado inferior." label="Servicio seleccionado">
+              <Field
+                hint="También podés hacer clic sobre una fila del listado inferior."
+                label="Servicio seleccionado"
+              >
                 <select className="field-input" onChange={handleSelectionChange} value={updateForm.id}>
                   <option value="">Seleccionar servicio</option>
                   {services.map((service) => (
@@ -326,19 +391,36 @@ export const ServicesAdminPage = () => {
                 </select>
               </Field>
 
+              <SelectionStateCard
+                emptyText="Seleccioná un servicio del catálogo para habilitar la edición."
+                lines={
+                  selectedService
+                    ? [
+                        `Duración: ${selectedService.durationMinutes} min`,
+                        `Estado: ${statusLabels[selectedService.status] ?? selectedService.status}`,
+                      ]
+                    : []
+                }
+                title={selectedService?.name}
+              />
+
               {selectedService ? (
                 <>
-                  <div className="rounded-2xl border border-[rgba(47,93,115,0.1)] bg-[rgba(47,93,115,0.04)] px-4 py-3 text-sm text-[rgba(46,46,46,0.74)]">
-                    <p className="font-semibold text-[var(--color-primary)]">{selectedService.name}</p>
-                    <p className="mt-1">Duración: {selectedService.durationMinutes} min</p>
-                    <p className="mt-1">Estado: {statusLabels[selectedService.status] ?? selectedService.status}</p>
-                  </div>
-
                   <Field label="Nombre">
-                    <input className="field-input" onChange={updateUpdateField('name')} required value={updateForm.name} />
+                    <input
+                      className="field-input"
+                      onChange={updateUpdateField('name')}
+                      required
+                      value={updateForm.name}
+                    />
                   </Field>
                   <Field label="Descripción">
-                    <textarea className="field-input min-h-28" onChange={updateUpdateField('description')} required value={updateForm.description} />
+                    <textarea
+                      className="field-input min-h-28"
+                      onChange={updateUpdateField('description')}
+                      required
+                      value={updateForm.description}
+                    />
                   </Field>
                   <Field label="Duración en minutos">
                     <input
@@ -351,24 +433,27 @@ export const ServicesAdminPage = () => {
                     />
                   </Field>
                   <Field label="Estado">
-                    <select className="field-input" onChange={updateUpdateField('status')} value={updateForm.status}>
+                    <select
+                      className="field-input"
+                      onChange={updateUpdateField('status')}
+                      value={updateForm.status}
+                    >
                       <option value="ACTIVE">Activo</option>
                       <option value="INACTIVE">Inactivo</option>
                     </select>
                   </Field>
                   <Field label="Color de referencia">
-                    <input className="field-input h-14" onChange={updateUpdateField('colorTag')} type="color" value={updateForm.colorTag} />
+                    <input
+                      className="field-input h-14"
+                      onChange={updateUpdateField('colorTag')}
+                      type="color"
+                      value={updateForm.colorTag}
+                    />
                   </Field>
                 </>
-              ) : (
-                <div className="rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-3 text-sm text-[rgba(46,46,46,0.64)]">
-                  Seleccioná un servicio del catálogo para habilitar la edición.
-                </div>
-              )}
-
-              {updateError ? (
-                <div className="rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{updateError}</div>
               ) : null}
+
+              {updateError ? <FormErrorAlert>{updateError}</FormErrorAlert> : null}
 
               {selectedService ? (
                 <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
@@ -397,49 +482,19 @@ export const ServicesAdminPage = () => {
       </div>
 
       <PanelCard>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Servicios disponibles</h2>
-            <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-              Hacé clic sobre una fila para cargarla en el panel de actualización.
-            </p>
-          </div>
-          <div className="rounded-full bg-[rgba(47,93,115,0.08)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
-            {services.length} servicios
-          </div>
-        </div>
+        <PanelTableHeader
+          countLabel={`${services.length} servicios`}
+          description="Hacé clic sobre una fila para cargarla en el panel de actualización."
+          title="Servicios disponibles"
+        />
 
         <div className="mt-6">
           <DataTable
-            columns={[
-              { key: 'name', label: 'Servicio' },
-              { key: 'description', label: 'Descripción' },
-              {
-                key: 'durationMinutes',
-                label: 'Duración',
-                render: (row) => `${row.durationMinutes} min`,
-              },
-              {
-                key: 'status',
-                label: 'Estado',
-                render: (row) => (
-                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[row.status]}`}>
-                    {statusLabels[row.status] ?? row.status}
-                  </span>
-                ),
-              },
-              {
-                key: 'action',
-                label: 'Acción',
-                render: (row) => (
-                  <Button className="px-3 py-2 text-xs" onClick={() => selectServiceForUpdate(row)} type="button" variant="outline">
-                    {updateForm.id === row.id ? 'Seleccionado' : 'Editar'}
-                  </Button>
-                ),
-              },
-            ]}
+            columns={serviceColumns}
             getRowClassName={(row) =>
-              updateForm.id === row.id ? 'bg-[rgba(47,93,115,0.06)] ring-1 ring-inset ring-[rgba(47,93,115,0.12)]' : ''
+              updateForm.id === row.id
+                ? 'bg-[rgba(47,93,115,0.06)] ring-1 ring-inset ring-[rgba(47,93,115,0.12)]'
+                : ''
             }
             onRowClick={selectServiceForUpdate}
             rows={services}
@@ -458,7 +513,11 @@ export const ServicesAdminPage = () => {
         onConfirm={handleDelete}
         resolutionActions={deleteResolutionActions}
         statusNotice={deleteStatusNotice}
-        subjectMeta={selectedService ? `${selectedService.durationMinutes} min · ${statusLabels[selectedService.status] ?? selectedService.status}` : ''}
+        subjectMeta={
+          selectedService
+            ? `${selectedService.durationMinutes} min · ${statusLabels[selectedService.status] ?? selectedService.status}`
+            : ''
+        }
         subjectName={selectedService?.name ?? ''}
         title="Eliminar servicio"
       />

@@ -1,10 +1,14 @@
 import { useMemo, useState } from 'react'
 import { FiEdit2, FiPlus, FiTrash2, FiUserCheck, FiUsers } from 'react-icons/fi'
 
+import { PanelSectionHeader } from '@/components/private/PanelSectionHeader'
+import { PanelTableHeader } from '@/components/private/PanelTableHeader'
+import { SelectionStateCard } from '@/components/private/SelectionStateCard'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal } from '@/components/ui/ConfirmDeleteModal'
 import { DataTable } from '@/components/ui/DataTable'
+import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { Field } from '@/components/ui/Field'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { PROFESSIONAL_DISCIPLINES } from '@/constants/professionalDisciplines'
@@ -32,6 +36,13 @@ const updateInitial = {
   professionalDiscipline: '',
 }
 
+const statusClasses = {
+  ACTIVE: 'bg-[rgba(167,196,181,0.2)] text-[#2f5d73]',
+  INACTIVE: 'bg-[rgba(217,140,122,0.18)] text-[#8b4b3d]',
+}
+
+const roleRequiresDiscipline = (role) => role === 'PROFESSIONAL'
+
 const formatLastAccess = (value) => {
   if (!value) {
     return 'Sin ingresos aún'
@@ -54,13 +65,6 @@ const buildUpdateForm = (user) => ({
   professionalDiscipline: user.professionalProfile?.discipline ?? '',
 })
 
-const statusClasses = {
-  ACTIVE: 'bg-[rgba(167,196,181,0.2)] text-[#2f5d73]',
-  INACTIVE: 'bg-[rgba(217,140,122,0.18)] text-[#8b4b3d]',
-}
-
-const roleRequiresDiscipline = (role) => role === 'PROFESSIONAL'
-
 export const UsersPage = () => {
   const [createForm, setCreateForm] = useState(createInitial)
   const [updateForm, setUpdateForm] = useState(updateInitial)
@@ -71,9 +75,18 @@ export const UsersPage = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const { data: users, reload } = useAsyncData(() => usersService.list(), [])
 
-  const activeUsersCount = useMemo(() => users.filter((user) => user.status === 'ACTIVE').length, [users])
-  const professionalUsersCount = useMemo(() => users.filter((user) => user.role === 'PROFESSIONAL').length, [users])
-  const selectedUser = useMemo(() => users.find((user) => user.id === updateForm.id) ?? null, [users, updateForm.id])
+  const activeUsersCount = useMemo(
+    () => users.filter((user) => user.status === 'ACTIVE').length,
+    [users],
+  )
+  const professionalUsersCount = useMemo(
+    () => users.filter((user) => user.role === 'PROFESSIONAL').length,
+    [users],
+  )
+  const selectedUser = useMemo(
+    () => users.find((user) => user.id === updateForm.id) ?? null,
+    [users, updateForm.id],
+  )
 
   const updateCreateField = (field) => (event) => {
     const value = event.target.value
@@ -81,7 +94,9 @@ export const UsersPage = () => {
     setCreateForm((current) => ({
       ...current,
       [field]: value,
-      ...(field === 'role' && value !== 'PROFESSIONAL' ? { professionalDiscipline: '' } : {}),
+      ...(field === 'role' && value !== 'PROFESSIONAL'
+        ? { professionalDiscipline: '' }
+        : {}),
     }))
   }
 
@@ -91,13 +106,27 @@ export const UsersPage = () => {
     setUpdateForm((current) => ({
       ...current,
       [field]: value,
-      ...(field === 'role' && value !== 'PROFESSIONAL' ? { professionalDiscipline: '' } : {}),
+      ...(field === 'role' && value !== 'PROFESSIONAL'
+        ? { professionalDiscipline: '' }
+        : {}),
     }))
   }
 
   const selectUserForUpdate = (user) => {
     setUpdateForm(buildUpdateForm(user))
     setUpdateError('')
+  }
+
+  const handleUpdateSelection = (event) => {
+    const nextUser = users.find((user) => user.id === event.target.value)
+
+    if (!nextUser) {
+      setUpdateForm(updateInitial)
+      setUpdateError('')
+      return
+    }
+
+    selectUserForUpdate(nextUser)
   }
 
   const closeDeleteModal = () => {
@@ -116,18 +145,6 @@ export const UsersPage = () => {
 
     setDeleteError('')
     setIsDeleteModalOpen(true)
-  }
-
-  const handleUpdateSelection = (event) => {
-    const nextUser = users.find((user) => user.id === event.target.value)
-
-    if (!nextUser) {
-      setUpdateForm(updateInitial)
-      setUpdateError('')
-      return
-    }
-
-    selectUserForUpdate(nextUser)
   }
 
   const handleCreate = async (event) => {
@@ -214,10 +231,12 @@ export const UsersPage = () => {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <Badge>Administración interna</Badge>
-            <h1 className="mt-4 text-3xl font-semibold text-[var(--color-primary)]">Usuarios del sistema</h1>
+            <h1 className="mt-4 text-3xl font-semibold text-[var(--color-primary)]">
+              Usuarios del sistema
+            </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-              Desde acá podés dar de alta nuevos accesos, seleccionar un usuario ya creado para editarlo y confirmar
-              su eliminación cuando corresponda.
+              Desde acá podés dar de alta nuevos accesos, seleccionar un usuario ya creado para
+              editarlo y confirmar su eliminación cuando corresponda.
             </p>
           </div>
 
@@ -227,21 +246,29 @@ export const UsersPage = () => {
                 <FiUsers aria-hidden="true" className="size-4" />
                 <span className="text-xs font-semibold uppercase tracking-[0.24em]">Total</span>
               </div>
-              <p className="mt-3 text-3xl font-semibold text-[var(--color-primary)]">{users.length}</p>
+              <p className="mt-3 text-3xl font-semibold text-[var(--color-primary)]">
+                {users.length}
+              </p>
             </div>
             <div className="rounded-2xl border border-[rgba(47,93,115,0.1)] bg-white/80 px-4 py-4">
               <div className="flex items-center gap-3 text-[var(--color-primary)]">
                 <FiUserCheck aria-hidden="true" className="size-4" />
                 <span className="text-xs font-semibold uppercase tracking-[0.24em]">Activos</span>
               </div>
-              <p className="mt-3 text-3xl font-semibold text-[var(--color-primary)]">{activeUsersCount}</p>
+              <p className="mt-3 text-3xl font-semibold text-[var(--color-primary)]">
+                {activeUsersCount}
+              </p>
             </div>
             <div className="rounded-2xl border border-[rgba(47,93,115,0.1)] bg-white/80 px-4 py-4">
               <div className="flex items-center gap-3 text-[var(--color-primary)]">
                 <FiEdit2 aria-hidden="true" className="size-4" />
-                <span className="text-xs font-semibold uppercase tracking-[0.24em]">Profesionales</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.24em]">
+                  Profesionales
+                </span>
               </div>
-              <p className="mt-3 text-3xl font-semibold text-[var(--color-primary)]">{professionalUsersCount}</p>
+              <p className="mt-3 text-3xl font-semibold text-[var(--color-primary)]">
+                {professionalUsersCount}
+              </p>
             </div>
           </div>
         </div>
@@ -249,24 +276,29 @@ export const UsersPage = () => {
 
       <div className="grid gap-6 2xl:grid-cols-[1fr_1fr]">
         <PanelCard>
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-[rgba(47,93,115,0.08)] p-3 text-[var(--color-primary)]">
-              <FiPlus aria-hidden="true" className="size-5" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Crear usuario</h2>
-              <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-                Si el rol es profesional, definí el tipo desde el alta.
-              </p>
-            </div>
-          </div>
+          <PanelSectionHeader
+            description="Si el rol es profesional, definí el tipo desde el alta."
+            icon={FiPlus}
+            title="Crear usuario"
+          />
 
           <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleCreate}>
             <Field label="Nombre completo">
-              <input className="field-input" onChange={updateCreateField('fullName')} required value={createForm.fullName} />
+              <input
+                className="field-input"
+                onChange={updateCreateField('fullName')}
+                required
+                value={createForm.fullName}
+              />
             </Field>
             <Field label="Email">
-              <input className="field-input" onChange={updateCreateField('email')} required type="email" value={createForm.email} />
+              <input
+                className="field-input"
+                onChange={updateCreateField('email')}
+                required
+                type="email"
+                value={createForm.email}
+              />
             </Field>
             <Field label="Contraseña inicial">
               <input
@@ -279,7 +311,11 @@ export const UsersPage = () => {
               />
             </Field>
             <Field label="Rol">
-              <select className="field-input" onChange={updateCreateField('role')} value={createForm.role}>
+              <select
+                className="field-input"
+                onChange={updateCreateField('role')}
+                value={createForm.role}
+              >
                 {Object.entries(ROLE_LABELS).map(([value, label]) => (
                   <option key={value} value={value}>
                     {label}
@@ -308,13 +344,13 @@ export const UsersPage = () => {
               </Field>
             ) : null}
             <Field label="Teléfono">
-              <input className="field-input" onChange={updateCreateField('phone')} value={createForm.phone} />
+              <input
+                className="field-input"
+                onChange={updateCreateField('phone')}
+                value={createForm.phone}
+              />
             </Field>
-            {createError ? (
-              <div className="md:col-span-2 rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">
-                {createError}
-              </div>
-            ) : null}
+            {createError ? <FormErrorAlert className="md:col-span-2">{createError}</FormErrorAlert> : null}
             <div className="md:col-span-2 flex justify-start">
               <Button type="submit">Crear usuario</Button>
             </div>
@@ -322,30 +358,31 @@ export const UsersPage = () => {
         </PanelCard>
 
         <PanelCard>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Actualizar o eliminar</h2>
-              <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-                Elegí un usuario desde la tabla o desde este selector para cargar sus datos.
-              </p>
-            </div>
-            {selectedUser ? (
-              <Button
-                className="px-4 py-2"
-                onClick={() => {
-                  setUpdateForm(updateInitial)
-                  setUpdateError('')
-                }}
-                type="button"
-                variant="ghost"
-              >
-                Limpiar selección
-              </Button>
-            ) : null}
-          </div>
+          <PanelSectionHeader
+            actions={
+              selectedUser ? (
+                <Button
+                  className="px-4 py-2"
+                  onClick={() => {
+                    setUpdateForm(updateInitial)
+                    setUpdateError('')
+                  }}
+                  type="button"
+                  variant="ghost"
+                >
+                  Limpiar selección
+                </Button>
+              ) : null
+            }
+            description="Elegí un usuario desde la tabla o desde este selector para cargar sus datos."
+            title="Actualizar o eliminar"
+          />
 
           <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleUpdate}>
-            <Field hint="También podés hacer clic sobre una fila del listado inferior." label="Usuario seleccionado">
+            <Field
+              hint="También podés hacer clic sobre una fila del listado inferior."
+              label="Usuario seleccionado"
+            >
               <select className="field-input" onChange={handleUpdateSelection} value={updateForm.id}>
                 <option value="">Seleccionar usuario</option>
                 {users.map((user) => (
@@ -356,27 +393,39 @@ export const UsersPage = () => {
               </select>
             </Field>
 
-            {selectedUser ? (
-              <div className="rounded-2xl border border-[rgba(47,93,115,0.1)] bg-[rgba(47,93,115,0.04)] px-4 py-3 text-sm text-[rgba(46,46,46,0.74)]">
-                <p className="font-semibold text-[var(--color-primary)]">{selectedUser.fullName}</p>
-                <p className="mt-1">Último acceso: {formatLastAccess(selectedUser.lastLoginAt)}</p>
-                {selectedUser.professionalProfile?.discipline ? (
-                  <p className="mt-1">Perfil profesional: {selectedUser.professionalProfile.discipline}</p>
-                ) : null}
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-3 text-sm text-[rgba(46,46,46,0.64)]">
-                Seleccioná un usuario para habilitar la edición.
-              </div>
-            )}
+            <SelectionStateCard
+              emptyText="Seleccioná un usuario para habilitar la edición."
+              lines={
+                selectedUser
+                  ? [
+                      `Último acceso: ${formatLastAccess(selectedUser.lastLoginAt)}`,
+                      selectedUser.professionalProfile?.discipline
+                        ? `Perfil profesional: ${selectedUser.professionalProfile.discipline}`
+                        : null,
+                    ].filter(Boolean)
+                  : []
+              }
+              title={selectedUser?.fullName}
+            />
 
             {selectedUser ? (
               <>
                 <Field label="Nombre completo">
-                  <input className="field-input" onChange={updateUpdateField('fullName')} required value={updateForm.fullName} />
+                  <input
+                    className="field-input"
+                    onChange={updateUpdateField('fullName')}
+                    required
+                    value={updateForm.fullName}
+                  />
                 </Field>
                 <Field label="Email">
-                  <input className="field-input" onChange={updateUpdateField('email')} required type="email" value={updateForm.email} />
+                  <input
+                    className="field-input"
+                    onChange={updateUpdateField('email')}
+                    required
+                    type="email"
+                    value={updateForm.email}
+                  />
                 </Field>
                 <Field hint="Dejá este campo vacío si no querés cambiarla." label="Nueva contraseña">
                   <input
@@ -388,10 +437,18 @@ export const UsersPage = () => {
                   />
                 </Field>
                 <Field label="Teléfono">
-                  <input className="field-input" onChange={updateUpdateField('phone')} value={updateForm.phone} />
+                  <input
+                    className="field-input"
+                    onChange={updateUpdateField('phone')}
+                    value={updateForm.phone}
+                  />
                 </Field>
                 <Field label="Rol">
-                  <select className="field-input" onChange={updateUpdateField('role')} value={updateForm.role}>
+                  <select
+                    className="field-input"
+                    onChange={updateUpdateField('role')}
+                    value={updateForm.role}
+                  >
                     {Object.entries(ROLE_LABELS).map(([value, label]) => (
                       <option key={value} value={value}>
                         {label}
@@ -400,7 +457,11 @@ export const UsersPage = () => {
                   </select>
                 </Field>
                 <Field label="Estado">
-                  <select className="field-input" onChange={updateUpdateField('status')} value={updateForm.status}>
+                  <select
+                    className="field-input"
+                    onChange={updateUpdateField('status')}
+                    value={updateForm.status}
+                  >
                     <option value="ACTIVE">Activo</option>
                     <option value="INACTIVE">Inactivo</option>
                   </select>
@@ -428,11 +489,7 @@ export const UsersPage = () => {
               </>
             ) : null}
 
-            {updateError ? (
-              <div className="md:col-span-2 rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">
-                {updateError}
-              </div>
-            ) : null}
+            {updateError ? <FormErrorAlert className="md:col-span-2">{updateError}</FormErrorAlert> : null}
 
             {selectedUser ? (
               <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-between">
@@ -455,19 +512,11 @@ export const UsersPage = () => {
       </div>
 
       <PanelCard>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Lista de usuarios</h2>
-            <p className="mt-1 text-sm text-[rgba(46,46,46,0.68)]">
-              Hacé clic sobre una fila para cargar sus datos en el panel de actualización.
-            </p>
-          </div>
-          {selectedUser ? (
-            <div className="rounded-full bg-[rgba(47,93,115,0.08)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-primary)]">
-              Editando: {selectedUser.fullName}
-            </div>
-          ) : null}
-        </div>
+        <PanelTableHeader
+          countLabel={selectedUser ? `Editando ${selectedUser.fullName}` : `${users.length} usuarios`}
+          description="Hacé clic sobre una fila para cargar sus datos en el panel de actualización."
+          title="Lista de usuarios"
+        />
 
         <div className="mt-6">
           <DataTable
@@ -489,7 +538,9 @@ export const UsersPage = () => {
                   <div>
                     <p>{ROLE_LABELS[row.role] ?? row.role}</p>
                     {row.professionalProfile?.discipline ? (
-                      <p className="mt-1 text-xs text-[rgba(46,46,46,0.62)]">{row.professionalProfile.discipline}</p>
+                      <p className="mt-1 text-xs text-[rgba(46,46,46,0.62)]">
+                        {row.professionalProfile.discipline}
+                      </p>
                     ) : null}
                   </div>
                 ),
@@ -498,7 +549,9 @@ export const UsersPage = () => {
                 key: 'status',
                 label: 'Estado',
                 render: (row) => (
-                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[row.status]}`}>
+                  <span
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[row.status]}`}
+                  >
                     {row.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
                   </span>
                 ),
@@ -529,7 +582,9 @@ export const UsersPage = () => {
               },
             ]}
             getRowClassName={(row) =>
-              updateForm.id === row.id ? 'bg-[rgba(47,93,115,0.06)] ring-1 ring-inset ring-[rgba(47,93,115,0.12)]' : ''
+              updateForm.id === row.id
+                ? 'bg-[rgba(47,93,115,0.06)] ring-1 ring-inset ring-[rgba(47,93,115,0.12)]'
+                : ''
             }
             onRowClick={selectUserForUpdate}
             rows={users}

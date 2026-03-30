@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { FiBell, FiHome, FiLogOut, FiUser } from 'react-icons/fi'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
@@ -7,9 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { privateNavigation } from '@/constants/navigation'
 import { ROLE_LABELS } from '@/constants/roles'
 import { useAuth } from '@/hooks/useAuth'
-import { usePolling } from '@/hooks/usePolling'
-import { notificationsService } from '@/services/notificationsService'
-import { emitNotificationsSync, PANEL_NOTIFICATIONS_SYNC_EVENT } from '@/utils/panelEvents'
+import { usePanelNotifications } from '@/hooks/usePanelNotifications'
 
 const rolesWithMessaging = ['COORDINATION', 'SECRETARY', 'PROFESSIONAL']
 
@@ -21,75 +19,21 @@ export const PrivateLayout = () => {
   const canUseMessaging = rolesWithMessaging.includes(user.role)
   const notificationsRef = useRef(null)
 
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
-  const [notifications, setNotifications] = useState([])
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [notificationsError, setNotificationsError] = useState('')
-  const [isNotificationsLoading, setIsNotificationsLoading] = useState(false)
-
-  const syncNotifications = async ({ includeList = false, silent = false } = {}) => {
-    if (!canUseMessaging) {
-      return
-    }
-
-    if (includeList && !silent) {
-      setIsNotificationsLoading(true)
-    }
-
-    try {
-      const [countResult, notificationsResult] = await Promise.all([
-        notificationsService.getUnreadCount(),
-        includeList ? notificationsService.list(10) : Promise.resolve(null),
-      ])
-
-      setUnreadCount(countResult.unreadCount ?? 0)
-
-      if (notificationsResult) {
-        setNotifications(notificationsResult)
-      }
-
-      setNotificationsError('')
-    } catch (error) {
-      setNotificationsError(error.message)
-    } finally {
-      if (includeList && !silent) {
-        setIsNotificationsLoading(false)
-      }
-    }
-  }
+  const {
+    close: closeNotifications,
+    error: notificationsError,
+    isLoading: isNotificationsLoading,
+    isOpen: isNotificationsOpen,
+    markAllRead: handleMarkAllNotificationsRead,
+    markRead: handleMarkNotificationRead,
+    notifications,
+    toggle: handleToggleNotifications,
+    unreadCount,
+  } = usePanelNotifications({ enabled: canUseMessaging })
 
   useEffect(() => {
-    if (!canUseMessaging) {
-      setNotifications([])
-      setUnreadCount(0)
-      setIsNotificationsOpen(false)
-      return
-    }
-
-    void syncNotifications({ includeList: isNotificationsOpen })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canUseMessaging, isNotificationsOpen])
-
-  useEffect(() => {
-    if (!canUseMessaging) {
-      return
-    }
-
-    const handleSync = () => {
-      void syncNotifications({ includeList: isNotificationsOpen, silent: true })
-    }
-
-    window.addEventListener(PANEL_NOTIFICATIONS_SYNC_EVENT, handleSync)
-
-    return () => {
-      window.removeEventListener(PANEL_NOTIFICATIONS_SYNC_EVENT, handleSync)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canUseMessaging, isNotificationsOpen])
-
-  useEffect(() => {
-    setIsNotificationsOpen(false)
-  }, [location.pathname, location.search])
+    closeNotifications()
+  }, [closeNotifications, location.pathname, location.search])
 
   useEffect(() => {
     if (!isNotificationsOpen) {
@@ -98,7 +42,7 @@ export const PrivateLayout = () => {
 
     const handlePointerDown = (event) => {
       if (!notificationsRef.current?.contains(event.target)) {
-        setIsNotificationsOpen(false)
+        closeNotifications()
       }
     }
 
@@ -107,64 +51,14 @@ export const PrivateLayout = () => {
     return () => {
       document.removeEventListener('mousedown', handlePointerDown)
     }
-  }, [isNotificationsOpen])
-
-  usePolling(
-    () => syncNotifications({ includeList: isNotificationsOpen, silent: true }),
-    {
-      enabled: canUseMessaging,
-      intervalMs: 30000,
-    },
-  )
-
-  const handleToggleNotifications = () => {
-    const nextValue = !isNotificationsOpen
-    setIsNotificationsOpen(nextValue)
-
-    if (nextValue) {
-      void syncNotifications({ includeList: true })
-    }
-  }
-
-  const handleMarkNotificationRead = async (notificationId) => {
-    try {
-      const updatedNotification = await notificationsService.markRead(notificationId)
-
-      setNotifications((current) =>
-        current.map((notification) =>
-          notification.id === notificationId ? updatedNotification : notification,
-        ),
-      )
-      setUnreadCount((current) => Math.max(0, current - 1))
-      emitNotificationsSync()
-    } catch (error) {
-      setNotificationsError(error.message)
-    }
-  }
-
-  const handleMarkAllNotificationsRead = async () => {
-    try {
-      await notificationsService.markAllRead()
-      setNotifications((current) =>
-        current.map((notification) => ({
-          ...notification,
-          isRead: true,
-          readAt: notification.readAt ?? new Date().toISOString(),
-        })),
-      )
-      setUnreadCount(0)
-      emitNotificationsSync()
-    } catch (error) {
-      setNotificationsError(error.message)
-    }
-  }
+  }, [closeNotifications, isNotificationsOpen])
 
   const handleOpenNotification = async (notification) => {
     if (!notification.isRead) {
       await handleMarkNotificationRead(notification.id)
     }
 
-    setIsNotificationsOpen(false)
+    closeNotifications()
 
     if (notification.threadId) {
       navigate(`/app/mensajes?threadId=${notification.threadId}`)

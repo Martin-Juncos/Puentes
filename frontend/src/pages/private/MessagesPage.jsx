@@ -23,7 +23,7 @@ const filterOptions = [
 const generalContextOptions = [
   { value: 'CONSULTA', label: 'Consulta' },
   { value: 'REPORTE', label: 'Reporte' },
-  { value: 'INFORMACION', label: 'InformaciÃ³n' },
+  { value: 'INFORMACION', label: 'Información' },
 ]
 
 const buildComposeInitial = ({ childId = '', contextType = '' } = {}) => ({

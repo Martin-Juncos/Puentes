@@ -1,6 +1,7 @@
 import { prisma } from '../../db/prisma.js'
 import { AppError } from '../../utils/AppError.js'
 import { resolveProfessionalProfileId } from '../../utils/professionals.js'
+import { buildNotFoundError, ensureFound } from '../../utils/records.js'
 
 import {
   createChild,
@@ -11,6 +12,53 @@ import {
   updateChild,
   upsertAssignment,
 } from './repository.js'
+
+const childDeleteSelect = {
+  id: true,
+  assignments: {
+    select: {
+      id: true,
+    },
+  },
+  sessions: {
+    select: {
+      id: true,
+    },
+  },
+  payments: {
+    select: {
+      id: true,
+    },
+  },
+  followUps: {
+    select: {
+      id: true,
+    },
+  },
+  messageThreads: {
+    select: {
+      id: true,
+    },
+  },
+}
+
+const getFamilyReference = async (familyId) =>
+  prisma.family.findUnique({
+    where: { id: familyId },
+    select: { id: true },
+  })
+
+const getProfessionalReference = async (professionalId) =>
+  prisma.professionalProfile.findUnique({
+    where: { id: professionalId },
+    select: { id: true },
+  })
+
+const getServiceReference = async (serviceId) =>
+  prisma.service.findUnique({
+    where: { id: serviceId },
+    select: { id: true },
+  })
 
 export const getChildren = async (user) => {
   if (user.role === 'PROFESSIONAL') {
@@ -28,84 +76,40 @@ export const getChildren = async (user) => {
   return listChildren()
 }
 
-export const getChildById = async (id) => {
-  const child = await getChild(id)
-
-  if (!child) {
-    throw new AppError(404, 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
-  }
-
-  return child
-}
+export const getChildById = async (id) =>
+  ensureFound(await getChild(id), 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
 
 export const createChildRecord = async (payload) => {
-  const family = await prisma.family.findUnique({
-    where: { id: payload.familyId },
-    select: { id: true },
-  })
-
-  if (!family) {
-    throw new AppError(404, 'FAMILY_NOT_FOUND', 'No existe la familia indicada.')
-  }
+  ensureFound(await getFamilyReference(payload.familyId), 'FAMILY_NOT_FOUND', 'No existe la familia indicada.')
 
   return createChild(payload)
 }
 
 export const updateChildRecord = async (id, payload) => {
   if (payload.familyId) {
-    const family = await prisma.family.findUnique({
-      where: { id: payload.familyId },
-      select: { id: true },
-    })
-
-    if (!family) {
-      throw new AppError(404, 'FAMILY_NOT_FOUND', 'No existe la familia indicada.')
-    }
+    ensureFound(
+      await getFamilyReference(payload.familyId),
+      'FAMILY_NOT_FOUND',
+      'No existe la familia indicada.',
+    )
   }
 
   try {
     return await updateChild(id, payload)
   } catch {
-    throw new AppError(404, 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
+    throw buildNotFoundError('CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
   }
 }
 
 export const deleteChildRecord = async (id) => {
-  const child = await prisma.child.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      assignments: {
-        select: {
-          id: true,
-        },
-      },
-      sessions: {
-        select: {
-          id: true,
-        },
-      },
-      payments: {
-        select: {
-          id: true,
-        },
-      },
-      followUps: {
-        select: {
-          id: true,
-        },
-      },
-      messageThreads: {
-        select: {
-          id: true,
-        },
-      },
-    },
-  })
-
-  if (!child) {
-    throw new AppError(404, 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
-  }
+  const child = ensureFound(
+    await prisma.child.findUnique({
+      where: { id },
+      select: childDeleteSelect,
+    }),
+    'CHILD_NOT_FOUND',
+    'No se encontró el niño o la niña solicitada.',
+  )
 
   if (
     child.assignments.length ||
@@ -157,7 +161,7 @@ export const deleteChildRecord = async (id) => {
         key: 'messageThreads',
         label: 'Conversaciones internas',
         count: child.messageThreads.length,
-        solution: 'MantenÃ© el caso para conservar la mensajerÃ­a y las alertas vinculadas.',
+        solution: 'Mantené el caso para conservar la mensajería y las alertas vinculadas.',
       })
     }
 
@@ -179,43 +183,38 @@ export const deleteChildRecord = async (id) => {
 }
 
 export const clearAssignmentsForChild = async (id) => {
-  const child = await prisma.child.findUnique({
-    where: { id },
-    select: { id: true },
-  })
-
-  if (!child) {
-    throw new AppError(404, 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
-  }
+  ensureFound(
+    await prisma.child.findUnique({
+      where: { id },
+      select: { id: true },
+    }),
+    'CHILD_NOT_FOUND',
+    'No se encontró el niño o la niña solicitada.',
+  )
 
   await deleteAssignmentsByChild(id)
 
   return getChildById(id)
 }
 
-export const assignProfessionalToChild = async ({ childId, professionalId, serviceId, notes, assignedByUserId }) => {
-  const [child, professional] = await Promise.all([
+export const assignProfessionalToChild = async ({
+  childId,
+  professionalId,
+  serviceId,
+  notes,
+  assignedByUserId,
+}) => {
+  const [child, professional, service] = await Promise.all([
     prisma.child.findUnique({ where: { id: childId }, select: { id: true } }),
-    prisma.professionalProfile.findUnique({
-      where: { id: professionalId },
-      select: { id: true },
-    }),
+    getProfessionalReference(professionalId),
+    serviceId ? getServiceReference(serviceId) : Promise.resolve(null),
   ])
 
-  if (!child) {
-    throw new AppError(404, 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña a asignar.')
-  }
-
-  if (!professional) {
-    throw new AppError(404, 'PROFESSIONAL_NOT_FOUND', 'No se encontró el profesional seleccionado.')
-  }
+  ensureFound(child, 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña a asignar.')
+  ensureFound(professional, 'PROFESSIONAL_NOT_FOUND', 'No se encontró el profesional seleccionado.')
 
   if (serviceId) {
-    const service = await prisma.service.findUnique({ where: { id: serviceId }, select: { id: true } })
-
-    if (!service) {
-      throw new AppError(404, 'SERVICE_NOT_FOUND', 'No se encontró el servicio seleccionado.')
-    }
+    ensureFound(service, 'SERVICE_NOT_FOUND', 'No se encontró el servicio seleccionado.')
   }
 
   try {

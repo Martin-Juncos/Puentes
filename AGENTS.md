@@ -65,7 +65,8 @@ El MVP no debe degradarse a una landing vacía ni a un turnero público.
 - En backend, cada dominio vive en `src/modules/<dominio>/` con `routes`, `controller`, `service`, `repository` y `validation`.
 - En frontend, la UI consume servicios desacoplados de `src/services/`.
 - La agenda se gestiona desde roles internos; la familia no autogestiona turnos en el MVP.
-- Secretaria y profesionales gestionan agenda, seguimiento y operación diaria.
+- Secretaría y profesionales gestionan agenda, seguimiento y operación diaria.
+- Mensajería y notificaciones son módulos activos del panel y no deben tratarse como código muerto.
 
 ## Criterios de arquitectura
 
@@ -74,6 +75,7 @@ El MVP no debe degradarse a una landing vacía ni a un turnero público.
 - Tratar al sitio institucional y al panel interno como dos experiencias hermanas, no como una sola UI homogénea.
 - Usar `motion` solo en el sitio institucional y transiciones útiles.
 - Usar `react-big-calendar` solo donde aporte valor operativo real.
+- Extender componentes privados compartidos antes de duplicar patrones de formularios, encabezados o tablas.
 
 ## Restricciones importantes del MVP
 
@@ -101,6 +103,7 @@ El MVP no debe degradarse a una landing vacía ni a un turnero público.
 
 - No reestructurar carpetas sin una razón fuerte.
 - Extender módulos existentes antes de crear patrones paralelos.
-- Si un cambio toca roles, permisos o agenda, validar primero el impacto en la operación interna.
+- Si un cambio toca roles, permisos, agenda, mensajería o notificaciones, validar primero el impacto en la operación interna.
 - Si un cambio toca marketing o identidad, validar que no invada la lógica del panel.
 - Documentar en `docs/` cualquier decisión estructural que afecte crecimiento futuro.
+- Tener presente que `prisma generate` puede fallar en Windows + OneDrive por bloqueo del engine durante renames; si pasa, documentarlo en vez de ocultarlo con workarounds frágiles.

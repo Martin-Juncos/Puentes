@@ -4,15 +4,15 @@
 
 Puentes se implementa como una aplicación fullstack con dos superficies coordinadas:
 
-- `frontend/`: experiencia pública institucional y panel interno operativa.
-- `backend/`: API REST modular, auth, permisos, reglas básicas de negocio e integración con PostgreSQL.
+- `frontend/`: experiencia pública institucional y panel interno operativo.
+- `backend/`: API REST modular, autenticación, permisos, reglas básicas de negocio e integración con PostgreSQL.
 
 ## Principios rectores
 
 1. La plataforma no es un turnero público.
 2. La familia no autogestiona agenda en el MVP.
-3. La secretaria, coordinación y profesionales sostienen la operación.
-4. La capa pública y la privada comparten identidad, pero no la misma densidad ni el mismo ritmo visual.
+3. Secretaría, coordinación y profesionales sostienen la operación.
+4. La capa pública y la privada comparten identidad institucional, pero no la misma densidad ni el mismo ritmo visual.
 
 ## Backend
 
@@ -22,7 +22,7 @@ Puentes se implementa como una aplicación fullstack con dos superficies coordin
 - Validación con Zod.
 - Middleware global para errores y respuestas uniformes.
 
-Dominios iniciales:
+Dominios activos:
 
 - auth
 - contacts
@@ -35,7 +35,10 @@ Dominios iniciales:
 - attendances
 - payments
 - follow-ups
+- messages
+- notifications
 - dashboard
+- settings
 
 ## Frontend
 
@@ -45,6 +48,17 @@ Dominios iniciales:
 - Contexto de autenticación basado en sesión backend.
 - Capa de servicios HTTP con `fetch`.
 - Componentes UI reutilizables y módulos funcionales por dominio.
+- Módulos activos del panel:
+  - agenda
+  - familias
+  - niños
+  - profesionales
+  - servicios
+  - cobros
+  - seguimientos
+  - mensajería
+  - usuarios
+  - configuración
 
 ## Etapas previstas
 
@@ -54,6 +68,7 @@ Dominios iniciales:
 - Operación interna base
 - Auth y permisos
 - Agenda, niños, familias, profesionales, servicios, cobros, asistencia y seguimientos básicos
+- Mensajería interna y notificaciones operativas
 
 ### Etapa 2
 
@@ -67,3 +82,8 @@ Dominios iniciales:
 - Reportes más completos
 - Automatizaciones justificadas
 - Integraciones operativas adicionales
+
+## Nota de entorno
+
+- El repo mantiene `lint` y build del frontend como validaciones estables.
+- En entornos Windows sincronizados con OneDrive, `prisma generate` puede fallar por bloqueo de archivos nativos durante el rename del motor. Es un riesgo de entorno conocido, no una decisión de arquitectura del proyecto.

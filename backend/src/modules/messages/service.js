@@ -1,6 +1,7 @@
 import { prisma } from '../../db/prisma.js'
 import { AppError } from '../../utils/AppError.js'
 import { resolveProfessionalProfileId } from '../../utils/professionals.js'
+import { ensureFound } from '../../utils/records.js'
 import { stripHtmlToText } from '../../utils/validation.js'
 
 import {
@@ -110,11 +111,11 @@ const getAccessibleChild = async (childId, user) => {
       : {}),
   })
 
-  if (!child) {
-    throw new AppError(404, 'MESSAGE_CHILD_NOT_FOUND', 'No se encontró el caso indicado para iniciar la conversación.')
-  }
-
-  return child
+  return ensureFound(
+    child,
+    'MESSAGE_CHILD_NOT_FOUND',
+    'No se encontró el caso indicado para iniciar la conversación.',
+  )
 }
 
 const getAccessibleThread = async (threadId, user) => {
@@ -125,11 +126,11 @@ const getAccessibleThread = async (threadId, user) => {
     professionalId,
   })
 
-  if (!thread) {
-    throw new AppError(404, 'MESSAGE_THREAD_NOT_FOUND', 'No se encontró la conversación solicitada.')
-  }
-
-  return thread
+  return ensureFound(
+    thread,
+    'MESSAGE_THREAD_NOT_FOUND',
+    'No se encontró la conversación solicitada.',
+  )
 }
 
 const getThreadContextConfig = async ({ childId, contextType }, user) => {
@@ -165,7 +166,8 @@ export const getMessageThreads = async (filters, user) => {
   return threads.map(normalizeThreadSummary)
 }
 
-export const getMessageThreadRecord = async (id, user) => normalizeThreadDetail(await getAccessibleThread(id, user))
+export const getMessageThreadRecord = async (id, user) =>
+  normalizeThreadDetail(await getAccessibleThread(id, user))
 
 export const createMessageThreadRecord = async (payload, user) => {
   const context = await getThreadContextConfig(payload, user)
@@ -256,7 +258,11 @@ export const createMessageRecord = async (threadId, payload, user) => {
   const thread = await getAccessibleThread(threadId, user)
 
   if (thread.status !== 'OPEN') {
-    throw new AppError(409, 'MESSAGE_THREAD_ARCHIVED', 'La conversación está archivada y no admite mensajes nuevos.')
+    throw new AppError(
+      409,
+      'MESSAGE_THREAD_ARCHIVED',
+      'La conversación está archivada y no admite mensajes nuevos.',
+    )
   }
 
   const recipientIds = thread.participants
