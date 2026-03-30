@@ -11,6 +11,16 @@ const initialState = {
   message: '',
 }
 
+const resolveContactErrorMessage = (error) => {
+  const firstDetail = error.details?.[0]
+
+  if (firstDetail?.message) {
+    return firstDetail.message
+  }
+
+  return error.message
+}
+
 export const ContactForm = () => {
   const [form, setForm] = useState(initialState)
   const [status, setStatus] = useState({ type: null, message: '' })
@@ -36,7 +46,7 @@ export const ContactForm = () => {
     } catch (error) {
       setStatus({
         type: 'error',
-        message: error.message,
+        message: resolveContactErrorMessage(error),
       })
     } finally {
       setIsSubmitting(false)
@@ -47,7 +57,7 @@ export const ContactForm = () => {
     <form className="grid gap-5" onSubmit={handleSubmit}>
       <div className="grid gap-5 md:grid-cols-2">
         <Field label="Nombre y apellido">
-          <input className="field-input" onChange={updateField('fullName')} required value={form.fullName} />
+          <input className="field-input" minLength={3} onChange={updateField('fullName')} required value={form.fullName} />
         </Field>
         <Field label="Email">
           <input
@@ -67,6 +77,7 @@ export const ContactForm = () => {
       <Field label="Mensaje">
         <textarea
           className="field-input min-h-36 resize-y"
+          minLength={10}
           onChange={updateField('message')}
           required
           value={form.message}

@@ -1,32 +1,31 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
 import { env } from '../../config/env.js'
 import { prisma } from '../../db/prisma.js'
 import { contactInquirySelect } from '../../utils/recordSelects.js'
 
-const transporter =
-  env.smtpHost && env.smtpUser
-    ? nodemailer.createTransport({
-        host: env.smtpHost,
-        port: env.smtpPort,
-        secure: env.smtpSecure,
-        auth: {
-          user: env.smtpUser,
-          pass: env.smtpPass,
-        },
-      })
-    : nodemailer.createTransport({
-        jsonTransport: true,
-      })
+const resend = env.resendApiKey ? new Resend(env.resendApiKey) : null
 
-const sendContactEmail = async ({ fullName, email, phone, message }) => {
-  await transporter.sendMail({
-    from: env.smtpFrom,
-    to: env.contactReceiver,
-    replyTo: email,
-    subject: `Nueva consulta institucional de ${fullName}`,
-    text: `Nombre: ${fullName}\nEmail: ${email}\nTelefono: ${phone ?? '-'}\n\n${message}`,
+const buildContactEmailText = ({ fullName, email, phone, message }) =>
+  `Nombre: ${fullName}\nEmail: ${email}\nTelefono: ${phone ?? '-'}\n\n${message}`
+
+const sendContactEmail = async (payload) => {
+  if (!resend) {
+    console.warn('CONTACT_EMAIL_SKIPPED', 'RESEND_API_KEY no está configurada.')
+    return
+  }
+
+  const response = await resend.emails.send({
+    from: env.resendFrom,
+    to: [env.contactReceiver],
+    replyTo: payload.email,
+    subject: `Nueva consulta institucional de ${payload.fullName}`,
+    text: buildContactEmailText(payload),
   })
+
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
 }
 
 export const createContactInquiry = async (payload) => {
@@ -35,7 +34,11 @@ export const createContactInquiry = async (payload) => {
     select: contactInquirySelect,
   })
 
-  await sendContactEmail(payload)
+  try {
+    await sendContactEmail(payload)
+  } catch (error) {
+    console.error('CONTACT_EMAIL_DELIVERY_FAILED', error)
+  }
 
   return inquiry
 }

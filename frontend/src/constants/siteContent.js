@@ -1,43 +1,71 @@
-export const institutionalHighlights = [
+export const homePracticalSignals = [
   {
-    eyebrow: 'Presencia institucional',
-    title: 'Un espacio para alojar, orientar y acompañar en cada etapa.',
-    description:
-      'Puentes articula mirada profesional, cercanía con las familias y organización operativa para que el acompañamiento tenga continuidad y sentido.',
+    title: 'Mirada interdisciplinaria',
+    description: 'Evaluamos cada situacion desde una lectura amplia, con articulacion entre disciplinas.',
   },
   {
-    eyebrow: 'Trabajo interdisciplinario',
-    title: 'Servicios conectados, no intervenciones aisladas.',
-    description:
-      'La propuesta integra evaluación, seguimiento, articulación con adultos referentes y coordinación cotidiana del equipo.',
+    title: 'Trabajo con familias',
+    description: 'El acompanamiento incluye escucha, orientacion y construccion conjunta con adultos referentes.',
+  },
+  {
+    title: 'Orientacion inicial',
+    description: 'Ayudamos a ordenar la consulta y a definir cual puede ser el mejor primer paso.',
+  },
+  {
+    title: 'Seguimiento con continuidad',
+    description: 'Buscamos que cada proceso tenga sosten, claridad y una comunicacion consistente.',
   },
 ]
 
-export const publicStats = [
-  { label: 'Mirada integral', value: '360°' },
-  { label: 'Capas del producto', value: '2' },
-  { label: 'Roles internos', value: '4' },
-  { label: 'Etapas previstas', value: '3' },
+export const homeGettingStartedSteps = [
+  {
+    step: '01',
+    title: 'Nos contas tu inquietud',
+    description: 'Podes escribirnos por el formulario, WhatsApp o correo para hacer una primera consulta.',
+  },
+  {
+    step: '02',
+    title: 'Te orientamos',
+    description: 'Revisamos tu consulta y te ayudamos a identificar el servicio o modalidad mas adecuada.',
+  },
+  {
+    step: '03',
+    title: 'Coordinamos el primer paso',
+    description: 'Definimos una entrevista inicial, una orientacion especifica o la derivacion correspondiente.',
+  },
 ]
 
-export const homeSections = [
+export const homeFallbackServices = [
   {
-    title: 'Identidad institucional clara',
-    description: 'Un sitio pensado para transmitir confianza, profesionalismo y una forma de trabajo humana.',
+    name: 'Orientacion inicial',
+    description: 'Primer espacio para ordenar la consulta, conocer la situacion y pensar el mejor comienzo.',
+    durationMinutes: 60,
+    colorTag: '#2F5D73',
   },
   {
-    title: 'Operación interna ordenada',
-    description: 'Agenda, seguimientos, asistencias y cobros dentro de un panel con roles diferenciados.',
+    name: 'Acompanamiento interdisciplinario',
+    description: 'Procesos sostenidos de trabajo con ninos, familias y equipo, segun cada necesidad.',
+    durationMinutes: 45,
+    colorTag: '#A7C4B5',
   },
   {
-    title: 'Base preparada para crecer',
-    description: 'El MVP deja lista la arquitectura para sumar recursos, familias y comunicaciones ampliadas.',
+    name: 'Trabajo con familias',
+    description: 'Encuentros para acompanar decisiones, fortalecer recursos y articular el proceso de cuidado.',
+    durationMinutes: 60,
+    colorTag: '#D98C7A',
   },
 ]
+
+export const homeTeamFallback = {
+  eyebrow: 'Equipo',
+  title: 'Una red profesional que trabaja de forma articulada.',
+  description:
+    'Puentes integra disciplinas y coordinacion institucional para acompanar procesos con continuidad, cercania y criterio clinico.',
+}
 
 export const approachPillars = [
-  'Acompañamiento del desarrollo infantil',
+  'Acompanamiento del desarrollo infantil',
   'Trabajo interdisciplinario con equipo y familias',
   'Seguimiento operativo y profesional claro',
-  'Comunicación institucional cercana y consistente',
+  'Comunicacion institucional cercana y consistente',
 ]
