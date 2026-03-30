@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
-  FiArrowRight,
   FiClock,
   FiLogIn,
   FiLogOut,
   FiMail,
-  FiMapPin,
   FiMenu,
   FiMessageCircle,
   FiPhone,
@@ -27,7 +25,8 @@ import { cn } from '@/utils/cn'
 
 const MotionMain = motion.main
 const MotionDiv = motion.div
-const footerNavigation = publicNavigation.filter((item) => item.to !== '/')
+const footerPrimaryLinks = publicNavigation.slice(0, 4)
+const footerSecondaryLinks = publicNavigation.slice(4)
 const footerFallbackSettings = {
   centerName: 'Puentes',
   address: 'Buenos Aires, Argentina',
@@ -280,158 +279,115 @@ export const PublicLayout = () => {
         <Outlet />
       </MotionMain>
 
-      <footer className="pt-8 lg:pt-12">
-        <div className="public-shell pb-10 lg:pb-12">
-          <div className="relative overflow-hidden rounded-[2.25rem] border border-[var(--color-border-soft)] bg-[linear-gradient(145deg,rgba(247,244,238,0.96),rgba(255,255,255,0.98),rgba(241,246,245,0.92))] px-6 py-8 shadow-[0_28px_90px_rgba(47,93,115,0.12)] backdrop-blur-xl sm:px-8 lg:px-10 lg:py-10">
-            <div className="absolute -right-12 top-0 h-44 w-44 rounded-full bg-[rgba(167,196,181,0.16)] blur-3xl" />
-            <div className="absolute bottom-0 left-12 h-32 w-32 rounded-full bg-[rgba(217,140,122,0.14)] blur-3xl" />
-
-            <div className="relative grid gap-8 xl:grid-cols-[1.2fr_0.72fr_0.9fr]">
-              <div className="max-w-2xl">
-                <div className="flex items-center gap-3">
-                  <img alt={media.logo.alt} className="h-12 w-12 rounded-full bg-white/85 p-1.5 shadow-sm" src={media.logo.src} />
-                  <div>
-                    <p className="text-[0.68rem] uppercase tracking-[0.32em] text-[rgba(47,93,115,0.62)]">
-                      Centro interdisciplinario
-                    </p>
-                    <p className="heading-display text-3xl font-semibold text-[var(--color-primary)]">
-                      {displaySettings.centerName}
-                    </p>
-                  </div>
-                </div>
-
-                <h2 className="heading-display mt-6 text-4xl font-semibold leading-[0.95] text-[var(--color-primary)] sm:text-[3.8rem]">
-                  Orientamos procesos, articulamos equipos y cuidamos el vínculo con las familias.
-                </h2>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-[rgba(46,46,46,0.74)]">
-                  Puentes reúne acompañamiento, organización institucional y contacto cercano para que cada consulta
-                  encuentre un camino claro desde el primer intercambio.
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-3 text-xs uppercase tracking-[0.18em] text-[rgba(47,93,115,0.62)]">
-                  <span className="rounded-full border border-[rgba(47,93,115,0.12)] bg-white/72 px-3 py-2">
-                    Trabajo con familias
-                  </span>
-                  <span className="rounded-full border border-[rgba(47,93,115,0.12)] bg-white/72 px-3 py-2">
-                    Equipo interdisciplinario
-                  </span>
-                  <span className="rounded-full border border-[rgba(47,93,115,0.12)] bg-white/72 px-3 py-2">
-                    Organización institucional
-                  </span>
-                </div>
-
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Button as={NavLink} className="gap-2" to="/contacto">
-                    Solicitar orientación
-                    <FiArrowRight aria-hidden="true" className="size-4" />
-                  </Button>
-                  {isAuthenticated ? (
-                    <Button as={NavLink} className="gap-2" to="/app/dashboard" variant="outline">
-                      Ir al panel
-                    </Button>
-                  ) : (
-                    <Button className="gap-2" onClick={() => setIsAccessOpen(true)} variant="outline">
-                      <FiLogIn aria-hidden="true" className="size-4" />
-                      Acceso institucional
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid content-start gap-3">
-                <p className="text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">Explorar</p>
-                <nav className="grid gap-2">
-                  {footerNavigation.map((item) => (
-                    <NavLink
-                      key={item.to}
-                      className={({ isActive }) =>
-                        cn(
-                          'group flex items-center justify-between rounded-[1.35rem] border border-transparent bg-white/58 px-4 py-3 text-sm font-medium text-[rgba(46,46,46,0.78)] transition-colors hover:border-[rgba(47,93,115,0.12)] hover:bg-white/86 hover:text-[var(--color-primary)]',
-                          isActive && 'border-[rgba(47,93,115,0.12)] bg-white text-[var(--color-primary)]',
-                        )
-                      }
-                      to={item.to}
-                    >
-                      <span>{item.label}</span>
-                      <FiArrowRight
-                        aria-hidden="true"
-                        className="size-4 opacity-55 transition-transform group-hover:translate-x-0.5"
-                      />
-                    </NavLink>
-                  ))}
-                </nav>
-              </div>
-
-              <div className="grid gap-3">
-                <div className="rounded-[1.5rem] border border-[rgba(47,93,115,0.1)] bg-white/76 px-5 py-4 backdrop-blur">
-                  <div className="flex items-start gap-3">
-                    <FiMail aria-hidden="true" className="mt-1 size-4 text-[var(--color-primary)]" />
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">Correo</p>
-                      <a
-                        className="mt-1 block text-sm leading-6 text-[rgba(46,46,46,0.82)]"
-                        href={`mailto:${displaySettings.institutionalEmail}`}
-                      >
-                        {displaySettings.institutionalEmail}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-[1.5rem] border border-[rgba(47,93,115,0.1)] bg-white/76 px-5 py-4 backdrop-blur">
-                  <div className="flex items-start gap-3">
-                    <FiPhone aria-hidden="true" className="mt-1 size-4 text-[var(--color-primary)]" />
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">Teléfono</p>
-                      <a
-                        className="mt-1 block text-sm leading-6 text-[rgba(46,46,46,0.82)]"
-                        href={`tel:${sanitizePhoneHref(displaySettings.institutionalPhone)}`}
-                      >
-                        {displaySettings.institutionalPhone}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-[1.5rem] border border-[rgba(47,93,115,0.1)] bg-white/76 px-5 py-4 backdrop-blur">
-                  <div className="flex items-start gap-3">
-                    <FiClock aria-hidden="true" className="mt-1 size-4 text-[var(--color-primary)]" />
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">Horarios</p>
-                      <p className="mt-1 text-sm leading-6 text-[rgba(46,46,46,0.82)]">
-                        {displaySettings.businessHoursSummary}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <footer className="mt-8 border-t border-[rgba(47,93,115,0.12)] bg-[linear-gradient(180deg,rgba(238,245,243,0.92),rgba(247,244,238,0.95))]">
+        <div className="public-shell py-12 lg:py-14">
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.25fr_1fr] lg:items-start">
+            <div className="space-y-4 text-center lg:text-left">
+              <p className="text-xs uppercase tracking-[0.3em] text-[rgba(47,93,115,0.62)]">Puentes</p>
+              <nav className="grid gap-3 text-base text-[rgba(46,46,46,0.8)]">
+                {footerPrimaryLinks.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    className={({ isActive }) =>
+                      cn('transition-colors hover:text-[var(--color-primary)]', isActive && 'text-[var(--color-primary)]')
+                    }
+                    to={item.to}
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
+              </nav>
             </div>
 
-            <div className="relative mt-8 flex flex-col gap-3 border-t border-[rgba(47,93,115,0.1)] pt-5 text-xs uppercase tracking-[0.18em] text-[rgba(47,93,115,0.58)] lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex flex-wrap items-center gap-3">
-                <span>
-                  © {new Date().getFullYear()} {displaySettings.centerName}
-                </span>
-                <span className="hidden h-1 w-1 rounded-full bg-[rgba(47,93,115,0.28)] lg:block" />
-                <span className="inline-flex items-center gap-2">
-                  <FiMapPin aria-hidden="true" className="size-3.5" />
-                  {displaySettings.address}
-                </span>
-              </div>
+            <div className="text-center">
+              <h2 className="heading-display text-4xl font-semibold text-[var(--color-primary)] sm:text-5xl">
+                {displaySettings.centerName}
+              </h2>
+              <p className="mt-4 text-lg text-[rgba(46,46,46,0.78)]">
+                Acompañamiento del desarrollo infantil con cercanía, claridad y trabajo articulado.
+              </p>
+              <p className="mt-2 text-sm text-[rgba(47,93,115,0.62)]">
+                {displaySettings.address} · {displaySettings.businessHoursSummary}
+              </p>
 
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="mt-6 flex flex-wrap justify-center gap-4">
                 <a
-                  className="rounded-full border border-[rgba(47,93,115,0.12)] bg-white/72 px-3 py-2 transition-colors hover:bg-white"
+                  aria-label="Enviar correo institucional"
+                  className="flex size-16 items-center justify-center rounded-full border border-[rgba(47,93,115,0.12)] bg-white/78 text-[var(--color-primary)] shadow-[0_12px_34px_rgba(47,93,115,0.08)] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white"
                   href={`mailto:${displaySettings.institutionalEmail}`}
                 >
-                  Correo institucional
+                  <FiMail aria-hidden="true" className="size-6" />
                 </a>
                 <a
-                  className="rounded-full border border-[rgba(47,93,115,0.12)] bg-white/72 px-3 py-2 transition-colors hover:bg-white"
+                  aria-label="Llamar al centro"
+                  className="flex size-16 items-center justify-center rounded-full border border-[rgba(47,93,115,0.12)] bg-white/78 text-[var(--color-primary)] shadow-[0_12px_34px_rgba(47,93,115,0.08)] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white"
+                  href={`tel:${sanitizePhoneHref(displaySettings.institutionalPhone)}`}
+                >
+                  <FiPhone aria-hidden="true" className="size-6" />
+                </a>
+                <a
+                  aria-label="Escribir por WhatsApp"
+                  className="flex size-16 items-center justify-center rounded-full border border-[rgba(47,93,115,0.12)] bg-white/78 text-[var(--color-primary)] shadow-[0_12px_34px_rgba(47,93,115,0.08)] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white"
                   href={displaySettings.whatsappUrl}
                   rel="noreferrer"
                   target="_blank"
                 >
+                  <FiMessageCircle aria-hidden="true" className="size-6" />
+                </a>
+                <div
+                  aria-label={`Horarios: ${displaySettings.businessHoursSummary}`}
+                  className="flex size-16 items-center justify-center rounded-full border border-[rgba(47,93,115,0.12)] bg-white/78 text-[var(--color-primary)] shadow-[0_12px_34px_rgba(47,93,115,0.08)]"
+                  title={displaySettings.businessHoursSummary}
+                >
+                  <FiClock aria-hidden="true" className="size-6" />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-center lg:text-right">
+              <p className="text-xs uppercase tracking-[0.3em] text-[rgba(47,93,115,0.62)]">Atención</p>
+              <div className="grid gap-3 text-base text-[rgba(46,46,46,0.8)]">
+                {footerSecondaryLinks.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    className={({ isActive }) =>
+                      cn('transition-colors hover:text-[var(--color-primary)]', isActive && 'text-[var(--color-primary)]')
+                    }
+                    to={item.to}
+                  >
+                    {item.label}
+                  </NavLink>
+                ))}
+                <NavLink className="transition-colors hover:text-[var(--color-primary)]" to="/contacto">
+                  Solicitar orientación
+                </NavLink>
+                {isAuthenticated ? (
+                  <NavLink className="transition-colors hover:text-[var(--color-primary)]" to="/app/dashboard">
+                    Ir al panel
+                  </NavLink>
+                ) : (
+                  <button className="text-inherit transition-colors hover:text-[var(--color-primary)]" onClick={() => setIsAccessOpen(true)} type="button">
+                    Ingresar
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 border-t border-[rgba(47,93,115,0.12)] pt-6">
+            <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+              <div className="hidden lg:block" />
+              <p className="text-center text-sm text-[rgba(46,46,46,0.74)]">
+                (c) {new Date().getFullYear()} {displaySettings.centerName}. Todos los derechos reservados.
+              </p>
+              <div className="flex justify-center lg:justify-end">
+                <a
+                  className="inline-flex items-center gap-2 rounded-full border border-transparent bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_34px_rgba(47,93,115,0.22)] transition-colors hover:bg-[var(--color-primary-strong)]"
+                  href={displaySettings.whatsappUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <FiMessageCircle aria-hidden="true" className="size-5" />
                   WhatsApp
                 </a>
               </div>
