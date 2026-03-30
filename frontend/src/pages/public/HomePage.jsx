@@ -357,11 +357,11 @@ export const HomePage = () => {
                 </Button>
                 <Button
                   as="a"
-                  className="gap-2 border-white/20 bg-transparent text-white hover:bg-white/10"
+                  className="gap-2"
                   href={displaySettings.whatsappUrl}
                   rel="noreferrer"
                   target="_blank"
-                  variant="outline"
+                  variant="contrast"
                 >
                   <FiMessageCircle aria-hidden="true" className="size-4" />
                   Escribir por WhatsApp

@@ -14,6 +14,7 @@ import {
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/Button'
+import { FloatingWhatsAppButton } from '@/components/ui/FloatingWhatsAppButton'
 import { ModalShell } from '@/components/ui/ModalShell'
 import { publicNavigation } from '@/constants/navigation'
 import { media } from '@/constants/media'
@@ -375,26 +376,16 @@ export const PublicLayout = () => {
           </div>
 
           <div className="mt-10 border-t border-[rgba(47,93,115,0.12)] pt-6">
-            <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
-              <div className="hidden lg:block" />
+            <div className="flex justify-center">
               <p className="text-center text-sm text-[rgba(46,46,46,0.74)]">
                 (c) {new Date().getFullYear()} {displaySettings.centerName}. Todos los derechos reservados.
               </p>
-              <div className="flex justify-center lg:justify-end">
-                <a
-                  className="inline-flex items-center gap-2 rounded-full border border-transparent bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_34px_rgba(47,93,115,0.22)] transition-colors hover:bg-[var(--color-primary-strong)]"
-                  href={displaySettings.whatsappUrl}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <FiMessageCircle aria-hidden="true" className="size-5" />
-                  WhatsApp
-                </a>
-              </div>
             </div>
           </div>
         </div>
       </footer>
+
+      <FloatingWhatsAppButton href={displaySettings.whatsappUrl} />
 
       <ModalShell
         closeLabel="Cerrar ingreso"
