@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Field } from '@/components/ui/Field'
 import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { ROLE_LABELS } from '@/constants/roles'
 import { useAuth } from '@/hooks/useAuth'
 import { useAsyncData } from '@/hooks/useAsyncData'
@@ -34,6 +35,7 @@ export const ProfessionalsPage = () => {
   const { user } = useAuth()
   const [form, setForm] = useState(initialForm)
   const [error, setError] = useState('')
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const canManage = ['ADMIN', 'COORDINATION'].includes(user.role)
 
   const { data: professionals, reload } = useAsyncData(() => professionalsService.listManage(), [])
@@ -78,6 +80,7 @@ export const ProfessionalsPage = () => {
       setForm(buildFormFromProfessional(updatedProfile))
       setError('')
       await reload()
+      setIsSuccessModalOpen(true)
     } catch (submitError) {
       setError(submitError.message)
     }
@@ -235,6 +238,13 @@ export const ProfessionalsPage = () => {
           ) : null}
         </PanelCard>
       </div>
+
+      <SuccessFeedbackModal
+        description="El perfil profesional quedó actualizado con su disciplina y configuración pública."
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        title="Perfil profesional guardado"
+      />
     </div>
   )
 }

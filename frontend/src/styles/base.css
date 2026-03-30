@@ -470,10 +470,143 @@ textarea.field-input {
   min-height: 18rem;
 }
 
+.home-signals-carousel .carousel-inner,
+.home-signals-carousel .carousel-item,
+.home-signals-carousel .carousel-item.active,
+.home-signals-carousel .carousel-item-next,
+.home-signals-carousel .carousel-item-prev {
+  min-height: 32rem;
+}
+
+.home-signals-carousel__item {
+  position: relative;
+}
+
+.home-signals-carousel__media {
+  position: relative;
+  min-height: 32rem;
+}
+
+.home-signals-carousel__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(18, 35, 43, 0.14), rgba(18, 35, 43, 0.44));
+}
+
+.home-signals-carousel__image {
+  display: block;
+  width: 100%;
+  height: 32rem;
+  object-fit: cover;
+}
+
+.home-signals-carousel__caption {
+  right: clamp(1rem, 4vw, 2.5rem);
+  bottom: clamp(1rem, 4vw, 2.5rem);
+  left: clamp(1rem, 4vw, 2.5rem);
+  padding: 0;
+  color: var(--color-text);
+}
+
+.home-signals-carousel__panel {
+  margin-left: auto;
+  width: min(100%, 42rem);
+  border: 1px solid rgba(47, 93, 115, 0.12);
+  border-radius: 1.75rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 244, 238, 0.96));
+  box-shadow: 0 20px 60px rgba(27, 39, 45, 0.18);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  text-align: left;
+}
+
+.home-signals-carousel__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.home-signals-carousel .carousel-control-prev,
+.home-signals-carousel .carousel-control-next {
+  width: 5.5rem;
+  opacity: 1;
+}
+
+.home-signals-carousel .carousel-control-prev:focus,
+.home-signals-carousel .carousel-control-next:focus {
+  outline: none;
+}
+
+.home-signals-carousel .carousel-indicators {
+  right: auto;
+  bottom: 1rem;
+  left: 1.5rem;
+  justify-content: flex-start;
+  margin: 0;
+}
+
+.home-signals-carousel .carousel-indicators [data-bs-target] {
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0.45rem;
+  margin-left: 0.45rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.56);
+  opacity: 1;
+}
+
+.home-signals-carousel .carousel-indicators .active {
+  width: 2.4rem;
+  background-color: white;
+}
+
 @media (max-width: 767px) {
   .public-media-overlay {
     position: static;
     margin: 1rem;
+  }
+
+  .home-signals-carousel .carousel-inner,
+  .home-signals-carousel .carousel-item,
+  .home-signals-carousel .carousel-item.active,
+  .home-signals-carousel .carousel-item-next,
+  .home-signals-carousel .carousel-item-prev,
+  .home-signals-carousel__media,
+  .home-signals-carousel__image {
+    min-height: 34rem;
+    height: 34rem;
+  }
+
+  .home-signals-carousel__caption {
+    right: 0.85rem;
+    bottom: 3.5rem;
+    left: 0.85rem;
+  }
+
+  .home-signals-carousel__panel {
+    width: 100%;
+  }
+
+  .home-signals-carousel .carousel-control-prev,
+  .home-signals-carousel .carousel-control-next {
+    align-items: start;
+    padding-top: 1rem;
+    width: 4rem;
+  }
+
+  .home-signals-carousel .carousel-indicators {
+    bottom: 1.2rem;
+    left: 50%;
+    justify-content: center;
+    transform: translateX(-50%);
   }
 }
 

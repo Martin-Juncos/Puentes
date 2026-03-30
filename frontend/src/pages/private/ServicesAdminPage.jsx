@@ -11,6 +11,7 @@ import { DataTable } from '@/components/ui/DataTable'
 import { Field } from '@/components/ui/Field'
 import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { useAuth } from '@/hooks/useAuth'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { settingsService } from '@/services/settingsService'
@@ -30,6 +31,12 @@ const updateInitial = {
   durationMinutes: 60,
   colorTag: '#2F5D73',
   status: 'ACTIVE',
+}
+
+const successModalInitial = {
+  isOpen: false,
+  title: '',
+  description: '',
 }
 
 const buildUpdateForm = (service) => ({
@@ -64,6 +71,7 @@ export const ServicesAdminPage = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [resolutionActionKey, setResolutionActionKey] = useState('')
   const [defaultServiceDuration, setDefaultServiceDuration] = useState(60)
+  const [successModal, setSuccessModal] = useState(successModalInitial)
 
   const { data: services, reload } = useAsyncData(() => servicesService.listManage(), [])
 
@@ -159,10 +167,15 @@ export const ServicesAdminPage = () => {
     selectServiceForUpdate(nextService)
   }
 
+  const closeSuccessModal = () => {
+    setSuccessModal(successModalInitial)
+  }
+
   const handleCreate = async (event) => {
     event.preventDefault()
 
     try {
+      const nextServiceName = createForm.name.trim()
       await servicesService.create({
         ...createForm,
         durationMinutes: Number(createForm.durationMinutes),
@@ -174,6 +187,11 @@ export const ServicesAdminPage = () => {
       })
       setCreateError('')
       await reload()
+      setSuccessModal({
+        isOpen: true,
+        title: 'Servicio creado',
+        description: `${nextServiceName || 'El servicio'} ya quedó disponible en el catálogo operativo.`,
+      })
     } catch (error) {
       setCreateError(error.message)
     }
@@ -520,6 +538,13 @@ export const ServicesAdminPage = () => {
         }
         subjectName={selectedService?.name ?? ''}
         title="Eliminar servicio"
+      />
+
+      <SuccessFeedbackModal
+        description={successModal.description}
+        isOpen={successModal.isOpen}
+        onClose={closeSuccessModal}
+        title={successModal.title}
       />
     </div>
   )

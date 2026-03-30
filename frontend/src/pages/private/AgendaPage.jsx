@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { RoleCalendar } from '@/features/calendar/RoleCalendar'
 import { useAuth } from '@/hooks/useAuth'
 import { useAsyncData } from '@/hooks/useAsyncData'
@@ -28,6 +29,7 @@ export const AgendaPage = () => {
   const [form, setForm] = useState(initialForm)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   const { data: sessions, isLoading, reload } = useAsyncData(() => sessionsService.list(), [])
   const { data: children } = useAsyncData(() => childrenService.list(), [])
@@ -50,7 +52,8 @@ export const AgendaPage = () => {
       await sessionsService.create(form)
       setForm(initialForm)
       setError('')
-      reload()
+      await reload()
+      setIsSuccessModalOpen(true)
     } catch (submitError) {
       setError(submitError.message)
     } finally {
@@ -152,6 +155,13 @@ export const AgendaPage = () => {
           )}
         </PanelCard>
       </div>
+
+      <SuccessFeedbackModal
+        description="La sesión ya quedó agendada y visible en el calendario operativo."
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        title="Sesión creada"
+      />
     </div>
   )
 }

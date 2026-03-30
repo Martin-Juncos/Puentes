@@ -1,37 +1,56 @@
+import { media } from '@/constants/media'
+
 export const homePracticalSignals = [
   {
     title: 'Mirada interdisciplinaria',
     description: 'Evaluamos cada situación desde una lectura amplia, con articulación entre disciplinas.',
+    image: media.teamSupport.src,
+    imageAlt: media.teamSupport.alt,
   },
   {
     title: 'Trabajo con familias',
     description: 'El acompañamiento incluye escucha, orientación y construcción conjunta con adultos referentes.',
+    image: media.aboutSupport.src,
+    imageAlt: media.aboutSupport.alt,
   },
   {
     title: 'Orientación inicial',
     description: 'Ayudamos a ordenar la consulta y a definir cuál puede ser el mejor primer paso.',
+    image: media.homeHero.src,
+    imageAlt: media.homeHero.alt,
   },
   {
     title: 'Seguimiento con continuidad',
     description: 'Buscamos que cada proceso tenga sostén, claridad y una comunicación consistente.',
+    image: media.trustSupport.src,
+    imageAlt: media.trustSupport.alt,
   },
 ]
 
 export const homeGettingStartedSteps = [
   {
     step: '01',
+    badgeLabel: 'Paso 01',
     title: 'Nos contás tu inquietud',
     description: 'Podés escribirnos por el formulario, WhatsApp o correo para hacer una primera consulta.',
+    image: media.contactHero.src,
+    imageAlt: media.contactHero.alt,
   },
   {
     step: '02',
+    badgeLabel: 'Paso 02',
     title: 'Te orientamos',
     description: 'Revisamos tu consulta y te ayudamos a identificar el servicio o modalidad más adecuada.',
+    image: media.aboutSupport.src,
+    imageAlt: media.aboutSupport.alt,
   },
   {
     step: '03',
+    badgeLabel: 'Paso 03',
     title: 'Coordinamos el primer paso',
     description: 'Definimos una entrevista inicial, una orientación específica o la derivación correspondiente.',
+    image: media.approachHero.src,
+    imageAlt: media.approachHero.alt,
   },
 ]
 

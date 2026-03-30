@@ -10,7 +10,7 @@ import { settingsService } from '@/services/settingsService'
 
 const fallbackSettings = {
   centerName: 'Puentes',
-  address: 'Buenos Aires, Argentina',
+  address: 'España 930, Goya, Corrientes',
   institutionalEmail: 'contacto@puentes.local',
   institutionalPhone: '+54 11 5555 0000',
   whatsappUrl: 'https://wa.me/5491100000000?text=Hola%20Puentes',

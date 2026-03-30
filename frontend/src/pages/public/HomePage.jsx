@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'motion/react'
 import {
   FiArrowRight,
-  FiCheckCircle,
   FiClock,
   FiCompass,
   FiHeart,
@@ -24,6 +23,7 @@ import {
   homePracticalSignals,
   homeTeamFallback,
 } from '@/constants/siteContent'
+import { HomeSignalsCarousel } from '@/features/home/HomeSignalsCarousel'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { professionalsService } from '@/services/professionalsService'
 import { servicesService } from '@/services/servicesService'
@@ -33,12 +33,13 @@ const MotionDiv = motion.div
 
 const fallbackSettings = {
   centerName: 'Puentes',
-  address: 'Buenos Aires, Argentina',
+  address: 'España 930, Goya, Corrientes',
   institutionalEmail: 'contacto@puentes.local',
   institutionalPhone: '+54 11 5555 0000',
   whatsappUrl: 'https://wa.me/5491100000000?text=Hola%20Puentes',
   businessHoursSummary: 'Lunes a viernes de 8 a 20 h.',
 }
+const mapQuery = encodeURIComponent('España 930, Goya, Corrientes')
 
 const quickActionCards = [
   {
@@ -144,17 +145,6 @@ export const HomePage = () => {
                 Hacer una consulta
               </Button>
             </div>
-
-            <div className="mt-8 grid gap-3 sm:grid-cols-3">
-              {['Orientación inicial', 'Trabajo con familias', 'Equipo interdisciplinario'].map((item) => (
-                <div
-                  key={item}
-                  className="rounded-full border border-[rgba(47,93,115,0.12)] bg-white/78 px-4 py-3 text-sm font-medium text-[var(--color-primary)]"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
           </div>
 
           <MotionDiv
@@ -191,17 +181,7 @@ export const HomePage = () => {
           </MotionDiv>
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {homePracticalSignals.map((item) => (
-            <PanelCard className="bg-white/90" key={item.title} variant="metric">
-              <div className="flex size-11 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)]">
-                <FiCheckCircle aria-hidden="true" className="size-5" />
-              </div>
-              <h2 className="mt-4 text-lg font-semibold text-[var(--color-primary)]">{item.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-[rgba(46,46,46,0.72)]">{item.description}</p>
-            </PanelCard>
-          ))}
-        </div>
+        <HomeSignalsCarousel items={homePracticalSignals} />
       </section>
 
       <section className="public-shell py-10 lg:py-16">
@@ -241,15 +221,12 @@ export const HomePage = () => {
           title="Un proceso simple para dar el primer paso."
         />
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {homeGettingStartedSteps.map((item) => (
-            <PanelCard className="bg-white/88" key={item.step} variant="form">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">{item.step}</p>
-              <h2 className="mt-4 text-2xl font-semibold text-[var(--color-primary)]">{item.title}</h2>
-              <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.74)]">{item.description}</p>
-            </PanelCard>
-          ))}
-        </div>
+        <HomeSignalsCarousel
+          footerText="Cada proceso empieza con escucha, orientación y una propuesta clara"
+          items={homeGettingStartedSteps}
+          nextLabel="Siguiente paso"
+          prevLabel="Paso anterior"
+        />
       </section>
 
       <section className="public-shell py-10 lg:py-16">
@@ -366,6 +343,34 @@ export const HomePage = () => {
                   <FiMessageCircle aria-hidden="true" className="size-4" />
                   Escribir por WhatsApp
                 </Button>
+              </div>
+
+              <div className="mt-8 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 p-3 backdrop-blur">
+                <div className="mb-3 flex items-center justify-between gap-3 px-2">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-white/65">Ubicación</p>
+                    <p className="mt-1 text-sm font-medium text-white/88">España 930, Goya, Corrientes</p>
+                  </div>
+                  <a
+                    className="text-xs font-semibold uppercase tracking-[0.18em] text-white/78 transition-colors hover:text-white"
+                    href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Abrir mapa
+                  </a>
+                </div>
+
+                <div className="overflow-hidden rounded-[1.25rem] border border-white/10">
+                  <iframe
+                    allowFullScreen
+                    className="h-64 w-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps?q=${mapQuery}&z=16&output=embed`}
+                    title="Mapa de Puentes en España 930, Goya, Corrientes"
+                  />
+                </div>
               </div>
             </div>
 

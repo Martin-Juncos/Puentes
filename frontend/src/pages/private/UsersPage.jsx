@@ -11,6 +11,7 @@ import { DataTable } from '@/components/ui/DataTable'
 import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { Field } from '@/components/ui/Field'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { PROFESSIONAL_DISCIPLINES } from '@/constants/professionalDisciplines'
 import { ROLE_LABELS } from '@/constants/roles'
 import { useAsyncData } from '@/hooks/useAsyncData'
@@ -34,6 +35,12 @@ const updateInitial = {
   status: 'ACTIVE',
   phone: '',
   professionalDiscipline: '',
+}
+
+const successModalInitial = {
+  isOpen: false,
+  title: '',
+  description: '',
 }
 
 const statusClasses = {
@@ -73,6 +80,7 @@ export const UsersPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [deleteError, setDeleteError] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
+  const [successModal, setSuccessModal] = useState(successModalInitial)
   const { data: users, reload } = useAsyncData(() => usersService.list(), [])
 
   const activeUsersCount = useMemo(
@@ -147,10 +155,15 @@ export const UsersPage = () => {
     setIsDeleteModalOpen(true)
   }
 
+  const closeSuccessModal = () => {
+    setSuccessModal(successModalInitial)
+  }
+
   const handleCreate = async (event) => {
     event.preventDefault()
 
     try {
+      const nextUserName = createForm.fullName.trim()
       const payload = {
         fullName: createForm.fullName,
         email: createForm.email,
@@ -167,6 +180,11 @@ export const UsersPage = () => {
       setCreateForm(createInitial)
       setCreateError('')
       await reload()
+      setSuccessModal({
+        isOpen: true,
+        title: 'Usuario creado',
+        description: `${nextUserName || 'El usuario'} ya quedó disponible para ingresar al sistema.`,
+      })
     } catch (error) {
       setCreateError(error.message)
     }
@@ -603,6 +621,13 @@ export const UsersPage = () => {
         subjectMeta={selectedUser?.email}
         subjectName={selectedUser?.fullName ?? ''}
         title="Eliminar usuario"
+      />
+
+      <SuccessFeedbackModal
+        description={successModal.description}
+        isOpen={successModal.isOpen}
+        onClose={closeSuccessModal}
+        title={successModal.title}
       />
     </div>
   )

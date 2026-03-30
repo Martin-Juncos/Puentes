@@ -7,6 +7,7 @@ import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Button } from '@/components/ui/Button'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { attendancesService } from '@/services/attendancesService'
 import { childrenService } from '@/services/childrenService'
@@ -49,6 +50,11 @@ export const PaymentsPage = () => {
   const [attendanceForm, setAttendanceForm] = useState(initialAttendance)
   const [paymentError, setPaymentError] = useState('')
   const [attendanceError, setAttendanceError] = useState('')
+  const [successModal, setSuccessModal] = useState({
+    isOpen: false,
+    title: '',
+    description: '',
+  })
 
   const { data: payments, reload: reloadPayments } = useAsyncData(() => paymentsService.list(), [])
   const { data: attendances, reload: reloadAttendances } = useAsyncData(() => attendancesService.list(), [])
@@ -127,7 +133,12 @@ export const PaymentsPage = () => {
       })
       setPaymentForm(initialPayment)
       setPaymentError('')
-      reloadPayments()
+      await reloadPayments()
+      setSuccessModal({
+        isOpen: true,
+        title: 'Cobro registrado',
+        description: 'El cobro quedó guardado correctamente en la gestión administrativa.',
+      })
     } catch (error) {
       setPaymentError(error.message)
     }
@@ -140,7 +151,12 @@ export const PaymentsPage = () => {
       await attendancesService.upsert(attendanceForm)
       setAttendanceForm(initialAttendance)
       setAttendanceError('')
-      reloadAttendances()
+      await reloadAttendances()
+      setSuccessModal({
+        isOpen: true,
+        title: 'Asistencia registrada',
+        description: 'La asistencia quedó actualizada correctamente.',
+      })
     } catch (error) {
       setAttendanceError(error.message)
     }
@@ -249,6 +265,19 @@ export const PaymentsPage = () => {
           </div>
         </PanelCard>
       </div>
+
+      <SuccessFeedbackModal
+        description={successModal.description}
+        isOpen={successModal.isOpen}
+        onClose={() =>
+          setSuccessModal({
+            isOpen: false,
+            title: '',
+            description: '',
+          })
+        }
+        title={successModal.title}
+      />
     </div>
   )
 }

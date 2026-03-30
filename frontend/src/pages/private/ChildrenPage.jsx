@@ -12,6 +12,7 @@ import { DataTable } from '@/components/ui/DataTable'
 import { Field } from '@/components/ui/Field'
 import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { useAuth } from '@/hooks/useAuth'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { childrenService } from '@/services/childrenService'
@@ -70,6 +71,12 @@ const childStatusClasses = {
   DISCHARGED: 'bg-[rgba(217,140,122,0.18)] text-[#8b4b3d]',
 }
 
+const successModalInitial = {
+  isOpen: false,
+  title: '',
+  description: '',
+}
+
 export const ChildrenPage = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -85,6 +92,7 @@ export const ChildrenPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [resolutionActionKey, setResolutionActionKey] = useState('')
+  const [successModal, setSuccessModal] = useState(successModalInitial)
 
   const { data: children, reload } = useAsyncData(() => childrenService.list(), [])
   const { data: families } = useAsyncData(() => familiesService.list(), [])
@@ -211,14 +219,24 @@ export const ChildrenPage = () => {
     selectChildForUpdate(nextChild)
   }
 
+  const closeSuccessModal = () => {
+    setSuccessModal(successModalInitial)
+  }
+
   const handleChildCreate = async (event) => {
     event.preventDefault()
 
     try {
+      const nextChildName = `${childCreateForm.firstName} ${childCreateForm.lastName}`.trim()
       await childrenService.create(childCreateForm)
       setChildCreateForm(childCreateInitial)
       setChildCreateError('')
       await reload()
+      setSuccessModal({
+        isOpen: true,
+        title: 'Caso creado',
+        description: `${nextChildName || 'El caso'} ya quedó incorporado para seguimiento y agenda.`,
+      })
     } catch (error) {
       setChildCreateError(error.message)
     }
@@ -254,6 +272,10 @@ export const ChildrenPage = () => {
     event.preventDefault()
 
     try {
+      const assignmentChild = children.find((child) => child.id === assignmentForm.childId)
+      const childName = assignmentChild
+        ? `${assignmentChild.firstName} ${assignmentChild.lastName}`.trim()
+        : ''
       await childrenService.assignProfessional(assignmentForm.childId, {
         professionalId: assignmentForm.professionalId,
         serviceId: assignmentForm.serviceId || undefined,
@@ -262,6 +284,13 @@ export const ChildrenPage = () => {
       setAssignmentForm(assignmentInitial)
       setAssignmentError('')
       await reload()
+      setSuccessModal({
+        isOpen: true,
+        title: 'Asignación creada',
+        description: childName
+          ? `La asignación del caso ${childName} se guardó correctamente.`
+          : 'La asignación se guardó correctamente.',
+      })
     } catch (error) {
       setAssignmentError(error.message)
     }
@@ -765,6 +794,13 @@ export const ChildrenPage = () => {
         }
         subjectName={selectedChild ? `${selectedChild.firstName} ${selectedChild.lastName}` : ''}
         title="Eliminar caso"
+      />
+
+      <SuccessFeedbackModal
+        description={successModal.description}
+        isOpen={successModal.isOpen}
+        onClose={closeSuccessModal}
+        title={successModal.title}
       />
     </div>
   )

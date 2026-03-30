@@ -10,6 +10,7 @@ import { DataTable } from '@/components/ui/DataTable'
 import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { Field } from '@/components/ui/Field'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { familiesService } from '@/services/familiesService'
 
@@ -57,6 +58,12 @@ const buildUpdateForm = (family) => ({
   status: family.status ?? 'ACTIVE',
 })
 
+const successModalInitial = {
+  isOpen: false,
+  title: '',
+  description: '',
+}
+
 export const FamiliesPage = () => {
   const [createForm, setCreateForm] = useState(createInitial)
   const [updateForm, setUpdateForm] = useState(updateInitial)
@@ -67,6 +74,7 @@ export const FamiliesPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [resolutionActionKey, setResolutionActionKey] = useState('')
+  const [successModal, setSuccessModal] = useState(successModalInitial)
   const { data: families, reload } = useAsyncData(() => familiesService.list(), [])
 
   const selectedFamily = useMemo(
@@ -144,14 +152,24 @@ export const FamiliesPage = () => {
     selectFamilyForUpdate(nextFamily)
   }
 
+  const closeSuccessModal = () => {
+    setSuccessModal(successModalInitial)
+  }
+
   const handleCreate = async (event) => {
     event.preventDefault()
 
     try {
+      const nextFamilyName = createForm.displayName.trim()
       await familiesService.create(createForm)
       setCreateForm(createInitial)
       setCreateError('')
       await reload()
+      setSuccessModal({
+        isOpen: true,
+        title: 'Familia creada',
+        description: `${nextFamilyName || 'La familia'} ya quedó registrada para seguimiento y contacto.`,
+      })
     } catch (error) {
       setCreateError(error.message)
     }
@@ -503,6 +521,13 @@ export const FamiliesPage = () => {
         subjectMeta={selectedFamily ? `${selectedFamily.primaryContactName} · ${selectedFamily.phone}` : ''}
         subjectName={selectedFamily?.displayName ?? ''}
         title="Eliminar familia"
+      />
+
+      <SuccessFeedbackModal
+        description={successModal.description}
+        isOpen={successModal.isOpen}
+        onClose={closeSuccessModal}
+        title={successModal.title}
       />
     </div>
   )

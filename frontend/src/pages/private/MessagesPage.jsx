@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Field } from '@/components/ui/Field'
 import { InlineLoader } from '@/components/ui/InlineLoader'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { ROLE_LABELS } from '@/constants/roles'
 import { useAuth } from '@/hooks/useAuth'
 import { useAsyncData } from '@/hooks/useAsyncData'
@@ -122,6 +123,7 @@ export const MessagesPage = () => {
   const [isRecipientsLoading, setIsRecipientsLoading] = useState(false)
   const [composeError, setComposeError] = useState('')
   const [isCreatingThread, setIsCreatingThread] = useState(false)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   const { data: children } = useAsyncData(() => childrenService.list(), [])
 
@@ -388,6 +390,7 @@ export const MessagesPage = () => {
       setIsComposeOpen(false)
       updateRouteState({ childId: nextChildId, threadId: thread.id })
       await loadThreads({ silent: true })
+      setIsSuccessModalOpen(true)
       emitNotificationsSync()
     } catch (error) {
       setComposeError(error.message)
@@ -828,6 +831,13 @@ export const MessagesPage = () => {
             </span>
           </div>
         ) : null}
+
+        <SuccessFeedbackModal
+          description="La conversación quedó creada y lista para continuar desde el inbox interno."
+          isOpen={isSuccessModalOpen}
+          onClose={() => setIsSuccessModalOpen(false)}
+          title="Conversación creada"
+        />
       </PanelCard>
     </div>
   )

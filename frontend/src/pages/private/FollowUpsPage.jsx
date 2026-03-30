@@ -13,6 +13,7 @@ import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { IconButton } from '@/components/ui/IconButton'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { RichTextEditor } from '@/components/ui/RichTextEditor'
+import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { useAuth } from '@/hooks/useAuth'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { childrenService } from '@/services/childrenService'
@@ -63,6 +64,7 @@ export const FollowUpsPage = () => {
   const [deleteTargetId, setDeleteTargetId] = useState('')
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   const {
     data: followUps,
@@ -244,6 +246,7 @@ export const FollowUpsPage = () => {
 
         setFollowUps((current) => [createdFollowUp, ...(current ?? [])])
         setForm(initialForm)
+        setIsSuccessModalOpen(true)
       }
 
       setError('')
@@ -450,6 +453,13 @@ export const FollowUpsPage = () => {
         }
         subjectName={deleteTarget?.title || deleteTarget?.summary || 'Informe de seguimiento'}
         title="Eliminar seguimiento"
+      />
+
+      <SuccessFeedbackModal
+        description="El seguimiento quedó guardado y ya figura en la lista de informes."
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        title="Seguimiento creado"
       />
     </div>
   )
