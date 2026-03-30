@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { FiAlertCircle, FiArrowRight, FiBell, FiClock, FiMessageSquare, FiPlus, FiSend, FiUsers } from 'react-icons/fi'
 import { useSearchParams } from 'react-router-dom'
 
+import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { Field } from '@/components/ui/Field'
+import { InlineLoader } from '@/components/ui/InlineLoader'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { ROLE_LABELS } from '@/constants/roles'
 import { useAuth } from '@/hooks/useAuth'
@@ -453,19 +456,24 @@ export const MessagesPage = () => {
         </div>
 
         {threadsError ? (
-          <div className="mt-5 rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{threadsError}</div>
+          <Alert className="mt-5" title="No pudimos cargar las conversaciones" tone="error">
+            {threadsError}
+          </Alert>
         ) : null}
 
         {isThreadsLoading ? (
-          <div className="mt-5 rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-6 text-sm text-[rgba(46,46,46,0.64)]">
-            Cargando conversaciones...
+          <div className="mt-5 rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-6">
+            <InlineLoader label="Cargando conversaciones..." />
           </div>
         ) : null}
 
         {!isThreadsLoading && !visibleThreads.length ? (
-          <div className="mt-5 rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-6 text-sm text-[rgba(46,46,46,0.64)]">
-            No hay conversaciones para el filtro seleccionado.
-          </div>
+          <EmptyState
+            className="mt-5"
+            description="Probá con otro filtro o abrí una nueva conversación para iniciar el intercambio."
+            icon={FiMessageSquare}
+            title="No hay conversaciones para este filtro"
+          />
         ) : null}
 
         {!isThreadsLoading && visibleThreads.length ? (
@@ -632,7 +640,9 @@ export const MessagesPage = () => {
               </Field>
 
               {composeError ? (
-                <div className="rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{composeError}</div>
+                <Alert title="No pudimos crear la conversación" tone="error">
+                  {composeError}
+                </Alert>
               ) : null}
 
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
@@ -686,12 +696,14 @@ export const MessagesPage = () => {
             </div>
 
             {threadError ? (
-              <div className="mt-5 rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{threadError}</div>
+              <Alert className="mt-5" title="No pudimos cargar la conversación" tone="error">
+                {threadError}
+              </Alert>
             ) : null}
 
             {isThreadLoading ? (
-              <div className="mt-5 rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-6 text-sm text-[rgba(46,46,46,0.64)]">
-                Cargando conversación...
+              <div className="mt-5 rounded-2xl border border-dashed border-[rgba(47,93,115,0.18)] px-4 py-6">
+                <InlineLoader label="Cargando conversación..." />
               </div>
             ) : (
               <div className="mt-6 grid gap-4">
@@ -749,7 +761,9 @@ export const MessagesPage = () => {
               />
 
               {replyError ? (
-                <div className="mt-4 rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{replyError}</div>
+                <Alert className="mt-4" title="No pudimos enviar la respuesta" tone="error">
+                  {replyError}
+                </Alert>
               ) : null}
 
               <div className="mt-4 flex justify-end">

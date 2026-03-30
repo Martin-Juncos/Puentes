@@ -1,5 +1,6 @@
-import { SectionHeading } from '@/components/ui/SectionHeading'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { SectionHeading } from '@/components/ui/SectionHeading'
+import { media } from '@/constants/media'
 
 const values = [
   'Mirada interdisciplinaria',
@@ -16,12 +17,31 @@ export const AboutPage = () => (
       title="Una plataforma y un centro que sostienen continuidad, escucha y organización."
     />
 
-    <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_0.9fr]">
-      <img alt="Puentes institucional" className="h-full min-h-96 w-full rounded-[2rem] object-cover" src="/media/4.jpg" />
-      <PanelCard>
+    <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:items-start">
+      <div className="mx-auto grid w-full max-w-sm gap-6 lg:max-w-none">
+        <div className="public-media-frame p-4">
+          <img
+            alt={media.aboutHero.alt}
+            className="h-64 w-full rounded-[2rem] object-cover sm:h-72 lg:h-[20rem]"
+            src={media.aboutHero.src}
+          />
+        </div>
+        <div className="public-media-frame p-4">
+          <img
+            alt={media.aboutSupport.alt}
+            className="h-48 w-full rounded-[2rem] object-cover sm:h-56 lg:h-52"
+            src={media.aboutSupport.src}
+          />
+        </div>
+      </div>
+
+      <PanelCard padding="lg" variant="form">
         <p className="text-sm leading-8 text-[rgba(46,46,46,0.75)]">
-          La propuesta de Puentes se apoya en una identidad institucional cálida y profesional, capaz de alojar consultas, ordenar procesos y facilitar el trabajo conjunto entre secretaría, profesionales, coordinación y familias.
+          La propuesta de Puentes se apoya en una identidad institucional cálida y profesional, capaz de alojar
+          consultas, ordenar procesos y facilitar el trabajo conjunto entre secretaría, profesionales, coordinación y
+          familias.
         </p>
+
         <div className="mt-8 grid gap-4">
           {values.map((value) => (
             <div

@@ -1,7 +1,10 @@
 import { useState } from 'react'
 
+import { PageHeader } from '@/components/private/PageHeader'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
+import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { RoleCalendar } from '@/features/calendar/RoleCalendar'
 import { useAuth } from '@/hooks/useAuth'
@@ -61,51 +64,51 @@ export const AgendaPage = () => {
 
   return (
     <div className="grid gap-6">
-      <PanelCard>
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">Agenda interna</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[var(--color-primary)]">
-              Calendario operativo por roles
-            </h2>
-          </div>
-          <p className="max-w-2xl text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-            Secretaría, coordinación y profesionales trabajan sobre la misma base institucional, pero con permisos distintos para consulta y gestión.
-          </p>
-        </div>
-      </PanelCard>
+      <PageHeader
+        description="Secretaría, coordinación y profesionales trabajan sobre la misma base institucional, pero con permisos distintos para consulta y gestión."
+        eyebrow="Agenda interna"
+        title="Calendario operativo por roles"
+      />
 
       <RoleCalendar sessions={sessions} />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-        <PanelCard>
+        <PanelCard variant="form">
           <h3 className="text-xl font-semibold text-[var(--color-primary)]">Próximas sesiones</h3>
           <div className="mt-5 grid gap-4">
-            {sessions.slice(0, 6).map((session) => (
-              <div className="rounded-2xl border border-[rgba(47,93,115,0.1)] px-4 py-4" key={session.id}>
-                <p className="font-semibold text-[var(--color-primary)]">
-                  {session.child.firstName} {session.child.lastName}
-                </p>
-                <p className="mt-1 text-sm text-[rgba(46,46,46,0.72)]">
-                  {session.professional.user.fullName} · {session.service.name}
-                </p>
-                <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">
-                  {formatDateTime(session.startsAt)}
-                </p>
-              </div>
-            ))}
+            {sessions.slice(0, 6).length ? (
+              sessions.slice(0, 6).map((session) => (
+                <div className="rounded-2xl border border-[rgba(47,93,115,0.1)] px-4 py-4" key={session.id}>
+                  <p className="font-semibold text-[var(--color-primary)]">
+                    {session.child.firstName} {session.child.lastName}
+                  </p>
+                  <p className="mt-1 text-sm text-[rgba(46,46,46,0.72)]">
+                    {session.professional.user.fullName} · {session.service.name}
+                  </p>
+                  <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">
+                    {formatDateTime(session.startsAt)}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <EmptyState
+                description="Cuando haya sesiones próximas cargadas en la agenda, se van a listar acá."
+                title="No hay sesiones próximas"
+              />
+            )}
           </div>
         </PanelCard>
 
-        <PanelCard className={canManageAgenda ? '' : 'bg-[rgba(47,93,115,0.04)]'}>
+        <PanelCard className={canManageAgenda ? '' : 'bg-[rgba(47,93,115,0.04)]'} variant={canManageAgenda ? 'form' : 'muted'}>
           <h3 className="text-xl font-semibold text-[var(--color-primary)]">Crear nueva sesión</h3>
           {!canManageAgenda ? (
             <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-              Como profesional, en esta etapa podés consultar tu agenda y usar el módulo de seguimientos. La programación y reprogramación quedan a cargo de secretaría o coordinación.
+              Como profesional, en esta etapa podés consultar tu agenda y usar el módulo de seguimientos. La
+              programación y reprogramación quedan a cargo de secretaría o coordinación.
             </p>
           ) : (
             <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
-              <Field label="Niño o niña">
+              <Field label="Niño o niña" required>
                 <select className="field-input" onChange={updateField('childId')} required value={form.childId}>
                   <option value="">Seleccionar</option>
                   {children.map((child) => (
@@ -115,7 +118,7 @@ export const AgendaPage = () => {
                   ))}
                 </select>
               </Field>
-              <Field label="Profesional">
+              <Field label="Profesional" required>
                 <select className="field-input" onChange={updateField('professionalId')} required value={form.professionalId}>
                   <option value="">Seleccionar</option>
                   {professionals.map((professional) => (
@@ -125,7 +128,7 @@ export const AgendaPage = () => {
                   ))}
                 </select>
               </Field>
-              <Field label="Servicio">
+              <Field label="Servicio" required>
                 <select className="field-input" onChange={updateField('serviceId')} required value={form.serviceId}>
                   <option value="">Seleccionar</option>
                   {services.map((service) => (
@@ -135,17 +138,13 @@ export const AgendaPage = () => {
                   ))}
                 </select>
               </Field>
-              <Field hint="La duración final se calcula según el servicio si no se indica un cierre manual." label="Inicio">
+              <Field hint="La duración final se calcula según el servicio si no se indica un cierre manual." label="Inicio" required>
                 <input className="field-input" onChange={updateField('startsAt')} required type="datetime-local" value={form.startsAt} />
               </Field>
               <Field label="Observaciones administrativas">
                 <textarea className="field-input min-h-28" onChange={updateField('adminNotes')} value={form.adminNotes} />
               </Field>
-              {error ? (
-                <div className="rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">
-                  {error}
-                </div>
-              ) : null}
+              {error ? <FormErrorAlert>{error}</FormErrorAlert> : null}
               <Button disabled={isSubmitting} type="submit">
                 {isSubmitting ? 'Guardando...' : 'Crear sesión'}
               </Button>

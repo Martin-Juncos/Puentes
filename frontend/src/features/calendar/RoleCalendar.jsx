@@ -24,7 +24,7 @@ export const RoleCalendar = ({ sessions }) => {
   }))
 
   return (
-    <PanelCard className="overflow-hidden bg-white/92 p-4">
+    <PanelCard className="overflow-hidden bg-white/92 p-4" variant="form">
       <Calendar
         components={{
           toolbar: CalendarToolbar,

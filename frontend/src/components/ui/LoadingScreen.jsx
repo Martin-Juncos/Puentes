@@ -1,8 +1,12 @@
+import { InlineLoader } from '@/components/ui/InlineLoader'
+import { PanelCard } from '@/components/ui/PanelCard'
+
 export const LoadingScreen = ({ message = 'Cargando...' }) => (
-  <div className="flex min-h-screen items-center justify-center panel-gradient">
-    <div className="surface-card max-w-md px-8 py-10 text-center">
-      <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[rgba(47,93,115,0.14)] border-t-[var(--color-primary)]" />
-      <p className="mt-5 text-sm font-medium text-[var(--color-primary)]">{message}</p>
-    </div>
+  <div className="panel-gradient flex min-h-screen items-center justify-center px-4 py-12">
+    <PanelCard className="max-w-md text-center" padding="lg" variant="form">
+      <div className="mx-auto flex w-fit items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] px-4 py-3">
+        <InlineLoader label={message} />
+      </div>
+    </PanelCard>
   </div>
 )

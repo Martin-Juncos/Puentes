@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import { FiClock, FiMapPin, FiSettings, FiSmartphone } from 'react-icons/fi'
 
+import { PageHeader } from '@/components/private/PageHeader'
+import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
+import { InlineLoader } from '@/components/ui/InlineLoader'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { settingsService } from '@/services/settingsService'
 
@@ -55,7 +58,7 @@ export const SettingsPage = () => {
       }
     }
 
-    loadSettings()
+    void loadSettings()
   }, [])
 
   const updateField = (field) => (event) => {
@@ -97,35 +100,27 @@ export const SettingsPage = () => {
 
   return (
     <div className="grid gap-6">
-      <PanelCard>
-        <div className="flex items-start gap-4">
-          <div className="rounded-2xl bg-[rgba(47,93,115,0.08)] p-3 text-[var(--color-primary)]">
-            <FiSettings aria-hidden="true" className="size-5" />
-          </div>
-          <div className="max-w-4xl">
-            <p className="text-xs uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">Configuración general</p>
-            <h2 className="mt-3 text-3xl font-semibold text-[var(--color-primary)]">Parámetros base del centro</h2>
-            <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.72)]">
-              Desde acá administrás datos institucionales, canales de contacto y valores operativos por defecto. Estos
-              datos se reflejan en la página pública de contacto y orientan la operación diaria del panel.
-            </p>
-            {formattedUpdatedAt ? (
-              <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-[rgba(47,93,115,0.58)]">
-                Última actualización: {formattedUpdatedAt}
-              </p>
-            ) : null}
-          </div>
-        </div>
-      </PanelCard>
+      <PageHeader
+        description="Administrá datos institucionales, canales de contacto y valores operativos por defecto desde una sola superficie consistente."
+        eyebrow="Configuración general"
+        meta={
+          formattedUpdatedAt ? (
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[rgba(47,93,115,0.58)]">
+              Última actualización: {formattedUpdatedAt}
+            </span>
+          ) : null
+        }
+        title="Parámetros base del centro"
+      />
 
       {isLoading ? (
-        <PanelCard>
-          <p className="text-sm text-[rgba(46,46,46,0.68)]">Cargando configuración actual...</p>
+        <PanelCard variant="form">
+          <InlineLoader label="Cargando configuración actual..." />
         </PanelCard>
       ) : (
         <form className="grid gap-6" onSubmit={handleSubmit}>
           <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-            <PanelCard>
+            <PanelCard variant="form">
               <div className="flex items-center gap-3">
                 <div className="rounded-2xl bg-[rgba(47,93,115,0.08)] p-3 text-[var(--color-primary)]">
                   <FiMapPin aria-hidden="true" className="size-5" />
@@ -139,13 +134,13 @@ export const SettingsPage = () => {
               </div>
 
               <div className="mt-6 grid gap-4">
-                <Field label="Nombre del centro">
+                <Field label="Nombre del centro" required>
                   <input className="field-input" onChange={updateField('centerName')} required value={form.centerName} />
                 </Field>
-                <Field label="Dirección o referencia principal">
+                <Field label="Dirección o referencia principal" required>
                   <input className="field-input" onChange={updateField('address')} required value={form.address} />
                 </Field>
-                <Field hint="Texto breve que se muestra como referencia operativa." label="Horario de atención">
+                <Field hint="Texto breve que se muestra como referencia operativa." label="Horario de atención" required>
                   <input
                     className="field-input"
                     onChange={updateField('businessHoursSummary')}
@@ -156,7 +151,7 @@ export const SettingsPage = () => {
               </div>
             </PanelCard>
 
-            <PanelCard>
+            <PanelCard variant="form">
               <div className="flex items-center gap-3">
                 <div className="rounded-2xl bg-[rgba(47,93,115,0.08)] p-3 text-[var(--color-primary)]">
                   <FiSmartphone aria-hidden="true" className="size-5" />
@@ -170,7 +165,7 @@ export const SettingsPage = () => {
               </div>
 
               <div className="mt-6 grid gap-4">
-                <Field label="Email institucional">
+                <Field label="Email institucional" required>
                   <input
                     className="field-input"
                     onChange={updateField('institutionalEmail')}
@@ -179,7 +174,7 @@ export const SettingsPage = () => {
                     value={form.institutionalEmail}
                   />
                 </Field>
-                <Field label="Teléfono principal">
+                <Field label="Teléfono principal" required>
                   <input
                     className="field-input"
                     onChange={updateField('institutionalPhone')}
@@ -187,7 +182,7 @@ export const SettingsPage = () => {
                     value={form.institutionalPhone}
                   />
                 </Field>
-                <Field hint="Usá un enlace completo tipo https://wa.me/..." label="URL de WhatsApp">
+                <Field hint="Usá un enlace completo tipo https://wa.me/..." label="URL de WhatsApp" required>
                   <input className="field-input" onChange={updateField('whatsappUrl')} required value={form.whatsappUrl} />
                 </Field>
               </div>
@@ -195,7 +190,7 @@ export const SettingsPage = () => {
           </div>
 
           <div className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-            <PanelCard>
+            <PanelCard variant="form">
               <div className="flex items-center gap-3">
                 <div className="rounded-2xl bg-[rgba(47,93,115,0.08)] p-3 text-[var(--color-primary)]">
                   <FiClock aria-hidden="true" className="size-5" />
@@ -242,7 +237,7 @@ export const SettingsPage = () => {
               </div>
             </PanelCard>
 
-            <PanelCard className="bg-[rgba(47,93,115,0.05)]">
+            <PanelCard className="bg-[rgba(47,93,115,0.05)]" variant="muted">
               <h3 className="text-2xl font-semibold text-[var(--color-primary)]">Qué impacta hoy</h3>
               <div className="mt-5 grid gap-3 text-sm leading-7 text-[rgba(46,46,46,0.74)]">
                 <p>La página pública de contacto toma el email, teléfono, dirección, horario y WhatsApp definidos acá.</p>
@@ -253,13 +248,15 @@ export const SettingsPage = () => {
           </div>
 
           {error ? (
-            <div className="rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{error}</div>
+            <Alert title="No pudimos guardar la configuración" tone="error">
+              {error}
+            </Alert>
           ) : null}
 
           {saveNotice ? (
-            <div className="rounded-2xl border border-[rgba(47,93,115,0.14)] bg-[rgba(167,196,181,0.18)] px-4 py-3 text-sm text-[var(--color-primary)]">
+            <Alert title="Cambios guardados" tone="success">
               {saveNotice}
-            </div>
+            </Alert>
           ) : null}
 
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { PageHeader } from '@/components/private/PageHeader'
 import { DataTable } from '@/components/ui/DataTable'
 import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { PanelCard } from '@/components/ui/PanelCard'
@@ -61,6 +62,12 @@ export const DashboardPage = () => {
 
   return (
     <div className="grid gap-6">
+      <PageHeader
+        description="Elegí un bloque del resumen para ampliar el detalle sin salir de la vista operativa general."
+        eyebrow="Resumen operativo"
+        title="Estado general del centro"
+      />
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {availableSections.map((section, index) => (
           <StatCard
@@ -74,13 +81,9 @@ export const DashboardPage = () => {
         ))}
       </div>
 
-      <PanelCard>
-        <p className="text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">
-          Detalle seleccionado
-        </p>
-        <h2 className="mt-2 text-2xl font-semibold text-[var(--color-primary)]">
-          {selectedSection.label}
-        </h2>
+      <PanelCard variant="form">
+        <p className="eyebrow-label">Detalle seleccionado</p>
+        <h2 className="mt-2 text-2xl font-semibold text-[var(--color-primary)]">{selectedSection.label}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-[rgba(46,46,46,0.72)]">
           {selectedSection.description}
         </p>

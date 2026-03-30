@@ -10,6 +10,7 @@ import { ConfirmDeleteModal } from '@/components/ui/ConfirmDeleteModal'
 import { DataTable } from '@/components/ui/DataTable'
 import { Field } from '@/components/ui/Field'
 import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
+import { IconButton } from '@/components/ui/IconButton'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { RichTextEditor } from '@/components/ui/RichTextEditor'
 import { useAuth } from '@/hooks/useAuth'
@@ -153,39 +154,37 @@ export const FollowUpsPage = () => {
         label: 'Acción',
         render: (row) => (
           <div className="flex justify-end gap-2">
-            <Button
+            <IconButton
               aria-label="Ver informe"
-              className="size-10 rounded-full p-0"
+              className="text-[var(--color-primary)]"
               onClick={(event) => {
                 event.stopPropagation()
                 navigate(`/app/seguimientos/${row.id}/informe`)
               }}
-              style={{ color: 'var(--color-primary)' }}
               title="Ver informe"
               type="button"
               variant="outline"
             >
               <FiEye aria-hidden="true" className="size-4" />
               <span className="sr-only">Ver informe</span>
-            </Button>
-            <Button
+            </IconButton>
+            <IconButton
               aria-label={form.id === row.id ? 'Editando' : 'Editar'}
-              className="size-10 rounded-full p-0"
+              className="text-[var(--color-primary)]"
               onClick={(event) => {
                 event.stopPropagation()
                 selectFollowUpForEdit(row)
               }}
-              style={{ color: 'var(--color-primary)' }}
               title={form.id === row.id ? 'Editando' : 'Editar'}
               type="button"
               variant="outline"
             >
               <FiEdit2 aria-hidden="true" className="size-4" />
               <span className="sr-only">{form.id === row.id ? 'Editando' : 'Editar'}</span>
-            </Button>
-            <Button
+            </IconButton>
+            <IconButton
               aria-label="Borrar"
-              className="size-10 rounded-full p-0 text-[#8b4b3d] hover:bg-[rgba(217,140,122,0.12)]"
+              className="text-[#8b4b3d] hover:bg-[rgba(217,140,122,0.12)]"
               onClick={(event) => {
                 event.stopPropagation()
                 openDeleteModal(row)
@@ -196,7 +195,7 @@ export const FollowUpsPage = () => {
             >
               <FiTrash2 aria-hidden="true" className="size-4" />
               <span className="sr-only">Borrar</span>
-            </Button>
+            </IconButton>
           </div>
         ),
       },
@@ -296,7 +295,7 @@ export const FollowUpsPage = () => {
 
   return (
     <div className="grid gap-6 xl:grid-cols-2">
-      <PanelCard className="xl:col-span-2">
+      <PanelCard className="xl:col-span-2" variant="form">
         <PanelSectionHeader
           actions={
             isEditing ? (
@@ -330,7 +329,7 @@ export const FollowUpsPage = () => {
         </div>
 
         <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
-          <Field label="Niño o niña">
+          <Field label="Niño o niña" required>
             <select className="field-input" onChange={updateField('childId')} required value={form.childId}>
               <option value="">Seleccionar</option>
               {children.map((child) => (
@@ -340,7 +339,7 @@ export const FollowUpsPage = () => {
               ))}
             </select>
           </Field>
-          <Field hint="Se abre el calendario nativo del navegador para elegir el día." label="Fecha">
+          <Field hint="Se abre el calendario nativo del navegador para elegir el día." label="Fecha" required>
             <input
               className="field-input"
               onChange={updateField('followUpDate')}
@@ -351,7 +350,7 @@ export const FollowUpsPage = () => {
           </Field>
 
           {canChooseProfessional ? (
-            <Field label="Profesional responsable">
+            <Field label="Profesional responsable" required>
               <select
                 className="field-input"
                 onChange={updateField('professionalId')}
@@ -409,7 +408,7 @@ export const FollowUpsPage = () => {
         </form>
       </PanelCard>
 
-      <PanelCard className="xl:col-span-2">
+      <PanelCard className="xl:col-span-2" variant="form">
         <PanelTableHeader
           countLabel={`${followUps.length} informes`}
           description="Hacé clic en una fila para cargarla en el formulario y editarla, o abrí el informe para imprimirlo."

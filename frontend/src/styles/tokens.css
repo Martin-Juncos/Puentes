@@ -1,0 +1,63 @@
+:root {
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Manrope', 'Segoe UI', sans-serif;
+
+  --color-primary: #2f5d73;
+  --color-primary-strong: #24495b;
+  --color-primary-soft: rgba(47, 93, 115, 0.08);
+  --color-primary-muted: rgba(47, 93, 115, 0.58);
+
+  --color-secondary: #a7c4b5;
+  --color-secondary-strong: #93b4a4;
+  --color-accent: #d98c7a;
+  --color-accent-strong: #b75f50;
+
+  --color-text: #2e2e2e;
+  --color-text-muted: rgba(46, 46, 46, 0.72);
+  --color-text-soft: rgba(46, 46, 46, 0.62);
+  --color-text-inverse: #ffffff;
+
+  --color-bg-app: #f7f4ee;
+  --color-bg-alt: #f3efe8;
+  --color-surface: rgba(255, 255, 255, 0.9);
+  --color-surface-strong: #ffffff;
+  --color-surface-muted: rgba(247, 244, 238, 0.92);
+  --color-panel: #f9f6f2;
+  --color-panel-muted: #eef3f2;
+
+  --color-border-soft: rgba(47, 93, 115, 0.12);
+  --color-border-strong: rgba(47, 93, 115, 0.2);
+  --color-overlay: rgba(27, 39, 45, 0.48);
+  --color-focus-ring: rgba(47, 93, 115, 0.16);
+
+  --color-success-bg: rgba(167, 196, 181, 0.22);
+  --color-success-text: #2f5d73;
+  --color-warning-bg: rgba(221, 211, 195, 0.34);
+  --color-warning-text: #6d5948;
+  --color-danger-bg: rgba(217, 140, 122, 0.18);
+  --color-danger-text: #8b4b3d;
+  --color-info-bg: rgba(47, 93, 115, 0.08);
+  --color-info-text: #2f5d73;
+  --color-neutral-bg: rgba(46, 46, 46, 0.06);
+  --color-neutral-text: rgba(46, 46, 46, 0.74);
+
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+
+  --shadow-soft: 0 24px 80px rgba(47, 93, 115, 0.12);
+  --shadow-elevated: 0 28px 90px rgba(47, 93, 115, 0.18);
+  --shadow-modal: 0 32px 110px rgba(27, 39, 45, 0.2);
+
+  --layout-max-public: 96rem;
+  --layout-max-panel: 88rem;
+}

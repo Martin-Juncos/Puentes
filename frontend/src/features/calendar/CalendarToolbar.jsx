@@ -12,20 +12,20 @@ const viewButtons = [
 export const CalendarToolbar = ({ label, onNavigate, onView, view }) => (
   <div className="mb-5 flex flex-col gap-4 border-b border-[rgba(47,93,115,0.1)] pb-5 lg:flex-row lg:items-center lg:justify-between">
     <div>
-      <p className="text-xs uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">Vista actual</p>
+      <p className="eyebrow-label">Vista actual</p>
       <h3 className="mt-2 text-xl font-semibold text-[var(--color-primary)]">{label}</h3>
     </div>
 
     <div className="flex flex-col gap-3 lg:items-end">
       <div className="flex flex-wrap items-center gap-2">
-        <Button className="gap-2 px-4 py-2.5" onClick={() => onNavigate('TODAY')} type="button" variant="outline">
+        <Button className="gap-2" onClick={() => onNavigate('TODAY')} size="sm" type="button" variant="outline">
           Hoy
         </Button>
-        <Button className="gap-2 px-4 py-2.5" onClick={() => onNavigate('PREV')} type="button" variant="ghost">
+        <Button className="gap-2" onClick={() => onNavigate('PREV')} size="sm" type="button" variant="ghost">
           <FiChevronLeft aria-hidden="true" className="size-4" />
           Anterior
         </Button>
-        <Button className="gap-2 px-4 py-2.5" onClick={() => onNavigate('NEXT')} type="button" variant="ghost">
+        <Button className="gap-2" onClick={() => onNavigate('NEXT')} size="sm" type="button" variant="ghost">
           Siguiente
           <FiChevronRight aria-hidden="true" className="size-4" />
         </Button>
@@ -37,9 +37,10 @@ export const CalendarToolbar = ({ label, onNavigate, onView, view }) => (
 
           return (
             <Button
-              className="gap-2 px-4 py-2.5"
+              className="gap-2"
               key={item.value}
               onClick={() => onView(item.value)}
+              size="sm"
               type="button"
               variant={view === item.value ? 'primary' : 'outline'}
             >

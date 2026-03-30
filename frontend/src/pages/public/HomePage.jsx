@@ -17,8 +17,14 @@ import { NavLink } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { media } from '@/constants/media'
+import {
+  homeFallbackServices,
+  homeGettingStartedSteps,
+  homePracticalSignals,
+  homeTeamFallback,
+} from '@/constants/siteContent'
 import { useAsyncData } from '@/hooks/useAsyncData'
-import { homeFallbackServices, homeGettingStartedSteps, homePracticalSignals, homeTeamFallback } from '@/constants/siteContent'
 import { professionalsService } from '@/services/professionalsService'
 import { servicesService } from '@/services/servicesService'
 import { settingsService } from '@/services/settingsService'
@@ -37,25 +43,25 @@ const fallbackSettings = {
 const quickActionCards = [
   {
     title: 'Conocer servicios',
-    description: 'Explora las propuestas del centro y cuales pueden encajar mejor con tu consulta.',
+    description: 'Explorá las propuestas del centro y cuáles pueden encajar mejor con tu consulta.',
     to: '/servicios',
     icon: FiCompass,
   },
   {
-    title: 'Pedir una orientacion inicial',
+    title: 'Pedir una orientación inicial',
     description: 'Escribinos para ordenar la inquietud y pensar juntos el mejor primer paso.',
     to: '/contacto',
     icon: FiMessageCircle,
   },
   {
-    title: 'Entender la modalidad de acompanamiento',
-    description: 'Conoce como trabajamos con ninos, familias y equipo de forma articulada.',
+    title: 'Entender la modalidad de acompañamiento',
+    description: 'Conocé cómo trabajamos con niños, familias y equipo de forma articulada.',
     to: '/acompanamiento',
     icon: FiHeart,
   },
   {
     title: 'Conocer al equipo',
-    description: 'Mira las disciplinas que forman parte de Puentes y su enfoque de trabajo.',
+    description: 'Mirá las disciplinas que forman parte de Puentes y su enfoque de trabajo.',
     to: '/equipo',
     icon: FiUsers,
   },
@@ -86,7 +92,7 @@ export const HomePage = () => {
           ...nextSettings,
         }))
       } catch {
-        // Se mantienen los valores de respaldo si falla la configuracion publica.
+        // Se mantienen los valores de respaldo si falla la configuración pública.
       }
     }
 
@@ -120,15 +126,13 @@ export const HomePage = () => {
       <section className="public-shell py-16 lg:py-24">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="flex flex-col justify-center">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-[var(--color-primary)]">
-              Orientacion para familias
-            </p>
+            <p className="eyebrow-label">Orientación para familias</p>
             <h1 className="heading-display mt-6 max-w-3xl text-5xl font-semibold leading-none text-[var(--color-primary)] md:text-7xl">
               Cuando algo preocupa, ayuda tener un primer paso claro.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[rgba(46,46,46,0.74)]">
-              En Puentes acompanamos consultas iniciales, trabajo con familias y procesos interdisciplinarios para que
-              cada situacion encuentre una orientacion posible, cercana y ordenada.
+              En Puentes acompañamos consultas iniciales, trabajo con familias y procesos interdisciplinarios para que
+              cada situación encuentre una orientación posible, cercana y ordenada.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
@@ -142,7 +146,7 @@ export const HomePage = () => {
             </div>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
-              {['Orientacion inicial', 'Trabajo con familias', 'Equipo interdisciplinario'].map((item) => (
+              {['Orientación inicial', 'Trabajo con familias', 'Equipo interdisciplinario'].map((item) => (
                 <div
                   key={item}
                   className="rounded-full border border-[rgba(47,93,115,0.12)] bg-white/78 px-4 py-3 text-sm font-medium text-[var(--color-primary)]"
@@ -160,20 +164,24 @@ export const HomePage = () => {
             transition={{ duration: 0.6, ease: 'easeOut' }}
           >
             <div className="absolute inset-0 rounded-[2.5rem] bg-[linear-gradient(160deg,rgba(47,93,115,0.18),rgba(167,196,181,0.12),rgba(217,140,122,0.16))]" />
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/60 bg-white/70 p-5 shadow-[var(--shadow-soft)] backdrop-blur-xl">
+            <div className="public-media-frame relative p-5">
               <img
-                alt="Espacio de orientacion y acompanamiento familiar"
+                alt={media.homeHero.alt}
                 className="h-[26rem] w-full rounded-[2rem] object-cover"
-                src="/media/0.jpg"
+                src={media.homeHero.src}
               />
 
-              <div className="absolute inset-x-8 bottom-8 rounded-[1.8rem] border border-white/70 bg-[rgba(255,255,255,0.92)] p-5 shadow-[0_20px_50px_rgba(47,93,115,0.14)] backdrop-blur">
-                <p className="text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">Primer contacto</p>
-                <h2 className="mt-3 text-2xl font-semibold text-[var(--color-primary)]">Te ayudamos a ordenar la consulta</h2>
+              <div className="public-media-overlay">
+                <p className="eyebrow-label">Primer contacto</p>
+                <h2 className="mt-3 text-2xl font-semibold text-[var(--color-primary)]">
+                  Te ayudamos a ordenar la consulta
+                </h2>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   {homeGettingStartedSteps.map((item) => (
                     <div key={item.step} className="rounded-[1.25rem] bg-[rgba(247,244,238,0.92)] px-4 py-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">{item.step}</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(47,93,115,0.58)]">
+                        {item.step}
+                      </p>
                       <p className="mt-2 text-sm font-semibold text-[var(--color-primary)]">{item.title}</p>
                     </div>
                   ))}
@@ -185,7 +193,7 @@ export const HomePage = () => {
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {homePracticalSignals.map((item) => (
-            <PanelCard className="bg-white/90 p-5" key={item.title}>
+            <PanelCard className="bg-white/90" key={item.title} variant="metric">
               <div className="flex size-11 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)]">
                 <FiCheckCircle aria-hidden="true" className="size-5" />
               </div>
@@ -198,9 +206,9 @@ export const HomePage = () => {
 
       <section className="public-shell py-10 lg:py-16">
         <SectionHeading
-          description="Si ya sabes que queres resolver, te acercamos un camino rapido para llegar a la informacion o al contacto correcto."
+          description="Si ya sabés qué querés resolver, te acercamos un camino rápido para llegar a la información o al contacto correcto."
           eyebrow="Primeras rutas"
-          title="Que necesitas hoy?"
+          title="¿Qué necesitás hoy?"
         />
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -209,7 +217,7 @@ export const HomePage = () => {
 
             return (
               <NavLink key={item.title} to={item.to}>
-                <PanelCard className="group h-full bg-white/90 p-6 transition-transform hover:-translate-y-1">
+                <PanelCard className="group h-full bg-white/90 transition-transform hover:-translate-y-1" variant="form">
                   <div className="flex size-12 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)] transition-colors group-hover:bg-[rgba(47,93,115,0.14)]">
                     <Icon aria-hidden="true" className="size-5" />
                   </div>
@@ -229,13 +237,13 @@ export const HomePage = () => {
       <section className="public-shell py-10 lg:py-16">
         <SectionHeading
           description="La idea es que el primer acercamiento no sea confuso: orientamos la consulta y ayudamos a definir un punto de partida."
-          eyebrow="Como empezar"
+          eyebrow="Cómo empezar"
           title="Un proceso simple para dar el primer paso."
         />
 
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {homeGettingStartedSteps.map((item) => (
-            <PanelCard className="bg-white/88 p-6" key={item.step}>
+            <PanelCard className="bg-white/88" key={item.step} variant="form">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">{item.step}</p>
               <h2 className="mt-4 text-2xl font-semibold text-[var(--color-primary)]">{item.title}</h2>
               <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.74)]">{item.description}</p>
@@ -247,9 +255,9 @@ export const HomePage = () => {
       <section className="public-shell py-10 lg:py-16">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <SectionHeading
-            description="Mostramos algunos servicios activos para ayudarte a ubicar rapidamente por donde puede comenzar la orientacion."
+            description="Mostramos algunos servicios activos para ayudarte a ubicar rápidamente por dónde puede comenzar la orientación."
             eyebrow="Servicios"
-            title="Una propuesta pensada para orientar, acompanar y articular."
+            title="Una propuesta pensada para orientar, acompañar y articular."
           />
 
           <Button as={NavLink} className="gap-2 self-start" to="/servicios" variant="outline">
@@ -260,12 +268,12 @@ export const HomePage = () => {
 
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {previewServices.map((service) => (
-            <PanelCard className="bg-white/90" key={service.name}>
+            <PanelCard className="bg-white/90" key={service.name} variant="form">
               <div className="h-2 w-20 rounded-full" style={{ backgroundColor: service.colorTag || '#2F5D73' }} />
               <h2 className="mt-5 text-2xl font-semibold text-[var(--color-primary)]">{service.name}</h2>
               <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.74)]">{service.description}</p>
               <p className="mt-5 text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">
-                Duracion de referencia: {service.durationMinutes} min
+                Duración de referencia: {service.durationMinutes} min
               </p>
             </PanelCard>
           ))}
@@ -289,7 +297,7 @@ export const HomePage = () => {
         {previewProfessionals.length ? (
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {previewProfessionals.map((professional, index) => (
-              <PanelCard className="bg-white/90" key={professional.id}>
+              <PanelCard className="bg-white/90" key={professional.id} variant="form">
                 <div
                   className="flex h-20 w-20 items-center justify-center rounded-[1.5rem] text-2xl font-bold text-white"
                   style={{ backgroundColor: professional.calendarColor || (index % 2 === 0 ? '#2F5D73' : '#A7C4B5') }}
@@ -299,14 +307,14 @@ export const HomePage = () => {
                 <p className="mt-5 text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">{professional.discipline}</p>
                 <h2 className="mt-2 text-2xl font-semibold text-[var(--color-primary)]">{professional.user.fullName}</h2>
                 <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.74)]">
-                  {professional.bio || 'Perfil profesional disponible para ampliar desde la pagina de equipo.'}
+                  {professional.bio || 'Perfil profesional disponible para ampliar desde la página de equipo.'}
                 </p>
               </PanelCard>
             ))}
           </div>
         ) : (
-          <PanelCard className="mt-10 bg-white/92">
-            <p className="text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">{homeTeamFallback.eyebrow}</p>
+          <PanelCard className="mt-10 bg-white/92" padding="lg" variant="form">
+            <p className="eyebrow-label">{homeTeamFallback.eyebrow}</p>
             <h2 className="mt-4 text-3xl font-semibold text-[var(--color-primary)]">{homeTeamFallback.title}</h2>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[rgba(46,46,46,0.74)]">{homeTeamFallback.description}</p>
             <Button as={NavLink} className="mt-6 gap-2" to="/equipo" variant="outline">
@@ -318,16 +326,22 @@ export const HomePage = () => {
       </section>
 
       <section className="public-shell pb-20 pt-10 lg:pb-24 lg:pt-16">
-        <PanelCard className="relative overflow-hidden !border-transparent !bg-[linear-gradient(145deg,rgba(47,93,115,0.98),rgba(36,73,91,0.96),rgba(167,196,181,0.3))] p-8 text-white md:p-10">
+        <PanelCard
+          className="relative overflow-hidden !border-transparent !bg-[linear-gradient(145deg,rgba(47,93,115,0.98),rgba(36,73,91,0.96),rgba(167,196,181,0.3))] text-white"
+          padding="lg"
+        >
           <div className="absolute -right-16 top-0 h-40 w-40 rounded-full bg-white/8 blur-3xl" />
           <div className="absolute bottom-0 left-10 h-28 w-28 rounded-full bg-[rgba(217,140,122,0.16)] blur-3xl" />
 
           <div className="relative grid gap-8 lg:grid-cols-[1fr_0.9fr]">
             <div className="max-w-2xl">
-              <p className="text-xs uppercase tracking-[0.24em] text-white/70">Contacto practico</p>
-              <h2 className="mt-4 text-4xl font-semibold">Si queres dar el primer paso, te respondemos por el canal que te quede mejor.</h2>
+              <p className="text-xs uppercase tracking-[0.24em] text-white/70">Contacto práctico</p>
+              <h2 className="mt-4 text-4xl font-semibold">
+                Si querés dar el primer paso, te respondemos por el canal que te quede mejor.
+              </h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-white/82">
-                Podes escribirnos por formulario, WhatsApp, correo o telefono. Lo importante es que la consulta no quede sin orientacion.
+                Podés escribirnos por formulario, WhatsApp, correo o teléfono. Lo importante es que la consulta no
+                quede sin orientación.
               </p>
 
               <div className="mt-5 flex flex-wrap gap-3 text-xs uppercase tracking-[0.18em] text-white/72">
@@ -341,16 +355,25 @@ export const HomePage = () => {
                   Hacer una consulta
                   <FiArrowRight aria-hidden="true" className="size-4" />
                 </Button>
-                <a href={displaySettings.whatsappUrl} rel="noreferrer" target="_blank">
-                  <Button className="gap-2" variant="outline">
-                    <FiMessageCircle aria-hidden="true" className="size-4" />
-                    Escribir por WhatsApp
-                  </Button>
-                </a>
+                <Button
+                  as="a"
+                  className="gap-2 border-white/20 bg-transparent text-white hover:bg-white/10"
+                  href={displaySettings.whatsappUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                  variant="outline"
+                >
+                  <FiMessageCircle aria-hidden="true" className="size-4" />
+                  Escribir por WhatsApp
+                </Button>
               </div>
             </div>
 
             <div className="grid gap-4">
+              <div className="public-media-frame border-white/10 bg-white/10 p-3 shadow-none">
+                <img alt={media.trustSupport.alt} className="h-40 w-full rounded-[1.5rem] object-cover" src={media.trustSupport.src} />
+              </div>
+
               <div className="rounded-[1.5rem] border border-white/10 bg-white/12 px-5 py-4 backdrop-blur">
                 <div className="flex items-start gap-3">
                   <FiMail aria-hidden="true" className="mt-1 size-4 text-white/80" />
@@ -367,7 +390,7 @@ export const HomePage = () => {
                 <div className="flex items-start gap-3">
                   <FiPhone aria-hidden="true" className="mt-1 size-4 text-white/80" />
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/65">Telefono</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-white/65">Teléfono</p>
                     <a className="mt-1 block text-sm leading-6 text-white/90" href={`tel:${sanitizePhoneHref(displaySettings.institutionalPhone)}`}>
                       {displaySettings.institutionalPhone}
                     </a>
@@ -389,7 +412,7 @@ export const HomePage = () => {
                 <div className="flex items-start gap-3">
                   <FiMapPin aria-hidden="true" className="mt-1 size-4 text-white/80" />
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/65">Ubicacion</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-white/65">Ubicación</p>
                     <p className="mt-1 text-sm leading-6 text-white/90">{displaySettings.address}</p>
                   </div>
                 </div>

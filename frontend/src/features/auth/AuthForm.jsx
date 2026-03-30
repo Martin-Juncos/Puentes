@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { FiEye, FiEyeOff, FiLock, FiLogIn, FiMail } from 'react-icons/fi'
 
+import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
+import { IconButton } from '@/components/ui/IconButton'
 import { useAuth } from '@/hooks/useAuth'
 
 export const AuthForm = ({
@@ -40,7 +42,7 @@ export const AuthForm = ({
 
   return (
     <form className="grid gap-5" onSubmit={handleSubmit}>
-      <Field hint={emailHint} label="Correo">
+      <Field hint={emailHint} label="Correo" required>
         <div className="relative">
           <FiMail
             aria-hidden="true"
@@ -57,7 +59,7 @@ export const AuthForm = ({
         </div>
       </Field>
 
-      <Field hint={passwordHint} label="Contraseña">
+      <Field hint={passwordHint} label="Contraseña" required>
         <div className="relative">
           <FiLock
             aria-hidden="true"
@@ -71,25 +73,25 @@ export const AuthForm = ({
             type={isPasswordVisible ? 'text' : 'password'}
             value={credentials.password}
           />
-          <button
+          <IconButton
             aria-label={isPasswordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-            className="absolute right-3 top-1/2 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full text-[rgba(47,93,115,0.68)] transition-colors hover:bg-[rgba(47,93,115,0.08)] hover:text-[var(--color-primary)]"
+            className="absolute right-3 top-1/2 size-10 -translate-y-1/2 border-transparent bg-transparent text-[rgba(47,93,115,0.68)] shadow-none hover:bg-[rgba(47,93,115,0.08)] hover:text-[var(--color-primary)]"
             onClick={() => setIsPasswordVisible((current) => !current)}
-            type="button"
+            variant="ghost"
           >
             {isPasswordVisible ? (
               <FiEyeOff aria-hidden="true" className="size-4" />
             ) : (
               <FiEye aria-hidden="true" className="size-4" />
             )}
-          </button>
+          </IconButton>
         </div>
       </Field>
 
       {error ? (
-        <div className="rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">
+        <Alert title="No pudimos iniciar la sesión" tone="error">
           {error}
-        </div>
+        </Alert>
       ) : null}
 
       <Button className="gap-2" disabled={isSubmitting} type="submit">

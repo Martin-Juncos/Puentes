@@ -22,6 +22,8 @@ El MVP no debe degradarse a una landing vacía ni a un turnero público.
 ```text
 /
   frontend/
+    public/
+      media/
     src/
       app/
       routes/
@@ -29,11 +31,12 @@ El MVP no debe degradarse a una landing vacía ni a un turnero público.
       pages/
       features/
       components/
+        ui/
+        private/
       hooks/
       services/
       utils/
       constants/
-      assets/
       styles/
   backend/
     prisma/
@@ -77,6 +80,40 @@ El MVP no debe degradarse a una landing vacía ni a un turnero público.
 - Usar `react-big-calendar` solo donde aporte valor operativo real.
 - Extender componentes privados compartidos antes de duplicar patrones de formularios, encabezados o tablas.
 
+## Sistema visual y consistencia
+
+- La fuente de verdad visual del frontend vive en:
+  - `frontend/src/styles/tokens.css`
+  - `frontend/src/styles/base.css`
+  - `frontend/src/styles/vendor.css`
+- No definir colores, radios, sombras o focos nuevos directamente en páginas si ya existe un token o primitive.
+- Para nuevas superficies, reutilizar primero estas primitives:
+  - `Button`
+  - `Alert`
+  - `Badge`
+  - `StatusBadge`
+  - `Field`
+  - `PanelCard`
+  - `DataTable`
+  - `ModalShell`
+  - `EmptyState`
+  - `InlineLoader`
+  - `PageHeader`
+- `components/ui/` es la capa base; `components/private/` agrupa bloques del panel. No crear variantes paralelas sin justificarlo.
+- Público y privado comparten tokens, pero no densidad ni ritmo:
+  - público: más aire, fotografía y jerarquía editorial;
+  - privado: más contención, legibilidad y prioridad operativa.
+- Mantener `react-icons/fi` como familia iconográfica principal.
+- Evitar mezclar superficies muy dramáticas o decorativas dentro del panel.
+
+## Política de imágenes y assets
+
+- `frontend/public/media/` es la fuente runtime canónica de imágenes.
+- `frontend/src/constants/media.js` define el catálogo reutilizable de assets públicos.
+- No usar strings sueltos de `/media/...` en páginas nuevas: importar desde `media.js`.
+- Reutilizar assets existentes antes de incorporar nuevos recursos.
+- Reservar fotografía e imágenes institucionales para la capa pública y auth; el panel interno debe seguir siendo visualmente austero.
+
 ## Restricciones importantes del MVP
 
 - No implementar reserva pública de turnos.
@@ -98,6 +135,7 @@ El MVP no debe degradarse a una landing vacía ni a un turnero público.
 - Verificar auth, guards y contrato de error `{ error: { code, message, details? } }`.
 - Verificar responsive básico del sitio público y legibilidad del panel.
 - Confirmar que cualquier cambio preserve la dualidad público/privado del producto.
+- Revisar que nuevos botones, alerts, badges, tablas, loaders y modales reutilicen el sistema existente.
 
 ## Guía para futuros agentes y skills
 
@@ -105,5 +143,6 @@ El MVP no debe degradarse a una landing vacía ni a un turnero público.
 - Extender módulos existentes antes de crear patrones paralelos.
 - Si un cambio toca roles, permisos, agenda, mensajería o notificaciones, validar primero el impacto en la operación interna.
 - Si un cambio toca marketing o identidad, validar que no invada la lógica del panel.
+- Si un cambio toca UI, revisar primero `components/ui`, `components/private`, `styles/` y `constants/media.js`.
 - Documentar en `docs/` cualquier decisión estructural que afecte crecimiento futuro.
 - Tener presente que `prisma generate` puede fallar en Windows + OneDrive por bloqueo del engine durante renames; si pasa, documentarlo en vez de ocultarlo con workarounds frágiles.

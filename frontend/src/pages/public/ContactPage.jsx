@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FiClock, FiMail, FiMapPin, FiMessageCircle, FiPhone } from 'react-icons/fi'
 
+import { Button } from '@/components/ui/Button'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { media } from '@/constants/media'
 import { ContactForm } from '@/features/contact/ContactForm'
 import { settingsService } from '@/services/settingsService'
 
@@ -40,7 +42,7 @@ export const ContactPage = () => {
       }
     }
 
-    loadSettings()
+    void loadSettings()
   }, [])
 
   const displaySettings = useMemo(
@@ -89,13 +91,17 @@ export const ContactPage = () => {
       />
 
       <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_0.8fr]">
-        <PanelCard className="bg-white/85">
+        <PanelCard className="bg-white/85" padding="lg" variant="form">
           <ContactForm />
         </PanelCard>
 
         <div className="grid gap-6">
-          <PanelCard className="bg-white/92">
-            <p className="text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">Canales directos</p>
+          <div className="public-media-frame p-4">
+            <img alt={media.trustSupport.alt} className="h-64 w-full rounded-[2rem] object-cover" src={media.trustSupport.src} />
+          </div>
+
+          <PanelCard className="bg-white/92" padding="lg" variant="form">
+            <p className="eyebrow-label">Canales directos</p>
             <h3 className="mt-4 text-3xl font-semibold text-[var(--color-primary)]">Hablemos con {displaySettings.centerName}</h3>
             <p className="mt-3 text-sm leading-7 text-[rgba(46,46,46,0.7)]">
               Si preferís otro camino además del formulario, podés escribirnos por WhatsApp, correo o llamarnos.
@@ -130,27 +136,26 @@ export const ContactPage = () => {
             </div>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <a
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
+              <Button
+                as="a"
+                className="gap-2"
                 href={displaySettings.whatsappUrl}
                 rel="noreferrer"
                 target="_blank"
+                variant="primary"
               >
                 <FiMessageCircle aria-hidden="true" className="size-4" />
                 Escribir por WhatsApp
-              </a>
-              <a
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(47,93,115,0.16)] bg-white px-5 py-3 text-sm font-semibold text-[var(--color-primary)]"
-                href={`mailto:${displaySettings.institutionalEmail}`}
-              >
+              </Button>
+              <Button as="a" className="gap-2" href={`mailto:${displaySettings.institutionalEmail}`} variant="outline">
                 <FiMail aria-hidden="true" className="size-4" />
                 Enviar correo
-              </a>
+              </Button>
             </div>
           </PanelCard>
 
-          <PanelCard className="bg-[rgba(247,244,238,0.92)]">
-            <p className="text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">También podés consultarnos por</p>
+          <PanelCard className="bg-[rgba(247,244,238,0.92)]" variant="muted">
+            <p className="eyebrow-label">También podés consultarnos por</p>
             <div className="mt-4 grid gap-3 text-sm leading-7 text-[rgba(46,46,46,0.74)]">
               <p>Orientación inicial para familias que quieren conocer el espacio.</p>
               <p>Coordinación de una primera entrevista o derivación.</p>
@@ -158,7 +163,9 @@ export const ContactPage = () => {
             </div>
           </PanelCard>
 
-          <img alt="Espacio de contacto y acompañamiento" className="h-80 w-full rounded-[2rem] object-cover" src="/media/9.jpg" />
+          <div className="public-media-frame p-4">
+            <img alt={media.contactHero.alt} className="h-80 w-full rounded-[2rem] object-cover" src={media.contactHero.src} />
+          </div>
         </div>
       </div>
     </div>

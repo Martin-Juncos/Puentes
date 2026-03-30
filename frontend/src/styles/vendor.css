@@ -1,0 +1,214 @@
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+.rich-text-editor {
+  min-height: 20rem;
+  padding: 1rem 1.1rem;
+  color: var(--color-text);
+  line-height: 1.7;
+  outline: none;
+}
+
+.rich-text-editor:focus {
+  box-shadow: inset 0 0 0 1px rgba(47, 93, 115, 0.2);
+}
+
+.rich-text-editor[data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(46, 46, 46, 0.45);
+  pointer-events: none;
+}
+
+.rich-text-editor p,
+.rich-text-editor ul,
+.rich-text-editor ol {
+  margin: 0 0 0.85rem;
+}
+
+.rich-text-editor p:last-child,
+.rich-text-editor ul:last-child,
+.rich-text-editor ol:last-child {
+  margin-bottom: 0;
+}
+
+.rich-text-editor ul,
+.rich-text-editor ol,
+.follow-up-report-body ul,
+.follow-up-report-body ol {
+  padding-left: 1.5rem;
+}
+
+.rich-text-editor ul,
+.follow-up-report-body ul {
+  list-style: disc;
+}
+
+.rich-text-editor ol,
+.follow-up-report-body ol {
+  list-style: decimal;
+}
+
+.rich-text-editor li,
+.follow-up-report-body li {
+  margin-bottom: 0.4rem;
+}
+
+.rich-text-editor li::marker,
+.follow-up-report-body li::marker {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.follow-up-report-body p,
+.follow-up-report-body ul,
+.follow-up-report-body ol {
+  margin: 0 0 1rem;
+}
+
+.follow-up-report-body p:last-child,
+.follow-up-report-body ul:last-child,
+.follow-up-report-body ol:last-child {
+  margin-bottom: 0;
+}
+
+.follow-up-report-body strong {
+  color: var(--color-primary);
+}
+
+.follow-up-report-body em {
+  font-style: italic;
+}
+
+.follow-up-report-body u {
+  text-underline-offset: 0.18em;
+}
+
+.rbc-calendar {
+  font-family: var(--font-body);
+  min-height: 680px;
+}
+
+.rbc-time-view {
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(47, 93, 115, 0.1);
+}
+
+.rbc-time-header,
+.rbc-time-content {
+  border-color: rgba(47, 93, 115, 0.1);
+}
+
+.rbc-time-header-content .rbc-header,
+.rbc-header {
+  min-height: 4.8rem;
+  padding: 0.55rem 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+  color: var(--color-primary);
+  background: rgba(247, 244, 238, 0.78);
+}
+
+.rbc-header .rbc-button-link,
+.rbc-header > span {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day-header {
+  display: flex;
+  min-width: 0;
+  min-height: 3.1rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.calendar-day-header__weekday {
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1;
+  color: rgba(47, 93, 115, 0.72);
+}
+
+.calendar-day-header__date {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-primary);
+}
+
+.calendar-day-header--today .calendar-day-header__weekday,
+.calendar-day-header--today .calendar-day-header__date {
+  color: #1f4558;
+}
+
+.rbc-header.rbc-today {
+  background: rgba(167, 196, 181, 0.16);
+}
+
+.rbc-time-gutter,
+.rbc-time-header-gutter {
+  width: 4.8rem;
+  min-width: 4.8rem;
+}
+
+.rbc-time-gutter .rbc-timeslot-group,
+.rbc-time-header-gutter {
+  min-width: 4.8rem;
+}
+
+.rbc-label {
+  padding-inline: 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(46, 46, 46, 0.72);
+}
+
+.rbc-timeslot-group {
+  min-height: 4.5rem;
+}
+
+.rbc-toolbar button {
+  border-radius: 999px;
+  border: 1px solid rgba(47, 93, 115, 0.18);
+  color: var(--color-primary);
+}
+
+.rbc-toolbar button.rbc-active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .rbc-time-header-content .rbc-header,
+  .rbc-header {
+    min-height: 4.6rem;
+    padding-inline: 0.2rem;
+    font-size: 0.74rem;
+  }
+
+  .rbc-time-gutter,
+  .rbc-time-header-gutter {
+    width: 4.2rem;
+    min-width: 4.2rem;
+  }
+
+  .rbc-label {
+    padding-inline: 0.4rem;
+    font-size: 0.74rem;
+  }
+
+  .calendar-day-header__weekday {
+    font-size: 0.68rem;
+  }
+
+  .calendar-day-header__date {
+    font-size: 0.88rem;
+  }
+}

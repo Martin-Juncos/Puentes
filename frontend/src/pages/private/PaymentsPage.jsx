@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
-import { Button } from '@/components/ui/Button'
+import { PageHeader } from '@/components/private/PageHeader'
 import { DataTable } from '@/components/ui/DataTable'
 import { Field } from '@/components/ui/Field'
+import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { Button } from '@/components/ui/Button'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { attendancesService } from '@/services/attendancesService'
 import { childrenService } from '@/services/childrenService'
@@ -27,6 +30,20 @@ const initialAttendance = {
   notes: '',
 }
 
+const paymentStatusTone = {
+  PENDING: 'warning',
+  PAID: 'success',
+  OVERDUE: 'danger',
+  CANCELED: 'neutral',
+}
+
+const attendanceStatusTone = {
+  PRESENT: 'success',
+  ABSENT: 'danger',
+  RESCHEDULED: 'warning',
+  CANCELED: 'neutral',
+}
+
 export const PaymentsPage = () => {
   const [paymentForm, setPaymentForm] = useState(initialPayment)
   const [attendanceForm, setAttendanceForm] = useState(initialAttendance)
@@ -38,6 +55,54 @@ export const PaymentsPage = () => {
   const { data: children } = useAsyncData(() => childrenService.list(), [])
   const { data: families } = useAsyncData(() => familiesService.list(), [])
   const { data: sessions } = useAsyncData(() => sessionsService.list(), [])
+
+  const paymentColumns = useMemo(
+    () => [
+      {
+        key: 'child',
+        label: 'Caso',
+        render: (row) => `${row.child.firstName} ${row.child.lastName}`,
+      },
+      {
+        key: 'amount',
+        label: 'Monto',
+        render: (row) => formatCurrency(row.amount),
+      },
+      {
+        key: 'dueDate',
+        label: 'Vencimiento',
+        render: (row) => (row.dueDate ? formatDate(row.dueDate) : 'Sin fecha'),
+      },
+      {
+        key: 'status',
+        label: 'Estado',
+        render: (row) => <StatusBadge tone={paymentStatusTone[row.status] ?? 'neutral'}>{row.status}</StatusBadge>,
+      },
+    ],
+    [],
+  )
+
+  const attendanceColumns = useMemo(
+    () => [
+      {
+        key: 'session',
+        label: 'Sesión',
+        render: (row) => `${row.session.child.firstName} ${row.session.child.lastName}`,
+      },
+      {
+        key: 'registeredAt',
+        label: 'Registro',
+        render: (row) => formatDateTime(row.registeredAt),
+      },
+      {
+        key: 'status',
+        label: 'Estado',
+        render: (row) => <StatusBadge tone={attendanceStatusTone[row.status] ?? 'neutral'}>{row.status}</StatusBadge>,
+      },
+      { key: 'notes', label: 'Notas' },
+    ],
+    [],
+  )
 
   const updatePaymentField = (field) => (event) =>
     setPaymentForm((current) => ({
@@ -83,11 +148,17 @@ export const PaymentsPage = () => {
 
   return (
     <div className="grid gap-6">
+      <PageHeader
+        description="Registrá cobros y asistencias desde una misma superficie operativa para sostener trazabilidad administrativa."
+        eyebrow="Cobros y asistencia"
+        title="Gestión administrativa diaria"
+      />
+
       <div className="grid gap-6 xl:grid-cols-2">
-        <PanelCard>
+        <PanelCard variant="form">
           <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Registrar cobro</h2>
           <form className="mt-6 grid gap-4" onSubmit={handlePaymentSubmit}>
-            <Field label="Niño o niña">
+            <Field label="Niño o niña" required>
               <select className="field-input" onChange={updatePaymentField('childId')} required value={paymentForm.childId}>
                 <option value="">Seleccionar</option>
                 {children.map((child) => (
@@ -97,7 +168,7 @@ export const PaymentsPage = () => {
                 ))}
               </select>
             </Field>
-            <Field label="Familia">
+            <Field label="Familia" required>
               <select className="field-input" onChange={updatePaymentField('familyId')} required value={paymentForm.familyId}>
                 <option value="">Seleccionar</option>
                 {families.map((family) => (
@@ -117,7 +188,7 @@ export const PaymentsPage = () => {
                 ))}
               </select>
             </Field>
-            <Field label="Monto">
+            <Field label="Monto" required>
               <input className="field-input" min="0" onChange={updatePaymentField('amount')} required type="number" value={paymentForm.amount} />
             </Field>
             <Field label="Vencimiento">
@@ -126,15 +197,15 @@ export const PaymentsPage = () => {
             <Field label="Notas">
               <textarea className="field-input min-h-24" onChange={updatePaymentField('notes')} value={paymentForm.notes} />
             </Field>
-            {paymentError ? <div className="rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{paymentError}</div> : null}
+            {paymentError ? <FormErrorAlert>{paymentError}</FormErrorAlert> : null}
             <Button type="submit">Guardar cobro</Button>
           </form>
         </PanelCard>
 
-        <PanelCard>
+        <PanelCard variant="form">
           <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Registrar asistencia</h2>
           <form className="mt-6 grid gap-4" onSubmit={handleAttendanceSubmit}>
-            <Field label="Sesión">
+            <Field label="Sesión" required>
               <select className="field-input" onChange={updateAttendanceField('sessionId')} required value={attendanceForm.sessionId}>
                 <option value="">Seleccionar</option>
                 {sessions.map((session) => (
@@ -155,7 +226,7 @@ export const PaymentsPage = () => {
             <Field label="Notas">
               <textarea className="field-input min-h-24" onChange={updateAttendanceField('notes')} value={attendanceForm.notes} />
             </Field>
-            {attendanceError ? <div className="rounded-2xl bg-[rgba(217,140,122,0.18)] px-4 py-3 text-sm text-[#8b4b3d]">{attendanceError}</div> : null}
+            {attendanceError ? <FormErrorAlert>{attendanceError}</FormErrorAlert> : null}
             <Button type="submit" variant="secondary">
               Guardar asistencia
             </Button>
@@ -164,53 +235,17 @@ export const PaymentsPage = () => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <PanelCard>
+        <PanelCard variant="form">
           <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Cobros</h2>
           <div className="mt-6">
-            <DataTable
-              columns={[
-                {
-                  key: 'child',
-                  label: 'Caso',
-                  render: (row) => `${row.child.firstName} ${row.child.lastName}`,
-                },
-                {
-                  key: 'amount',
-                  label: 'Monto',
-                  render: (row) => formatCurrency(row.amount),
-                },
-                {
-                  key: 'dueDate',
-                  label: 'Vencimiento',
-                  render: (row) => (row.dueDate ? formatDate(row.dueDate) : 'Sin fecha'),
-                },
-                { key: 'status', label: 'Estado' },
-              ]}
-              rows={payments}
-            />
+            <DataTable columns={paymentColumns} rows={payments} />
           </div>
         </PanelCard>
 
-        <PanelCard>
+        <PanelCard variant="form">
           <h2 className="text-2xl font-semibold text-[var(--color-primary)]">Asistencias</h2>
           <div className="mt-6">
-            <DataTable
-              columns={[
-                {
-                  key: 'session',
-                  label: 'Sesión',
-                  render: (row) => `${row.session.child.firstName} ${row.session.child.lastName}`,
-                },
-                {
-                  key: 'registeredAt',
-                  label: 'Registro',
-                  render: (row) => formatDateTime(row.registeredAt),
-                },
-                { key: 'status', label: 'Estado' },
-                { key: 'notes', label: 'Notas' },
-              ]}
-              rows={attendances}
-            />
+            <DataTable columns={attendanceColumns} rows={attendances} />
           </div>
         </PanelCard>
       </div>

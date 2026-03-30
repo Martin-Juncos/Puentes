@@ -2,8 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-
 import { App } from './app/App'
 import { AuthProvider } from './features/auth/AuthProvider'
 import './index.css'

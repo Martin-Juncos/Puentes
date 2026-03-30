@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Field } from '@/components/ui/Field'
 import { contactService } from '@/services/contactService'
@@ -56,10 +57,10 @@ export const ContactForm = () => {
   return (
     <form className="grid gap-5" onSubmit={handleSubmit}>
       <div className="grid gap-5 md:grid-cols-2">
-        <Field label="Nombre y apellido">
+        <Field label="Nombre y apellido" required>
           <input className="field-input" minLength={3} onChange={updateField('fullName')} required value={form.fullName} />
         </Field>
-        <Field label="Email">
+        <Field label="Email" required>
           <input
             className="field-input"
             onChange={updateField('email')}
@@ -74,9 +75,9 @@ export const ContactForm = () => {
         <input className="field-input" onChange={updateField('phone')} value={form.phone} />
       </Field>
 
-      <Field label="Mensaje">
+      <Field label="Mensaje" required>
         <textarea
-          className="field-input min-h-36 resize-y"
+          className="field-input min-h-36"
           minLength={10}
           onChange={updateField('message')}
           required
@@ -85,15 +86,9 @@ export const ContactForm = () => {
       </Field>
 
       {status.type ? (
-        <div
-          className={`rounded-2xl px-4 py-3 text-sm ${
-            status.type === 'success'
-              ? 'bg-[rgba(167,196,181,0.22)] text-[var(--color-primary)]'
-              : 'bg-[rgba(217,140,122,0.18)] text-[#8b4b3d]'
-          }`}
-        >
+        <Alert title={status.type === 'success' ? 'Consulta enviada' : 'No pudimos enviar tu consulta'} tone={status.type}>
           {status.message}
-        </div>
+        </Alert>
       ) : null}
 
       <Button className="w-full sm:w-fit" disabled={isSubmitting} type="submit">
