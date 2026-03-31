@@ -14,4 +14,5 @@ export const sessionsService = {
   },
   create: (payload) => apiClient.post('/sessions', payload),
   update: (id, payload) => apiClient.patch(`/sessions/${id}`, payload),
+  remove: (id) => apiClient.delete(`/sessions/${id}`),
 }

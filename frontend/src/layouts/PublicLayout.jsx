@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fi'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
+import { AnimatedBrandLockup } from '@/components/ui/AnimatedBrandLockup'
 import { Button } from '@/components/ui/Button'
 import { FloatingWhatsAppButton } from '@/components/ui/FloatingWhatsAppButton'
 import { ModalShell } from '@/components/ui/ModalShell'
@@ -28,6 +29,8 @@ const MotionMain = motion.main
 const MotionDiv = motion.div
 const footerPrimaryLinks = publicNavigation.slice(0, 4)
 const footerSecondaryLinks = publicNavigation.slice(4)
+const desktopAuthActionClass =
+  'group !rounded-full min-h-10 border border-[var(--color-border-soft)] !bg-white/88 px-3.5 py-1.5 shadow-[0_8px_20px_rgba(47,93,115,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:!bg-[var(--color-primary)] hover:!text-white hover:shadow-[0_12px_26px_rgba(47,93,115,0.16)]'
 const footerFallbackSettings = {
   centerName: 'Puentes',
   address: 'España 930, Goya, Corrientes',
@@ -118,15 +121,7 @@ export const PublicLayout = () => {
       <header className="sticky top-0 z-40 border-b border-[var(--color-border-soft)] bg-[rgba(247,244,238,0.9)] backdrop-blur-xl">
         <div className="public-shell flex items-center gap-4 py-4">
           <NavLink className="flex min-w-0 items-center gap-3" to="/">
-            <img alt={media.logo.alt} className="h-10 w-10 rounded-full bg-white/80 p-1" src={media.logo.src} />
-            <div className="min-w-0">
-              <p className="text-[0.65rem] uppercase tracking-[0.42em] text-[rgba(47,93,115,0.6)]">
-                Centro interdisciplinario
-              </p>
-              <p className="truncate text-[1.85rem] font-semibold leading-none text-[var(--color-primary)] sm:text-[2.1rem]">
-                Puentes
-              </p>
-            </div>
+            <AnimatedBrandLockup logoAlt={media.logo.alt} logoSrc={media.logo.src} />
           </NavLink>
 
           <nav className="ml-6 hidden items-center gap-6 text-sm font-medium text-[rgba(46,46,46,0.74)] md:flex">
@@ -151,23 +146,33 @@ export const PublicLayout = () => {
               <>
                 <Button
                   as={NavLink}
-                  className="h-auto rounded-full border border-[var(--color-border-soft)] bg-white/85 px-4 py-2 text-left hover:bg-white"
+                  className={cn(desktopAuthActionClass, 'h-auto justify-start gap-2.5 text-left')}
+                  size="sm"
                   to="/app/dashboard"
-                  variant="ghost"
+                  variant="outline"
                 >
-                  <div className="flex size-10 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)]">
-                    <FiUser aria-hidden="true" className="size-4" />
+                  <div className="flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)] transition-colors duration-200 group-hover:bg-white/16 group-hover:text-white">
+                    <FiUser aria-hidden="true" className="size-3.5" />
                   </div>
-                  <div className="hidden sm:block">
-                    <p className="text-sm font-semibold text-[var(--color-primary)]">{user.fullName}</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-[rgba(47,93,115,0.62)]">
+                  <div className="hidden sm:flex sm:flex-col sm:gap-0">
+                    <p className="mt-3 text-[0.9rem] font-semibold leading-none text-[var(--color-primary)] transition-colors duration-200 group-hover:text-white">
+                      {user.fullName}
+                    </p>
+                    <p className="-mt-1.5 text-[0.55rem] uppercase tracking-[0.16em] leading-none text-[rgba(47,93,115,0.62)] transition-colors duration-200 group-hover:text-white/78">
                       {ROLE_LABELS[user.role]}
                     </p>
                   </div>
                 </Button>
-                <Button className="gap-2" onClick={handleLogout} variant="ghost">
-                  <FiLogOut aria-hidden="true" className="size-4" />
-                  Salir
+                <Button
+                  className={cn(desktopAuthActionClass, 'gap-2.5')}
+                  onClick={handleLogout}
+                  size="sm"
+                  variant="outline"
+                >
+                  <div className="flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)] transition-colors duration-200 group-hover:bg-white/16 group-hover:text-white">
+                    <FiLogOut aria-hidden="true" className="size-3.5" />
+                  </div>
+                  <span className="text-[0.9rem] leading-none transition-colors duration-200 group-hover:text-white">Salir</span>
                 </Button>
               </>
             ) : (
@@ -230,13 +235,13 @@ export const PublicLayout = () => {
 
                 {isAuthenticated ? (
                   <div className="grid gap-2 rounded-[1.5rem] border border-[var(--color-border-soft)] bg-white/92 p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-10 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)]">
-                        <FiUser aria-hidden="true" className="size-4" />
+                    <div className="flex items-center gap-2">
+                      <div className="flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)]">
+                        <FiUser aria-hidden="true" className="size-3.5" />
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-[var(--color-primary)]">{user.fullName}</p>
-                        <p className="text-xs uppercase tracking-[0.2em] text-[rgba(47,93,115,0.62)]">
+                      <div className="flex flex-col gap-0">
+                        <p className="text-[0.95rem] font-semibold leading-none text-[var(--color-primary)]">{user.fullName}</p>
+                        <p className="text-[0.58rem] uppercase tracking-[0.14em] leading-none text-[rgba(47,93,115,0.62)]">
                           {ROLE_LABELS[user.role]}
                         </p>
                       </div>

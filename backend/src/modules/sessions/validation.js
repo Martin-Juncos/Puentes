@@ -1,6 +1,11 @@
 import { z } from 'zod'
 
-import { idParamSchema, optionalDateSchema, preprocessOptionalString } from '../../utils/validation.js'
+import {
+  idParamSchema,
+  optionalDateSchema,
+  preprocessNullableString,
+  preprocessOptionalString,
+} from '../../utils/validation.js'
 
 export const sessionQuerySchema = {
   query: z.object({
@@ -35,10 +40,14 @@ export const updateSessionSchema = {
       startsAt: z.coerce.date().optional(),
       endsAt: z.coerce.date().optional(),
       status: z.enum(['SCHEDULED', 'COMPLETED', 'CANCELED', 'RESCHEDULED']).optional(),
-      adminNotes: preprocessOptionalString(),
-      internalNotes: preprocessOptionalString(),
+      adminNotes: preprocessNullableString(),
+      internalNotes: preprocessNullableString(),
     })
     .refine((value) => Object.values(value).some((field) => field !== undefined), {
       message: 'Debes enviar al menos un campo para actualizar.',
     }),
+}
+
+export const deleteSessionSchema = {
+  params: idParamSchema,
 }

@@ -8,6 +8,12 @@ export const listSessions = (where = {}) =>
     select: sessionSelect,
   })
 
+export const getSession = (id) =>
+  prisma.session.findUnique({
+    where: { id },
+    select: sessionSelect,
+  })
+
 export const createSession = (data) =>
   prisma.session.create({
     data,
@@ -18,5 +24,11 @@ export const updateSession = (id, data) =>
   prisma.session.update({
     where: { id },
     data,
+    select: sessionSelect,
+  })
+
+export const deleteSession = (id) =>
+  prisma.session.delete({
+    where: { id },
     select: sessionSelect,
   })

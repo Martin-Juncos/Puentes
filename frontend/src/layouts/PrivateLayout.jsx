@@ -14,6 +14,13 @@ import { cn } from '@/utils/cn'
 
 const MotionDiv = motion.div
 const rolesWithMessaging = ['COORDINATION', 'SECRETARY', 'PROFESSIONAL']
+const rolesWithNotifications = ['ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL']
+const privateTopbarActionClass =
+  'group !rounded-full min-h-10 border border-[var(--color-border-soft)] !bg-white/88 px-3.5 py-1.5 shadow-[0_8px_20px_rgba(47,93,115,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:!bg-[var(--color-primary)] hover:!text-white hover:shadow-[0_12px_26px_rgba(47,93,115,0.16)]'
+const privateTopbarIconClass =
+  'flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)] transition-colors duration-200 group-hover:bg-white/16 group-hover:text-white'
+const privateTopbarUserSummaryClass =
+  'flex min-w-0 items-center gap-2.5 rounded-full border border-[var(--color-border-soft)] bg-white/88 px-3.5 py-1.5 shadow-[0_8px_20px_rgba(47,93,115,0.06)]'
 
 export const PrivateLayout = () => {
   const { logout, user } = useAuth()
@@ -21,6 +28,7 @@ export const PrivateLayout = () => {
   const location = useLocation()
   const items = privateNavigation.filter((item) => item.roles.includes(user.role))
   const canUseMessaging = rolesWithMessaging.includes(user.role)
+  const canUseNotifications = rolesWithNotifications.includes(user.role)
   const notificationsRef = useRef(null)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
@@ -34,7 +42,7 @@ export const PrivateLayout = () => {
     notifications,
     toggle: handleToggleNotifications,
     unreadCount,
-  } = usePanelNotifications({ enabled: canUseMessaging })
+  } = usePanelNotifications({ enabled: canUseNotifications })
 
   useEffect(() => {
     closeNotifications()
@@ -58,12 +66,22 @@ export const PrivateLayout = () => {
     }
   }, [closeNotifications, isNotificationsOpen])
 
+  const handleLogout = () => {
+    setIsMobileNavOpen(false)
+    logout()
+  }
+
   const handleOpenNotification = async (notification) => {
     if (!notification.isRead) {
       await handleMarkNotificationRead(notification.id)
     }
 
     closeNotifications()
+
+    if (!canUseMessaging) {
+      navigate('/app/dashboard')
+      return
+    }
 
     if (notification.threadId) {
       navigate(`/app/mensajes?threadId=${notification.threadId}`)
@@ -83,19 +101,19 @@ export const PrivateLayout = () => {
       const Icon = item.icon
 
       return (
-          <NavLink
-            key={item.to}
-            className={({ isActive }) =>
+        <NavLink
+          key={item.to}
+          className={({ isActive }) =>
             cn(
               'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-colors',
               isActive
                 ? 'bg-[var(--color-primary)] text-white'
                 : 'text-[rgba(46,46,46,0.75)] hover:bg-[rgba(47,93,115,0.06)] hover:text-[var(--color-primary)]',
             )
-            }
-            onClick={() => setIsMobileNavOpen(false)}
-            to={item.to}
-          >
+          }
+          onClick={() => setIsMobileNavOpen(false)}
+          to={item.to}
+        >
           {Icon ? <Icon aria-hidden="true" className="size-4 shrink-0" /> : null}
           <span>{item.label}</span>
         </NavLink>
@@ -103,13 +121,15 @@ export const PrivateLayout = () => {
     })
 
   const renderUserSummary = () => (
-    <div className="flex items-start gap-3 rounded-2xl bg-[rgba(47,93,115,0.07)] p-4">
-      <div className="mt-0.5 flex size-10 items-center justify-center rounded-full bg-white text-[var(--color-primary)]">
-        <FiUser aria-hidden="true" className="size-4" />
+    <div className="flex items-center gap-2 rounded-2xl bg-[rgba(47,93,115,0.07)] px-3.5 py-2">
+      <div className="flex size-7 items-center justify-center rounded-full bg-white text-[var(--color-primary)]">
+        <FiUser aria-hidden="true" className="size-3.5" />
       </div>
-      <div>
-        <p className="text-sm font-semibold text-[var(--color-primary)]">{user.fullName}</p>
-        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[rgba(47,93,115,0.65)]">{ROLE_LABELS[user.role]}</p>
+      <div className="flex flex-col gap-0">
+        <p className="text-[0.95rem] font-semibold leading-none text-[var(--color-primary)]">{user.fullName}</p>
+        <p className="text-[0.58rem] uppercase tracking-[0.14em] leading-none text-[rgba(47,93,115,0.65)]">
+          {ROLE_LABELS[user.role]}
+        </p>
       </div>
     </div>
   )
@@ -129,18 +149,6 @@ export const PrivateLayout = () => {
           <div className="mt-6">{renderUserSummary()}</div>
 
           <nav className="mt-6 grid gap-2">{renderNavigationLinks()}</nav>
-
-          <Button
-            className="mt-auto w-full gap-2"
-            onClick={() => {
-              setIsMobileNavOpen(false)
-              logout()
-            }}
-            variant="outline"
-          >
-            <FiLogOut aria-hidden="true" className="size-4" />
-            Cerrar sesión
-          </Button>
         </aside>
 
         <div className="panel-content relative min-w-0 flex-1 overflow-visible">
@@ -149,12 +157,16 @@ export const PrivateLayout = () => {
               <Button
                 aria-expanded={isMobileNavOpen}
                 aria-label={isMobileNavOpen ? 'Cerrar navegación interna' : 'Abrir navegación interna'}
-                className="lg:hidden"
+                className={cn(privateTopbarActionClass, '!size-10 !min-h-0 !p-0 lg:hidden')}
                 onClick={() => setIsMobileNavOpen((current) => !current)}
                 size="icon"
                 variant="outline"
               >
-                {isMobileNavOpen ? <FiX aria-hidden="true" className="size-5" /> : <FiMenu aria-hidden="true" className="size-5" />}
+                {isMobileNavOpen ? (
+                  <FiX aria-hidden="true" className="size-5" />
+                ) : (
+                  <FiMenu aria-hidden="true" className="size-5" />
+                )}
               </Button>
 
               <div>
@@ -168,28 +180,39 @@ export const PrivateLayout = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="hidden items-center gap-3 rounded-full border border-[var(--color-border-soft)] bg-white/85 px-4 py-2 sm:flex">
-                <div className="flex size-10 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)]">
-                  <FiUser aria-hidden="true" className="size-4" />
+            <div className="flex flex-wrap items-center gap-3 md:justify-end">
+              <Button as={NavLink} className={cn(privateTopbarActionClass, 'gap-2.5')} size="sm" to="/" variant="outline">
+                <div className={privateTopbarIconClass}>
+                  <FiHome aria-hidden="true" className="size-3.5" />
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-[var(--color-primary)]">{user.fullName}</p>
-                  <p className="text-xs uppercase tracking-[0.2em] text-[rgba(47,93,115,0.62)]">Sesión activa</p>
+                <span className="text-[0.9rem] leading-none transition-colors duration-200 group-hover:text-white">
+                  Volver al inicio
+                </span>
+              </Button>
+
+              <div className={privateTopbarUserSummaryClass}>
+                <div className="flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)]">
+                  <FiUser aria-hidden="true" className="size-3.5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-[0.9rem] font-semibold leading-none text-[var(--color-primary)]">{user.fullName}</p>
+                  <p className="text-[0.68rem] uppercase tracking-[0.18em] leading-tight text-[rgba(47,93,115,0.62)]">Sesión activa</p>
                 </div>
               </div>
 
-              {canUseMessaging ? (
+              {canUseNotifications ? (
                 <div className="relative z-50" ref={notificationsRef}>
                   <Button
                     aria-expanded={isNotificationsOpen}
                     aria-haspopup="dialog"
-                    className="relative"
+                    className={cn(privateTopbarActionClass, 'relative !size-10 !min-h-0 !p-0')}
                     onClick={handleToggleNotifications}
                     size="icon"
                     variant="outline"
                   >
-                    <FiBell aria-hidden="true" className="size-5" />
+                    <div className={privateTopbarIconClass}>
+                      <FiBell aria-hidden="true" className="size-4" />
+                    </div>
                     {unreadCount > 0 ? (
                       <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-[var(--color-accent)] px-1.5 py-1 text-[10px] font-semibold text-white">
                         {unreadCount > 9 ? '9+' : unreadCount}
@@ -211,9 +234,11 @@ export const PrivateLayout = () => {
                 </div>
               ) : null}
 
-              <Button as={NavLink} className="gap-2" to="/" variant="outline">
-                <FiHome aria-hidden="true" className="size-4" />
-                Volver al inicio
+              <Button className={cn(privateTopbarActionClass, 'gap-2.5')} onClick={handleLogout} size="sm" variant="outline">
+                <div className={privateTopbarIconClass}>
+                  <FiLogOut aria-hidden="true" className="size-3.5" />
+                </div>
+                Cerrar sesión
               </Button>
             </div>
           </div>
@@ -236,17 +261,6 @@ export const PrivateLayout = () => {
                   </div>
                   {renderUserSummary()}
                   <nav className="grid gap-2">{renderNavigationLinks()}</nav>
-                  <Button
-                    className="w-full gap-2"
-                    onClick={() => {
-                      setIsMobileNavOpen(false)
-                      logout()
-                    }}
-                    variant="outline"
-                  >
-                    <FiLogOut aria-hidden="true" className="size-4" />
-                    Cerrar sesión
-                  </Button>
                 </div>
               </MotionDiv>
             ) : null}

@@ -370,8 +370,12 @@ export const HomePage = () => {
             </div>
 
             <div className="grid gap-4">
-              <div className="public-media-frame border-white/10 bg-white/10 p-3 shadow-none">
-                <img alt={media.trustSupport.alt} className="h-40 w-full rounded-[1.5rem] object-cover" src={media.trustSupport.src} />
+              <div className="overflow-hidden rounded-[1.5rem]">
+                <img
+                  alt={media.trustSupport.alt}
+                  className="block h-40 w-full rounded-[1.5rem] border border-white/10 object-cover"
+                  src={media.trustSupport.src}
+                />
               </div>
 
               <div className="rounded-[1.5rem] border border-white/10 bg-white/12 px-5 py-4 backdrop-blur">

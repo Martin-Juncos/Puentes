@@ -18,12 +18,14 @@ export const ROLE_CAPABILITIES = {
   ],
   COORDINATION: [
     'agenda.view.all',
+    'agenda.manage',
     'professionals.view',
     'services.manage',
     'records.view.global',
     'followups.view',
   ],
   SECRETARY: [
+    'agenda.view.all',
     'agenda.manage',
     'children.manage',
     'families.manage',
@@ -33,6 +35,7 @@ export const ROLE_CAPABILITIES = {
   ],
   PROFESSIONAL: [
     'agenda.view.own',
+    'agenda.manage.own',
     'children.view.assigned',
     'followups.manage.own',
   ],

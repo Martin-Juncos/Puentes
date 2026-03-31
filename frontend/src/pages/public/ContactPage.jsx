@@ -10,7 +10,7 @@ import { settingsService } from '@/services/settingsService'
 
 const fallbackSettings = {
   centerName: 'Puentes',
-  address: 'España 930, Goya, Corrientes',
+  address: 'Espana 930, Goya, Corrientes',
   institutionalEmail: 'contacto@puentes.local',
   institutionalPhone: '+54 11 5555 0000',
   whatsappUrl: 'https://wa.me/5491100000000?text=Hola%20Puentes',
@@ -26,6 +26,8 @@ const normalizeTextSetting = (value, fallback) => {
   return trimmed || fallback
 }
 
+const sanitizePhoneHref = (value) => value.replace(/[^\d+]/g, '')
+
 export const ContactPage = () => {
   const [settings, setSettings] = useState(fallbackSettings)
 
@@ -38,7 +40,7 @@ export const ContactPage = () => {
           ...nextSettings,
         }))
       } catch {
-        // Si la configuración pública no está disponible, se mantienen valores de respaldo.
+        // Si la configuracion publica no esta disponible, se mantienen valores de respaldo.
       }
     }
 
@@ -57,6 +59,8 @@ export const ContactPage = () => {
     [settings],
   )
 
+  const mapQuery = encodeURIComponent(displaySettings.address)
+
   const quickContactItems = [
     {
       icon: FiMail,
@@ -66,13 +70,13 @@ export const ContactPage = () => {
     },
     {
       icon: FiPhone,
-      label: 'Teléfono',
+      label: 'Telefono',
       value: displaySettings.institutionalPhone,
-      href: `tel:${displaySettings.institutionalPhone.replace(/\s+/g, '')}`,
+      href: `tel:${sanitizePhoneHref(displaySettings.institutionalPhone)}`,
     },
     {
       icon: FiMapPin,
-      label: 'Ubicación',
+      label: 'Ubicacion',
       value: displaySettings.address,
     },
     {
@@ -85,26 +89,48 @@ export const ContactPage = () => {
   return (
     <div className="public-shell py-16 lg:py-24">
       <SectionHeading
-        description="Podés escribirnos para orientación institucional, consultas iniciales o coordinación de una primera entrevista."
+        description="Podes escribirnos para una consulta inicial, orientacion institucional o para coordinar el mejor primer paso segun tu necesidad."
         eyebrow="Contacto"
-        title="Abrimos un canal claro para escuchar, orientar y ordenar el primer paso."
+        title="Un espacio claro para consultar, ordenar la inquietud y elegir el canal mas comodo."
       />
 
-      <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_0.8fr]">
-        <PanelCard className="bg-white/85" padding="lg" variant="form">
-          <ContactForm />
-        </PanelCard>
-
+      <div className="mt-12 grid gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(21rem,0.95fr)]">
         <div className="grid gap-6">
-          <div className="public-media-frame p-4">
-            <img alt={media.trustSupport.alt} className="h-64 w-full rounded-[2rem] object-cover" src={media.trustSupport.src} />
-          </div>
+          <PanelCard className="bg-white/95" padding="lg" variant="form">
+            <div className="flex flex-col gap-4">
+              <div>
+                <p className="eyebrow-label">Formulario de contacto</p>
+                <h2 className="mt-4 text-3xl font-semibold text-[var(--color-primary)]">Contanos en que podemos ayudarte</h2>
+                <p className="mt-4 max-w-2xl text-sm leading-8 text-[rgba(46,46,46,0.74)]">
+                  Este formulario esta pensado para consultas iniciales, orientacion institucional y coordinacion de una
+                  primera entrevista. Si preferis, tambien podes escribirnos por WhatsApp o correo.
+                </p>
+              </div>
 
-          <PanelCard className="bg-white/92" padding="lg" variant="form">
+              <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.18em] text-[rgba(47,93,115,0.62)]">
+                <span className="rounded-full border border-[var(--color-border-soft)] bg-[rgba(247,244,238,0.9)] px-3 py-2">
+                  Respuesta institucional
+                </span>
+                <span className="rounded-full border border-[var(--color-border-soft)] bg-[rgba(247,244,238,0.9)] px-3 py-2">
+                  Orientacion inicial
+                </span>
+                <span className="rounded-full border border-[var(--color-border-soft)] bg-[rgba(247,244,238,0.9)] px-3 py-2">
+                  Canales directos
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <ContactForm />
+            </div>
+          </PanelCard>
+
+          <PanelCard className="bg-white/95" padding="lg" variant="form">
             <p className="eyebrow-label">Canales directos</p>
-            <h3 className="mt-4 text-3xl font-semibold text-[var(--color-primary)]">Hablemos con {displaySettings.centerName}</h3>
-            <p className="mt-3 text-sm leading-7 text-[rgba(46,46,46,0.7)]">
-              Si preferís otro camino además del formulario, podés escribirnos por WhatsApp, correo o llamarnos.
+            <h2 className="mt-4 text-3xl font-semibold text-[var(--color-primary)]">Hablemos con {displaySettings.centerName}</h2>
+            <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.74)]">
+              Si preferis resolver la consulta por otro canal, te dejamos las vias mas practicas para escribirnos o
+              llamarnos sin pasar por el formulario.
             </p>
 
             <div className="mt-6 grid gap-4">
@@ -112,13 +138,13 @@ export const ContactPage = () => {
                 const Icon = item.icon
 
                 const content = (
-                  <div className="flex items-start gap-3 rounded-[1.25rem] border border-[rgba(47,93,115,0.1)] bg-[rgba(247,244,238,0.86)] px-4 py-4 transition-colors hover:bg-[rgba(241,246,245,0.95)]">
-                    <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[var(--color-primary)]">
+                  <div className="flex items-start gap-3 rounded-[1.4rem] border border-[rgba(47,93,115,0.1)] bg-[rgba(247,244,238,0.86)] px-4 py-4 transition-colors hover:bg-[rgba(241,246,245,0.95)]">
+                    <div className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-full bg-white text-[var(--color-primary)] shadow-[0_10px_24px_rgba(47,93,115,0.08)]">
                       <Icon aria-hidden="true" className="size-4" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-[0.2em] text-[rgba(47,93,115,0.58)]">{item.label}</p>
-                      <p className="mt-1 text-sm leading-6 text-[rgba(46,46,46,0.8)]">{item.value}</p>
+                      <p className="mt-1 text-sm leading-6 text-[rgba(46,46,46,0.82)]">{item.value}</p>
                     </div>
                   </div>
                 )
@@ -153,19 +179,63 @@ export const ContactPage = () => {
               </Button>
             </div>
           </PanelCard>
+        </div>
 
-          <PanelCard className="bg-[rgba(247,244,238,0.92)]" variant="muted">
-            <p className="eyebrow-label">También podés consultarnos por</p>
-            <div className="mt-4 grid gap-3 text-sm leading-7 text-[rgba(46,46,46,0.74)]">
-              <p>Orientación inicial para familias que quieren conocer el espacio.</p>
-              <p>Coordinación de una primera entrevista o derivación.</p>
-              <p>Consultas administrativas sobre horarios, contacto y funcionamiento general.</p>
+        <div className="grid gap-6">
+          <div className="h-full overflow-hidden rounded-[2rem]">
+            <img
+              alt={media.contactHero.alt}
+              className="h-full min-h-[18rem] w-full object-cover sm:min-h-[22rem]"
+              src={media.contactHero.src}
+            />
+          </div>
+
+          <PanelCard
+            className="relative overflow-hidden !border-transparent !bg-[linear-gradient(145deg,rgba(47,93,115,0.98),rgba(36,73,91,0.96),rgba(167,196,181,0.28))] text-white"
+            padding="lg"
+          >
+            <div className="absolute -right-12 top-0 h-32 w-32 rounded-full bg-white/8 blur-3xl" />
+            <div className="absolute bottom-0 left-8 h-24 w-24 rounded-full bg-[rgba(217,140,122,0.16)] blur-3xl" />
+
+            <div className="relative">
+              <p className="text-xs uppercase tracking-[0.22em] text-white/70">Contacto practico</p>
+              <h2 className="mt-4 text-3xl font-semibold">Ubicacion y referencia institucional</h2>
+
+              <div className="mt-6 overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/10 p-3 backdrop-blur">
+                <div className="mb-3 flex items-center justify-between gap-3 px-2">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-white/65">Direccion</p>
+                    <p className="mt-1 text-sm font-medium text-white/88">{displaySettings.address}</p>
+                  </div>
+                  <a
+                    className="text-xs font-semibold uppercase tracking-[0.18em] text-white/78 transition-colors hover:text-white"
+                    href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Abrir mapa
+                  </a>
+                </div>
+
+                <div className="overflow-hidden rounded-[1.25rem] border border-white/10">
+                  <iframe
+                    allowFullScreen
+                    className="h-64 w-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps?q=${mapQuery}&z=16&output=embed`}
+                    title={`Mapa de ${displaySettings.centerName}`}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-3 text-sm leading-7 text-white/82">
+                <p>Consultas iniciales para familias que quieren conocer el espacio.</p>
+                <p>Coordinacion de una primera entrevista o derivacion.</p>
+                <p>Informacion institucional sobre horarios, canales y funcionamiento general.</p>
+              </div>
             </div>
           </PanelCard>
-
-          <div className="public-media-frame p-4">
-            <img alt={media.contactHero.alt} className="h-80 w-full rounded-[2rem] object-cover" src={media.contactHero.src} />
-          </div>
         </div>
       </div>
     </div>

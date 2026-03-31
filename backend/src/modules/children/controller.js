@@ -16,7 +16,7 @@ export const getChildController = async (req, res) =>
   sendSuccess(res, await getChildById(req.params.id))
 
 export const createChildController = async (req, res) =>
-  sendSuccess(res, await createChildRecord(req.body), undefined, 201)
+  sendSuccess(res, await createChildRecord(req.body, req.user), undefined, 201)
 
 export const updateChildController = async (req, res) =>
   sendSuccess(res, await updateChildRecord(req.params.id, req.body))

@@ -15,7 +15,7 @@ import { notificationsQuerySchema, readNotificationSchema } from './validation.j
 
 export const notificationsRouter = Router()
 
-notificationsRouter.use(authenticate, authorize('COORDINATION', 'SECRETARY', 'PROFESSIONAL'))
+notificationsRouter.use(authenticate, authorize('ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'))
 
 notificationsRouter.get('/', validate(notificationsQuerySchema), asyncHandler(listNotificationsController))
 notificationsRouter.get('/unread-count', asyncHandler(getUnreadNotificationsCountController))

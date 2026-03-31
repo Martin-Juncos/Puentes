@@ -1,6 +1,7 @@
 import { prisma } from '../../db/prisma.js'
 import { AppError } from '../../utils/AppError.js'
 import { resolveProfessionalProfileId } from '../../utils/professionals.js'
+import { childSelect } from '../../utils/recordSelects.js'
 import { buildNotFoundError, ensureFound } from '../../utils/records.js'
 
 import {
@@ -79,8 +80,40 @@ export const getChildren = async (user) => {
 export const getChildById = async (id) =>
   ensureFound(await getChild(id), 'CHILD_NOT_FOUND', 'No se encontró el niño o la niña solicitada.')
 
-export const createChildRecord = async (payload) => {
+export const createChildRecord = async (payload, user) => {
   ensureFound(await getFamilyReference(payload.familyId), 'FAMILY_NOT_FOUND', 'No existe la familia indicada.')
+
+  if (user?.role === 'PROFESSIONAL') {
+    const professionalId = await resolveProfessionalProfileId(user.id)
+
+    const createdChild = await prisma.$transaction(async (tx) => {
+      const child = await tx.child.create({
+        data: payload,
+        select: {
+          id: true,
+        },
+      })
+
+      await tx.childProfessionalAssignment.create({
+        data: {
+          childId: child.id,
+          professionalId,
+          assignedByUserId: user.id,
+        },
+      })
+
+      return tx.child.findUnique({
+        where: { id: child.id },
+        select: childSelect,
+      })
+    })
+
+    return ensureFound(
+      createdChild,
+      'CHILD_NOT_FOUND',
+      'No se encontró el niño o la niña recién creado.',
+    )
+  }
 
   return createChild(payload)
 }

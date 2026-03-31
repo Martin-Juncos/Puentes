@@ -28,7 +28,7 @@ export const NotificationsPanel = ({
 
     <div className="mt-4 rounded-2xl bg-[rgba(47,93,115,0.04)] p-4">
       <p className="text-[15px] leading-6 text-[rgba(46,46,46,0.74)]">
-        Avisos de mensajes por caso y de gestiones generales para coordinación, secretaría y profesionales.
+        Avisos de mensajes por caso y alertas operativas del panel interno para los distintos roles.
       </p>
       <Button
         className="mt-3 px-4 py-2 text-[11px] uppercase tracking-[0.16em]"
@@ -86,14 +86,20 @@ export const NotificationsPanel = ({
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-[15px] font-semibold leading-6 text-[var(--color-primary)]">{notification.title}</p>
+                  <p className="text-[15px] font-semibold leading-6 text-[var(--color-primary)]">
+                    {notification.title}
+                  </p>
                   {!notification.isRead ? <StatusBadge tone="info">Nueva</StatusBadge> : null}
                 </div>
                 <p className="mt-1 text-sm leading-6 text-[rgba(46,46,46,0.76)]">
-                  {notification.bodyPreview || 'Abrí la conversación para ver el detalle.'}
+                  {notification.bodyPreview || 'Abrí el detalle para ver más información.'}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.14em] text-[rgba(47,93,115,0.64)]">
-                  {notification.child ? <span>{notification.child.firstName} {notification.child.lastName}</span> : null}
+                  {notification.child ? (
+                    <span>
+                      {notification.child.firstName} {notification.child.lastName}
+                    </span>
+                  ) : null}
                   {notification.actorUser ? <span>{ROLE_LABELS[notification.actorUser.role]}</span> : null}
                   <span>{formatDateTime(notification.createdAt)}</span>
                 </div>
@@ -108,7 +114,7 @@ export const NotificationsPanel = ({
                 type="button"
                 variant="outline"
               >
-                Ver conversación
+                Ver detalle
                 <FiChevronRight aria-hidden="true" className="size-4" />
               </Button>
               {!notification.isRead ? (
