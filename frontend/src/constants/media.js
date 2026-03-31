@@ -1,3 +1,31 @@
+const teamPhotoFileNames = new Set([
+  'anamartinez',
+  'camilatevez',
+  'carlabenitez',
+  'claudiabajale',
+  'florenciaperez',
+  'gabrieladiaz',
+  'julietaherrera',
+  'lauramedina',
+  'luciabordon',
+  'lucianagomez',
+  'marianalopez',
+  'micaelaruiz',
+  'nataliaacosta',
+  'paulatorres',
+  'rominasilva',
+  'sofiaramirez',
+  'valeriafernandez',
+  'veronicacabrera',
+])
+
+const normalizeMediaKey = (value = '') =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '')
+
 export const media = {
   logo: {
     src: '/media/logo.png',
@@ -5,7 +33,7 @@ export const media = {
   },
   homeHero: {
     src: '/media/0.jpg',
-    alt: 'Espacio de orientación y acompañamiento familiar en Puentes',
+    alt: 'Espacio de orientacion y acompanamiento familiar en Puentes',
   },
   servicesHero: {
     src: '/media/1.jpg',
@@ -21,7 +49,7 @@ export const media = {
   },
   aboutHero: {
     src: '/media/4.jpg',
-    alt: 'Identidad institucional y acompañamiento del centro Puentes',
+    alt: 'Identidad institucional y acompanamiento del centro Puentes',
   },
   newsTeaser: {
     src: '/media/5.jpg',
@@ -29,7 +57,7 @@ export const media = {
   },
   trustSupport: {
     src: '/media/6.jpg',
-    alt: 'Clima de confianza, escucha y acompañamiento en Puentes',
+    alt: 'Clima de confianza, escucha y acompanamiento en Puentes',
   },
   aboutSupport: {
     src: '/media/7.jpg',
@@ -37,10 +65,23 @@ export const media = {
   },
   approachHero: {
     src: '/media/8.jpg',
-    alt: 'Modalidad de acompañamiento interdisciplinario en Puentes',
+    alt: 'Modalidad de acompanamiento interdisciplinario en Puentes',
   },
   contactHero: {
     src: '/media/9.jpg',
-    alt: 'Espacio de contacto y acompañamiento institucional de Puentes',
+    alt: 'Espacio de contacto y acompanamiento institucional de Puentes',
   },
+}
+
+export const getProfessionalPhoto = (fullName) => {
+  const normalizedKey = normalizeMediaKey(fullName)
+
+  if (!teamPhotoFileNames.has(normalizedKey)) {
+    return null
+  }
+
+  return {
+    src: `/media/team/${normalizedKey}.jpg`,
+    alt: `Retrato profesional de ${fullName} en Puentes`,
+  }
 }

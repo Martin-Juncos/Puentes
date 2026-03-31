@@ -15,6 +15,7 @@ import { NavLink } from 'react-router-dom'
 
 import { Button } from '@/components/ui/Button'
 import { PanelCard } from '@/components/ui/PanelCard'
+import { ProfessionalCard } from '@/components/ui/ProfessionalCard'
 import { SectionHeading } from '@/components/ui/SectionHeading'
 import { media } from '@/constants/media'
 import {
@@ -274,19 +275,13 @@ export const HomePage = () => {
         {previewProfessionals.length ? (
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {previewProfessionals.map((professional, index) => (
-              <PanelCard className="bg-white/90" key={professional.id} variant="form">
-                <div
-                  className="flex h-20 w-20 items-center justify-center rounded-[1.5rem] text-2xl font-bold text-white"
-                  style={{ backgroundColor: professional.calendarColor || (index % 2 === 0 ? '#2F5D73' : '#A7C4B5') }}
-                >
-                  {professional.user.fullName.charAt(0)}
-                </div>
-                <p className="mt-5 text-xs uppercase tracking-[0.24em] text-[rgba(47,93,115,0.58)]">{professional.discipline}</p>
-                <h2 className="mt-2 text-2xl font-semibold text-[var(--color-primary)]">{professional.user.fullName}</h2>
-                <p className="mt-4 text-sm leading-7 text-[rgba(46,46,46,0.74)]">
-                  {professional.bio || 'Perfil profesional disponible para ampliar desde la página de equipo.'}
-                </p>
-              </PanelCard>
+              <ProfessionalCard
+                key={professional.id}
+                professional={professional}
+                index={index}
+                titleAs="h2"
+                bioFallback="Perfil profesional disponible para ampliar desde la pagina de equipo."
+              />
             ))}
           </div>
         ) : (
