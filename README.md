@@ -212,7 +212,9 @@ npm run prisma:seed
 Importante:
 
 - El seed actual hace `deleteMany()` sobre las tablas principales antes de recrear datos demo.
-- Usarlo solo en un entorno local o descartable.
+- Esta bloqueado si `NODE_ENV=production`.
+- Esta bloqueado por defecto si `DATABASE_URL` no parece local o descartable. Para una base remota de pruebas, habilitarlo de forma explicita con `SEED_ALLOW_REMOTE=true`.
+- Si `SEED_ADMIN_PASSWORD` o `SEED_DEFAULT_PASSWORD` no estan definidas, el seed genera passwords aleatorias y las imprime por consola al finalizar.
 
 ### 9.5. Levantar el proyecto
 
@@ -240,14 +242,15 @@ npm run dev:backend
 npm run build
 ```
 
-### 9.7. Credenciales demo incluidas en el seed
+Nota:
 
-| Rol | Email | Password |
-| --- | --- | --- |
-| `ADMIN` | `prof.mcjuncos@gmail.com` | `Cordoba2020` |
-| `COORDINATION` | `coordinacion@puentes.local` | `Puentes2026!` |
-| `SECRETARY` | `secretaria@puentes.local` | `Puentes2026!` |
-| `PROFESSIONAL` | `profesional@puentes.local` | `Puentes2026!` |
+- En Windows + OneDrive, `prisma generate` puede fallar con un `EPERM` al renombrar el engine nativo. Si ocurre, tratarlo como una limitacion del entorno y no como un error de negocio de la aplicacion.
+
+### 9.7. Credenciales demo del seed
+
+- `ADMIN`: usa `SEED_ADMIN_EMAIL` y `SEED_ADMIN_PASSWORD` si estan definidas.
+- `COORDINATION`, `SECRETARY` y `PROFESSIONAL`: usan `SEED_DEFAULT_PASSWORD` si esta definida.
+- Si no se informan passwords por entorno, el seed genera credenciales aleatorias para esa corrida y las muestra en consola.
 
 ## 10. Variables de entorno
 
@@ -277,6 +280,10 @@ npm run build
 | `JWT_EXPIRES_IN` | Expiración del token JWT | `7d` |
 | `COOKIE_NAME` | Nombre de la cookie de sesión | `puentes_token` |
 | `COOKIE_SECURE` | Define si la cookie requiere canal seguro | `false` |
+| `SEED_ADMIN_EMAIL` | Email demo del usuario `ADMIN` para el seed | `admin@puentes.local` |
+| `SEED_ADMIN_PASSWORD` | Password fija opcional para el usuario `ADMIN` del seed | `` |
+| `SEED_DEFAULT_PASSWORD` | Password fija opcional para `COORDINATION`, `SECRETARY` y `PROFESSIONAL` | `` |
+| `SEED_ALLOW_REMOTE` | Permite seedear una base remota descartable de forma explicita | `false` |
 | `RESEND_API_KEY` | Habilita envío de email institucional real desde el módulo de contacto | `` |
 | `RESEND_FROM` | Remitente del email enviado por Resend | `"Puentes <onboarding@resend.dev>"` |
 | `CONTACT_RECEIVER` | Destinatario institucional de las consultas de contacto | `contacto@puentes.local` |

@@ -1,11 +1,26 @@
+import { randomBytes } from 'node:crypto'
+
 import bcrypt from 'bcryptjs'
 
 import { PrismaClient } from '@prisma/client'
 
 import { DEFAULT_SERVICES_CATALOG } from '../src/config/defaultServicesCatalog.js'
 import { DEFAULT_APP_SETTINGS } from '../src/config/defaultAppSettings.js'
+import { loadEnv } from '../src/config/loadEnv.js'
+
+loadEnv()
 
 const prisma = new PrismaClient()
+const allowedSeedHostnames = new Set([
+  'localhost',
+  '127.0.0.1',
+  '::1',
+  '[::1]',
+  'host.docker.internal',
+])
+const privateIpv4Pattern =
+  /^(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})$/
+const defaultSeedAdminEmail = 'admin@puentes.local'
 
 const buildDate = (dayOffset, hour, minute = 0) => {
   const date = new Date()
@@ -14,10 +29,61 @@ const buildDate = (dayOffset, hour, minute = 0) => {
   return date
 }
 
+const getSeedEnv = (name, fallback = '') => {
+  const value = process.env[name]?.trim()
+  return value || fallback
+}
+
+const generateDemoPassword = () => randomBytes(12).toString('base64url')
+
+const isSafeSeedHost = (hostname) =>
+  allowedSeedHostnames.has(hostname) ||
+  privateIpv4Pattern.test(hostname) ||
+  hostname.endsWith('.local') ||
+  !hostname.includes('.')
+
+const canSeedDatabaseSafely = (databaseUrl) => {
+  try {
+    const url = new URL(databaseUrl)
+
+    if (url.protocol === 'file:') {
+      return true
+    }
+
+    return isSafeSeedHost(url.hostname)
+  } catch {
+    return false
+  }
+}
+
+const assertSeedSafety = () => {
+  const nodeEnv = getSeedEnv('NODE_ENV', 'development').toLowerCase()
+  const databaseUrl = getSeedEnv('DATABASE_URL')
+  const allowRemoteSeed = getSeedEnv('SEED_ALLOW_REMOTE') === 'true'
+
+  if (nodeEnv === 'production') {
+    throw new Error('Seed bloqueado: no se permite correr datos demo con NODE_ENV=production.')
+  }
+
+  if (!databaseUrl) {
+    throw new Error('Seed bloqueado: DATABASE_URL no esta configurada.')
+  }
+
+  if (!allowRemoteSeed && !canSeedDatabaseSafely(databaseUrl)) {
+    throw new Error(
+      'Seed bloqueado: DATABASE_URL no parece apuntar a una base local o descartable. Usa SEED_ALLOW_REMOTE=true solo si es intencional.',
+    )
+  }
+}
+
 const main = async () => {
-  const adminDemoEmail = 'prof.mcjuncos@gmail.com'
-  const adminDemoPassword = 'Cordoba2020'
-  const defaultDemoPassword = 'Puentes2026!'
+  assertSeedSafety()
+
+  const adminDemoEmail = getSeedEnv('SEED_ADMIN_EMAIL', defaultSeedAdminEmail)
+  const adminDemoPassword = getSeedEnv('SEED_ADMIN_PASSWORD') || generateDemoPassword()
+  const defaultDemoPassword = getSeedEnv('SEED_DEFAULT_PASSWORD') || generateDemoPassword()
+  const isAdminPasswordGenerated = !getSeedEnv('SEED_ADMIN_PASSWORD')
+  const isDefaultPasswordGenerated = !getSeedEnv('SEED_DEFAULT_PASSWORD')
 
   const adminPasswordHash = await bcrypt.hash(adminDemoPassword, 10)
   const defaultPasswordHash = await bcrypt.hash(defaultDemoPassword, 10)
@@ -230,6 +296,9 @@ const main = async () => {
   console.log(`- coordinacion@puentes.local / ${defaultDemoPassword} (${coordinationUser.role})`)
   console.log(`- secretaria@puentes.local / ${defaultDemoPassword} (${secretaryUser.role})`)
   console.log(`- profesional@puentes.local / ${defaultDemoPassword} (${professionalUser.role})`)
+  if (isAdminPasswordGenerated || isDefaultPasswordGenerated) {
+    console.log('- Las passwords fueron generadas en esta corrida. Si queres credenciales estables, defini SEED_ADMIN_PASSWORD y/o SEED_DEFAULT_PASSWORD.')
+  }
   console.log(`- Servicio institucional destacado: ${serviceOne?.name ?? 'No encontrado'}`)
   console.log(`- Servicio operativo destacado: ${serviceThree?.name ?? 'No encontrado'}`)
 }

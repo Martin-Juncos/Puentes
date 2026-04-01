@@ -1,13 +1,6 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { loadEnv } from './loadEnv.js'
 
-import dotenv from 'dotenv'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-dotenv.config({ path: path.resolve(__dirname, '../../../.env'), quiet: true })
-dotenv.config({ path: path.resolve(__dirname, '../../.env'), override: true, quiet: true })
+loadEnv()
 
 const parseCsv = (value = '') =>
   value
@@ -25,6 +18,8 @@ const toBoolean = (value, fallback = false) => {
 
 const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173'
 const frontendUrls = Array.from(new Set([frontendUrl, ...parseCsv(process.env.FRONTEND_URLS)]))
+const DEFAULT_DEVELOPMENT_JWT_SECRET = 'change-me-with-a-long-random-secret'
+const insecureJwtSecrets = new Set(['change-me', DEFAULT_DEVELOPMENT_JWT_SECRET])
 
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? 'development',
@@ -32,7 +27,7 @@ export const env = {
   frontendUrl,
   frontendUrls,
   databaseUrl: process.env.DATABASE_URL ?? '',
-  jwtSecret: process.env.JWT_SECRET ?? 'change-me',
+  jwtSecret: process.env.JWT_SECRET?.trim() || DEFAULT_DEVELOPMENT_JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
   cookieName: process.env.COOKIE_NAME ?? 'puentes_token',
   cookieSecure: toBoolean(process.env.COOKIE_SECURE, false),
@@ -45,3 +40,29 @@ export const env = {
 }
 
 env.isProduction = env.nodeEnv === 'production'
+
+const configErrors = []
+
+if (!env.databaseUrl) {
+  configErrors.push('DATABASE_URL es obligatoria para iniciar el backend.')
+}
+
+if (!Number.isFinite(env.port) || env.port <= 0) {
+  configErrors.push('PORT debe ser un numero positivo.')
+}
+
+if (env.isProduction && insecureJwtSecrets.has(env.jwtSecret)) {
+  configErrors.push('JWT_SECRET debe tener un valor real y no puede quedar con el placeholder por defecto.')
+}
+
+if (configErrors.length) {
+  throw new Error(
+    ['Configuracion invalida de entorno:', ...configErrors.map((message) => `- ${message}`)].join('\n'),
+  )
+}
+
+if (!env.isProduction && insecureJwtSecrets.has(env.jwtSecret)) {
+  console.warn(
+    '[env] JWT_SECRET esta usando el placeholder de desarrollo. Cambialo antes de desplegar o compartir el entorno.',
+  )
+}
