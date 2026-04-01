@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './homeBootstrapOverrides.css'
 import Carousel from 'react-bootstrap/Carousel'
 import { FiArrowLeft, FiArrowRight, FiCheckCircle } from 'react-icons/fi'
 

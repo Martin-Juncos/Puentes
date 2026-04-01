@@ -1,0 +1,7 @@
+.public-gradient a,
+.public-gradient a:visited,
+.public-gradient a:hover,
+.public-gradient a:focus-visible {
+  color: inherit;
+  text-decoration: none;
+}

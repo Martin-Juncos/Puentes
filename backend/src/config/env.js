@@ -40,6 +40,7 @@ export const env = {
 }
 
 env.isProduction = env.nodeEnv === 'production'
+env.isTest = env.nodeEnv === 'test'
 
 const configErrors = []
 
@@ -51,18 +52,14 @@ if (!Number.isFinite(env.port) || env.port <= 0) {
   configErrors.push('PORT debe ser un numero positivo.')
 }
 
-if (env.isProduction && insecureJwtSecrets.has(env.jwtSecret)) {
-  configErrors.push('JWT_SECRET debe tener un valor real y no puede quedar con el placeholder por defecto.')
+if (!env.isTest && insecureJwtSecrets.has(env.jwtSecret)) {
+  configErrors.push(
+    'JWT_SECRET debe tener un valor real y no puede quedar con el placeholder por defecto en runtime.',
+  )
 }
 
 if (configErrors.length) {
   throw new Error(
     ['Configuracion invalida de entorno:', ...configErrors.map((message) => `- ${message}`)].join('\n'),
-  )
-}
-
-if (!env.isProduction && insecureJwtSecrets.has(env.jwtSecret)) {
-  console.warn(
-    '[env] JWT_SECRET esta usando el placeholder de desarrollo. Cambialo antes de desplegar o compartir el entorno.',
   )
 }
