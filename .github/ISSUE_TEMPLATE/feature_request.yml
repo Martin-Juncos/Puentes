@@ -1,0 +1,46 @@
+name: Propuesta de mejora
+description: Sugerir una mejora funcional o de experiencia para el producto o el repo.
+title: "[Mejora]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Necesidad
+      description: Que problema real resolveria esta mejora.
+      placeholder: Secretaria necesita ver en un mismo lugar los cobros pendientes por familia.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Propuesta
+      description: Explica la idea de la forma mas concreta posible.
+      placeholder: Agregar un filtro y una vista resumida de deuda en la pagina de cobros.
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impacto esperado
+      options:
+        - Bajo
+        - Medio
+        - Alto
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Area alcanzada
+      options:
+        - label: Sitio publico
+        - label: Panel interno
+        - label: Backend / API
+        - label: Documentacion / GitHub
+  - type: textarea
+    id: extra
+    attributes:
+      label: Contexto adicional
+      description: Referencias, capturas o decisiones relacionadas.

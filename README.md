@@ -1,6 +1,6 @@
 [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF)](./docs/ci-cd.md)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](./package.json)
-[![License](https://img.shields.io/badge/license-TODO-lightgrey)](#14-licencia)
+[![License](https://img.shields.io/badge/license-pendiente-lightgrey)](#14-licencia)
 
 # Puentes
 
@@ -24,10 +24,9 @@ El código refleja esa necesidad con una arquitectura que separa explícitamente
 
 ## 3. Demo / Screenshots
 
-<!-- TODO: agregar capturas o GIFs reales del sitio público, login, dashboard, agenda y mensajería interna. -->
-<!-- Sugerencia: guardar los assets en docs/screenshots/ y referenciarlos con rutas relativas. -->
+La carpeta `docs/screenshots/` queda reservada para capturas o GIFs reales del sitio público, login, dashboard, agenda y mensajería interna. Por ahora el repositorio no versiona screenshots para evitar que queden desactualizados frente a cambios frecuentes de UI.
 
-Ejemplo de placeholders cuando haya material visual:
+Ejemplo de referencia cuando ese material exista:
 
 ```md
 ![Home pública](docs/screenshots/home-publica.png)
@@ -293,9 +292,9 @@ Nota:
 
 ## 11. Cómo correr los tests
 
-Actualmente el repositorio no define scripts `test` en `package.json` ni se detectaron archivos `*.test.*` o `*.spec.*` dentro de `frontend/` y `backend/`.
+La validación automatizada actual del repositorio combina checks locales y CI de GitHub Actions.
 
-La validación automatizada disponible hoy es:
+Comandos base:
 
 ```bash
 npm run lint
@@ -312,16 +311,27 @@ Qué cubre hoy esa validación:
 
 Cobertura esperada:
 
-<!-- TODO: definir estrategia de testing automatizado y cobertura objetivo (unitaria, integración, e2e). -->
+- baseline actual:
+  - frontend: tests unitarios de hooks compartidos con `Vitest` y `Testing Library`;
+  - backend: smoke tests con `Vitest` y `Supertest`;
+  - CI: ejecución de `lint`, `test` y `build` en PRs y pushes a ramas principales.
+- estrategia de corto plazo:
+  - unit tests para hooks, utils y servicios no triviales;
+  - integration tests para auth, agenda, mensajes y contacto;
+  - smoke e2e para login, agenda y contacto cuando la superficie se estabilice.
+
+Detalle ampliado: `docs/testing.md`.
 
 ## 12. Guía de contribución
 
-Estado inferido del repositorio:
+Baseline actual del repositorio:
 
 - La rama detectada local y remota es `master`.
 - Existe una CI base en `.github/workflows/ci.yml`.
 - Existe una plantilla de PR en `.github/pull_request_template.md`.
-- El historial reciente no muestra una convención formal de commits tipo Conventional Commits.
+- Existen issue templates en `.github/ISSUE_TEMPLATE/`.
+- Existe `CODEOWNERS` en `.github/CODEOWNERS`.
+- Las convenciones de ramas, commits y merge están documentadas en `CONTRIBUTING.md`.
 
 Flujo mínimo sugerido y compatible con el estado actual del repo:
 
@@ -330,14 +340,12 @@ Flujo mínimo sugerido y compatible con el estado actual del repo:
 3. Ejecutar `npm run lint`, `npm run test` y `npm run build` antes de abrir el PR.
 4. Abrir el PR contra `master`.
 
-Convenciones pendientes de formalizar:
+Convenciones activas:
 
-- Branching:
-  `<!-- TODO: definir naming de ramas -->`
-- Commits:
-  `<!-- TODO: definir convención de mensajes de commit -->`
-- Pull requests:
-  usar `.github/pull_request_template.md` como baseline
+- Branching: `feat/<tema>`, `fix/<tema>`, `chore/<tema>`, `docs/<tema>`, `refactor/<tema>`.
+- Commits: mensajes cortos, en imperativo y centrados en el cambio principal.
+- Pull requests: usar `.github/pull_request_template.md` como baseline.
+- GitHub: mantener `master` protegido con CI obligatoria cuando la configuración del repo lo permita.
 
 ## 13. Roadmap
 
@@ -353,14 +361,12 @@ Items detectados en `docs/architecture.md` como etapas previstas:
 
 ## 14. Licencia
 
-No se detectó un archivo `LICENSE` en la raíz del repositorio.
-
-`<!-- TODO: completar tipo de licencia del proyecto -->`
+Todavía no hay un archivo `LICENSE` versionado ni una licencia explícita definida para distribución. Hasta que esa decisión se formalice por parte de la persona propietaria del repositorio, conviene tratar el código como de uso reservado.
 
 ## 15. Autores / Contacto
 
 - Mantenimiento técnico del repositorio:
-  `<!-- TODO: completar responsables técnicos / mantenedores -->`
+  Carlos Martin Juncos (`@Martin-Juncos`, inferido desde `origin` y el historial reciente).
 - Contacto institucional por defecto en la configuración inicial:
   `contacto@puentes.local`
 
