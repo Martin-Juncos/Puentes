@@ -1,4 +1,4 @@
-[![Build](https://img.shields.io/badge/build-sin%20CI-lightgrey)](#11-cómo-correr-los-tests)
+[![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF)](./docs/ci-cd.md)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](./package.json)
 [![License](https://img.shields.io/badge/license-TODO-lightgrey)](#14-licencia)
 
@@ -55,13 +55,13 @@ Ejemplo de placeholders cuando haya material visual:
 | --- | --- |
 | Monorepo | `npm workspaces`, `concurrently` |
 | Frontend | `React 19`, `Vite 8`, `JavaScript`, `React Router 7`, `Tailwind CSS` vía `@tailwindcss/vite` |
-| UI y experiencia | `motion`, `react-big-calendar`, `react-icons`, `react-bootstrap`, `bootstrap`, `animejs`, `date-fns` |
+| UI y experiencia | `motion`, `react-big-calendar`, `react-icons`, `animejs`, `date-fns` |
 | Backend | `Node.js`, `Express 5`, `cookie-parser`, `cors`, `morgan`, `dotenv` |
 | Auth y seguridad | `jsonwebtoken`, cookies `httpOnly`, `bcryptjs`, middlewares de autenticación/autorización |
 | Validación y errores | `Zod`, `AppError`, `errorHandler`, contrato uniforme de errores |
 | Persistencia | `PostgreSQL`, `Prisma ORM` |
 | Integraciones | `Resend` para email institucional opcional |
-| Calidad | `ESLint` en frontend y backend |
+| Calidad | `ESLint`, `Vitest`, `Testing Library`, `Supertest`, GitHub Actions |
 
 ## 6. Arquitectura
 
@@ -299,13 +299,16 @@ La validación automatizada disponible hoy es:
 
 ```bash
 npm run lint
+npm run test
 npm run build
 ```
 
 Qué cubre hoy esa validación:
 
 - `npm run lint`: reglas ESLint del frontend y del backend.
+- `npm run test`: tests de Vitest en frontend y backend.
 - `npm run build`: build de Vite en frontend y `prisma generate` en backend.
+- GitHub Actions ejecuta esos tres comandos automáticamente en PRs y pushes a ramas principales. La baseline está documentada en `docs/ci-cd.md`.
 
 Cobertura esperada:
 
@@ -316,14 +319,15 @@ Cobertura esperada:
 Estado inferido del repositorio:
 
 - La rama detectada local y remota es `master`.
-- No se detectaron plantillas de PR ni flujos de CI configurados en `.github/`.
+- Existe una CI base en `.github/workflows/ci.yml`.
+- Existe una plantilla de PR en `.github/pull_request_template.md`.
 - El historial reciente no muestra una convención formal de commits tipo Conventional Commits.
 
 Flujo mínimo sugerido y compatible con el estado actual del repo:
 
 1. Crear una rama desde `master`.
 2. Mantener el cambio acotado al workspace o módulo afectado.
-3. Ejecutar `npm run lint` y `npm run build` antes de abrir el PR.
+3. Ejecutar `npm run lint`, `npm run test` y `npm run build` antes de abrir el PR.
 4. Abrir el PR contra `master`.
 
 Convenciones pendientes de formalizar:
@@ -333,7 +337,7 @@ Convenciones pendientes de formalizar:
 - Commits:
   `<!-- TODO: definir convención de mensajes de commit -->`
 - Pull requests:
-  `<!-- TODO: definir checklist o template de PR -->`
+  usar `.github/pull_request_template.md` como baseline
 
 ## 13. Roadmap
 

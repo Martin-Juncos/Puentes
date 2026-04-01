@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, test y build
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/puentes_ci
+      JWT_SECRET: ci-build-secret-change-me-please
+      FRONTEND_URL: http://localhost:5173
+      CONTACT_RECEIVER: contacto@puentes.local
+      RESEND_FROM: Puentes <onboarding@resend.dev>
+      PRISMA_HIDE_UPDATE_MESSAGE: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar lint
+        run: npm run lint
+
+      - name: Ejecutar tests
+        run: npm run test
+
+      - name: Ejecutar build
+        run: npm run build
