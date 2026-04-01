@@ -484,16 +484,39 @@ textarea.field-input {
   min-height: 18rem;
 }
 
-.home-signals-carousel .carousel-inner,
-.home-signals-carousel .carousel-item,
-.home-signals-carousel .carousel-item.active,
-.home-signals-carousel .carousel-item-next,
-.home-signals-carousel .carousel-item-prev {
+.home-signals-carousel__viewport,
+.home-signals-carousel__slides {
   min-height: 32rem;
 }
 
 .home-signals-carousel__item {
   position: relative;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.018);
+  filter: saturate(0.94);
+  z-index: 0;
+  transition:
+    opacity 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-signals-carousel__item.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+  filter: saturate(1);
+  z-index: 1;
+}
+
+.home-signals-carousel__slides {
+  position: relative;
+}
+
+.home-signals-carousel__slides .home-signals-carousel__item:not(.is-active) {
+  position: absolute;
+  inset: 0;
 }
 
 .home-signals-carousel__media {
@@ -516,6 +539,7 @@ textarea.field-input {
 }
 
 .home-signals-carousel__caption {
+  position: absolute;
   right: clamp(1rem, 4vw, 2.5rem);
   bottom: clamp(1rem, 4vw, 2.5rem);
   left: clamp(1rem, 4vw, 2.5rem);
@@ -532,6 +556,16 @@ textarea.field-input {
   box-shadow: 0 20px 60px rgba(27, 39, 45, 0.18);
   padding: clamp(1.25rem, 3vw, 2rem);
   text-align: left;
+  opacity: 0;
+  transform: translateY(1rem);
+  transition:
+    opacity 620ms cubic-bezier(0.22, 1, 0.36, 1) 120ms,
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1) 120ms;
+}
+
+.home-signals-carousel__item.is-active .home-signals-carousel__panel {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .home-signals-carousel__control {
@@ -547,26 +581,50 @@ textarea.field-input {
   backdrop-filter: blur(10px);
 }
 
-.home-signals-carousel .carousel-control-prev,
-.home-signals-carousel .carousel-control-next {
+.home-signals-carousel__nav {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   width: 5.5rem;
   opacity: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  z-index: 2;
 }
 
-.home-signals-carousel .carousel-control-prev:focus,
-.home-signals-carousel .carousel-control-next:focus {
+.home-signals-carousel__nav--prev {
+  left: 0;
+}
+
+.home-signals-carousel__nav--next {
+  right: 0;
+}
+
+.home-signals-carousel__nav:focus {
   outline: none;
 }
 
-.home-signals-carousel .carousel-indicators {
+.home-signals-carousel__nav:focus-visible .home-signals-carousel__control {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.22);
+}
+
+.home-signals-carousel__indicators {
+  position: absolute;
   right: auto;
   bottom: 1rem;
   left: 1.5rem;
+  display: flex;
+  align-items: center;
   justify-content: flex-start;
   margin: 0;
+  z-index: 2;
 }
 
-.home-signals-carousel .carousel-indicators [data-bs-target] {
+.home-signals-carousel__indicator {
   width: 0.7rem;
   height: 0.7rem;
   margin-right: 0.45rem;
@@ -575,11 +633,17 @@ textarea.field-input {
   border-radius: 999px;
   background-color: rgba(255, 255, 255, 0.56);
   opacity: 1;
+  padding: 0;
+  transition:
+    width 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 320ms ease,
+    transform 320ms ease;
 }
 
-.home-signals-carousel .carousel-indicators .active {
+.home-signals-carousel__indicator.is-active {
   width: 2.4rem;
   background-color: white;
+  transform: scale(1.02);
 }
 
 @media (max-width: 767px) {
@@ -588,11 +652,8 @@ textarea.field-input {
     margin: 1rem;
   }
 
-  .home-signals-carousel .carousel-inner,
-  .home-signals-carousel .carousel-item,
-  .home-signals-carousel .carousel-item.active,
-  .home-signals-carousel .carousel-item-next,
-  .home-signals-carousel .carousel-item-prev,
+  .home-signals-carousel__viewport,
+  .home-signals-carousel__slides,
   .home-signals-carousel__media,
   .home-signals-carousel__image {
     min-height: 34rem;
@@ -609,14 +670,13 @@ textarea.field-input {
     width: 100%;
   }
 
-  .home-signals-carousel .carousel-control-prev,
-  .home-signals-carousel .carousel-control-next {
+  .home-signals-carousel__nav {
     align-items: start;
     padding-top: 1rem;
     width: 4rem;
   }
 
-  .home-signals-carousel .carousel-indicators {
+  .home-signals-carousel__indicators {
     bottom: 1.2rem;
     left: 50%;
     justify-content: center;
