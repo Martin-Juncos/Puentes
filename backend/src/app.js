@@ -10,8 +10,33 @@ import { notFoundHandler } from './middleware/notFound.js'
 
 export const app = express()
 
-const allowedOrigins = new Set([env.frontendUrl])
-const localhostPattern = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/i
+const allowedOrigins = new Set(env.frontendUrls)
+const localHostnames = new Set(['localhost', '127.0.0.1', '::1', '[::1]'])
+const privateIpv4Pattern =
+  /^(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})$/
+
+const isAllowedDevelopmentOrigin = (origin) => {
+  if (env.isProduction) {
+    return false
+  }
+
+  try {
+    const url = new URL(origin)
+
+    if (url.protocol !== 'http:') {
+      return false
+    }
+
+    return (
+      localHostnames.has(url.hostname) ||
+      privateIpv4Pattern.test(url.hostname) ||
+      url.hostname.endsWith('.local') ||
+      !url.hostname.includes('.')
+    )
+  } catch {
+    return false
+  }
+}
 
 app.use(
   cors({
@@ -21,7 +46,7 @@ app.use(
         return
       }
 
-      if (allowedOrigins.has(origin) || (!env.isProduction && localhostPattern.test(origin))) {
+      if (allowedOrigins.has(origin) || isAllowedDevelopmentOrigin(origin)) {
         callback(null, true)
         return
       }

@@ -11,14 +11,25 @@ const parseResponse = async (response) => {
 }
 
 const request = async (path, options = {}) => {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers ?? {}),
-    },
-    ...options,
-  })
+  let response
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers ?? {}),
+      },
+      ...options,
+    })
+  } catch (error) {
+    const networkError = new Error(
+      'No pudimos conectar el formulario con el servidor. Si el problema sigue, probá por WhatsApp o email.',
+    )
+    networkError.code = 'NETWORK_ERROR'
+    networkError.cause = error
+    throw networkError
+  }
 
   const payload = await parseResponse(response)
 
