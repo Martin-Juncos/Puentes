@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const useAsyncData = (loader, dependencies = []) => {
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const loaderRef = useRef(loader)
+  const dependenciesKey = JSON.stringify(dependencies)
 
-  const load = async () => {
+  useEffect(() => {
+    loaderRef.current = loader
+  }, [loader])
+
+  const load = useCallback(async () => {
     setIsLoading(true)
 
     try {
-      const result = await loader()
+      const result = await loaderRef.current()
       setData(result)
       setError(null)
     } catch (loadError) {
@@ -17,12 +23,11 @@ export const useAsyncData = (loader, dependencies = []) => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies)
+    void load()
+  }, [load, dependenciesKey])
 
   return { data, setData, isLoading, error, reload: load }
 }

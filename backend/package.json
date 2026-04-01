@@ -8,6 +8,7 @@
     "start": "node src/bootstrap.js",
     "build": "prisma generate",
     "lint": "eslint .",
+    "test": "vitest run",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node prisma/seed.js"
@@ -28,6 +29,8 @@
     "@eslint/js": "^9.39.4",
     "eslint": "^9.39.4",
     "globals": "^17.4.0",
-    "prisma": "6.19.2"
+    "prisma": "6.19.2",
+    "supertest": "^7.2.2",
+    "vitest": "^4.1.2"
   }
 }

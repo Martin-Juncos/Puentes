@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FiAlertCircle, FiArrowRight, FiBell, FiClock, FiMessageSquare, FiPlus, FiSend, FiUsers } from 'react-icons/fi'
 import { useSearchParams } from 'react-router-dom'
 
@@ -139,11 +139,11 @@ export const MessagesPage = () => {
     return threads
   }, [activeFilter, threads])
 
-  const updateRouteState = ({ childId = childIdFromUrl, compose = false, threadId = '' }) => {
+  const updateRouteState = useCallback(({ childId = childIdFromUrl, compose = false, threadId = '' }) => {
     setSearchParams(buildSearchParamsState({ childId, compose, threadId }), { replace: true })
-  }
+  }, [childIdFromUrl, setSearchParams])
 
-  const loadThreads = async ({ silent = false } = {}) => {
+  const loadThreads = useCallback(async ({ silent = false } = {}) => {
     if (!silent) {
       setIsThreadsLoading(true)
     }
@@ -159,9 +159,9 @@ export const MessagesPage = () => {
         setIsThreadsLoading(false)
       }
     }
-  }
+  }, [childIdFromUrl])
 
-  const loadActiveThread = async (threadId, { silent = false } = {}) => {
+  const loadActiveThread = useCallback(async (threadId, { silent = false } = {}) => {
     if (!threadId) {
       setActiveThread(null)
       return
@@ -191,7 +191,7 @@ export const MessagesPage = () => {
         setIsThreadLoading(false)
       }
     }
-  }
+  }, [])
 
   useEffect(() => {
     setIsComposeOpen(composeFromUrl)
@@ -208,8 +208,7 @@ export const MessagesPage = () => {
 
   useEffect(() => {
     void loadThreads()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [childIdFromUrl])
+  }, [loadThreads])
 
   useEffect(() => {
     if (isComposeOpen || activeThreadId || isThreadsLoading || !threads.length) {
@@ -219,8 +218,7 @@ export const MessagesPage = () => {
     const nextThreadId = threads[0].id
     setActiveThreadId(nextThreadId)
     updateRouteState({ childId: childIdFromUrl, threadId: nextThreadId })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeThreadId, childIdFromUrl, isComposeOpen, isThreadsLoading, threads])
+  }, [activeThreadId, childIdFromUrl, isComposeOpen, isThreadsLoading, threads, updateRouteState])
 
   useEffect(() => {
     if (!activeThreadId || isComposeOpen) {
@@ -228,7 +226,7 @@ export const MessagesPage = () => {
     }
 
     void loadActiveThread(activeThreadId)
-  }, [activeThreadId, isComposeOpen])
+  }, [activeThreadId, isComposeOpen, loadActiveThread])
 
   useEffect(() => {
     if (!isComposeOpen || (!composeForm.childId && !composeForm.contextType)) {
@@ -294,8 +292,7 @@ export const MessagesPage = () => {
     return () => {
       window.removeEventListener(PANEL_NOTIFICATIONS_SYNC_EVENT, handleSync)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeThreadId, isComposeOpen, childIdFromUrl])
+  }, [activeThreadId, isComposeOpen, loadActiveThread, loadThreads])
 
   usePolling(
     () => loadThreads({ silent: true }),

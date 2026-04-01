@@ -51,8 +51,7 @@ export const usePanelNotifications = ({ enabled }) => {
     }
 
     void syncNotifications({ includeList: isOpen })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, isOpen])
+  }, [enabled, isOpen, syncNotifications])
 
   useEffect(() => {
     if (!enabled) {
@@ -68,8 +67,7 @@ export const usePanelNotifications = ({ enabled }) => {
     return () => {
       window.removeEventListener(PANEL_NOTIFICATIONS_SYNC_EVENT, handleSync)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, isOpen])
+  }, [enabled, isOpen, syncNotifications])
 
   usePolling(
     () => syncNotifications({ includeList: isOpen, silent: true }),
