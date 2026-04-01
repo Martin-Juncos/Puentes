@@ -177,13 +177,28 @@ export const PublicLayout = () => {
               </>
             ) : (
               <>
-                <Button as={NavLink} className="gap-2" to="/contacto" variant="outline">
-                  <FiMessageCircle aria-hidden="true" className="size-4" />
-                  Consultar
+                <Button
+                  as={NavLink}
+                  className={cn(desktopAuthActionClass, 'gap-2.5')}
+                  size="sm"
+                  to="/contacto"
+                  variant="outline"
+                >
+                  <div className="flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)] transition-colors duration-200 group-hover:bg-white/16 group-hover:text-white">
+                    <FiMessageCircle aria-hidden="true" className="size-3.5" />
+                  </div>
+                  <span className="text-[0.9rem] leading-none transition-colors duration-200 group-hover:text-white">Consultar</span>
                 </Button>
-                <Button className="gap-2" onClick={() => setIsAccessOpen(true)}>
-                  <FiLogIn aria-hidden="true" className="size-4" />
-                  Ingresar
+                <Button
+                  className={cn(desktopAuthActionClass, 'gap-2.5')}
+                  onClick={() => setIsAccessOpen(true)}
+                  size="sm"
+                  variant="outline"
+                >
+                  <div className="flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)] transition-colors duration-200 group-hover:bg-white/16 group-hover:text-white">
+                    <FiLogIn aria-hidden="true" className="size-3.5" />
+                  </div>
+                  <span className="text-[0.9rem] leading-none transition-colors duration-200 group-hover:text-white">Ingresar</span>
                 </Button>
               </>
             )}
@@ -256,7 +271,8 @@ export const PublicLayout = () => {
                   </div>
                 ) : (
                   <div className="grid gap-2">
-                    <Button as={NavLink} onClick={() => setIsMobileNavOpen(false)} to="/contacto" variant="outline">
+                    <Button as={NavLink} className="gap-2" onClick={() => setIsMobileNavOpen(false)} to="/contacto" variant="outline">
+                      <FiMessageCircle aria-hidden="true" className="size-4" />
                       Consultar
                     </Button>
                     <Button
@@ -265,6 +281,7 @@ export const PublicLayout = () => {
                         setIsMobileNavOpen(false)
                         setIsAccessOpen(true)
                       }}
+                      variant="outline"
                     >
                       <FiLogIn aria-hidden="true" className="size-4" />
                       Ingresar

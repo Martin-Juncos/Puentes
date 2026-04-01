@@ -57,6 +57,8 @@
   --shadow-soft: 0 24px 80px rgba(47, 93, 115, 0.12);
   --shadow-elevated: 0 28px 90px rgba(47, 93, 115, 0.18);
   --shadow-modal: 0 32px 110px rgba(27, 39, 45, 0.2);
+  --shadow-button: 0 8px 18px rgba(47, 93, 115, 0.08);
+  --shadow-button-hover: 0 14px 28px rgba(47, 93, 115, 0.14);
 
   --layout-max-public: 96rem;
   --layout-max-panel: 88rem;

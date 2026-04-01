@@ -4,19 +4,19 @@ import { cn } from '@/utils/cn'
 
 const variants = {
   primary:
-    'border border-transparent bg-[var(--color-primary)] !text-white hover:bg-[#24495b] focus-visible:ring-[var(--color-focus-ring)]',
+    'button-elevated border border-transparent bg-[var(--color-primary)] !text-white hover:bg-[var(--color-primary-strong)] focus-visible:ring-[var(--color-focus-ring)]',
   secondary:
-    'border border-transparent bg-[var(--color-secondary)] !text-[var(--color-primary)] hover:bg-[#93b4a4] focus-visible:ring-[rgba(167,196,181,0.34)]',
+    'button-elevated border border-transparent bg-[var(--color-secondary)] !text-[var(--color-primary)] hover:bg-[var(--color-secondary-strong)] focus-visible:ring-[rgba(167,196,181,0.34)]',
   outline:
-    'border border-[var(--color-border-soft)] bg-white !text-[var(--color-primary)] hover:bg-[rgba(47,93,115,0.04)] focus-visible:ring-[var(--color-focus-ring)]',
+    'button-elevated border border-[var(--color-border-soft)] bg-white !text-[var(--color-primary)] hover:border-[var(--color-border-strong)] hover:bg-[rgba(47,93,115,0.04)] focus-visible:ring-[var(--color-focus-ring)]',
   contrast:
     'border border-white/20 bg-transparent !text-white hover:bg-white/10 focus-visible:ring-[rgba(255,255,255,0.22)]',
   ghost:
     'border border-transparent bg-transparent !text-[var(--color-primary)] hover:bg-[rgba(47,93,115,0.06)] focus-visible:ring-[var(--color-focus-ring)]',
   destructive:
-    'border border-transparent bg-[#b75f50] !text-white hover:bg-[#9f4f43] focus-visible:ring-[rgba(183,95,80,0.22)]',
+    'button-elevated border border-transparent bg-[var(--color-accent-strong)] !text-white hover:bg-[#9f4f43] focus-visible:ring-[rgba(183,95,80,0.22)]',
   subtle:
-    'border border-transparent bg-[rgba(47,93,115,0.08)] !text-[var(--color-primary)] hover:bg-[rgba(47,93,115,0.12)] focus-visible:ring-[var(--color-focus-ring)]',
+    'button-elevated border border-transparent bg-[rgba(47,93,115,0.08)] !text-[var(--color-primary)] hover:bg-[rgba(47,93,115,0.12)] focus-visible:ring-[var(--color-focus-ring)]',
 }
 
 const sizes = {
@@ -36,8 +36,7 @@ export const Button = ({
 }) =>
   createElement(as, {
     className: cn(
-      'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors transition-transform duration-200 focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0',
-      as === 'button' ? 'active:translate-y-[1px]' : '',
+      'inline-flex appearance-none items-center justify-center gap-2 rounded-full font-semibold outline-none transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none',
       variants[variant] ?? variants.primary,
       sizes[size] ?? sizes.md,
       className,
