@@ -15,7 +15,12 @@ const buildDate = (dayOffset, hour, minute = 0) => {
 }
 
 const main = async () => {
-  const passwordHash = await bcrypt.hash('Puentes2026!', 10)
+  const adminDemoEmail = 'prof.mcjuncos@gmail.com'
+  const adminDemoPassword = 'Cordoba2020'
+  const defaultDemoPassword = 'Puentes2026!'
+
+  const adminPasswordHash = await bcrypt.hash(adminDemoPassword, 10)
+  const defaultPasswordHash = await bcrypt.hash(defaultDemoPassword, 10)
 
   await prisma.notification.deleteMany()
   await prisma.message.deleteMany()
@@ -42,8 +47,8 @@ const main = async () => {
     prisma.user.create({
       data: {
         fullName: 'Valeria Admin',
-        email: 'admin@puentes.local',
-        passwordHash,
+        email: adminDemoEmail,
+        passwordHash: adminPasswordHash,
         role: 'ADMIN',
         phone: '+54 11 5555 0101',
       },
@@ -52,7 +57,7 @@ const main = async () => {
       data: {
         fullName: 'Lucía Coordinación',
         email: 'coordinacion@puentes.local',
-        passwordHash,
+        passwordHash: defaultPasswordHash,
         role: 'COORDINATION',
         phone: '+54 11 5555 0102',
       },
@@ -61,7 +66,7 @@ const main = async () => {
       data: {
         fullName: 'Marina Secretaría',
         email: 'secretaria@puentes.local',
-        passwordHash,
+        passwordHash: defaultPasswordHash,
         role: 'SECRETARY',
         phone: '+54 11 5555 0103',
       },
@@ -70,7 +75,7 @@ const main = async () => {
       data: {
         fullName: 'Camila Psicopedagogía',
         email: 'profesional@puentes.local',
-        passwordHash,
+        passwordHash: defaultPasswordHash,
         role: 'PROFESSIONAL',
         phone: '+54 11 5555 0104',
       },
@@ -221,10 +226,10 @@ const main = async () => {
 
   console.log('Seed completado.')
   console.log('Usuarios demo:')
-  console.log(`- admin@puentes.local / Puentes2026! (${adminUser.role})`)
-  console.log(`- coordinacion@puentes.local / Puentes2026! (${coordinationUser.role})`)
-  console.log(`- secretaria@puentes.local / Puentes2026! (${secretaryUser.role})`)
-  console.log(`- profesional@puentes.local / Puentes2026! (${professionalUser.role})`)
+  console.log(`- ${adminDemoEmail} / ${adminDemoPassword} (${adminUser.role})`)
+  console.log(`- coordinacion@puentes.local / ${defaultDemoPassword} (${coordinationUser.role})`)
+  console.log(`- secretaria@puentes.local / ${defaultDemoPassword} (${secretaryUser.role})`)
+  console.log(`- profesional@puentes.local / ${defaultDemoPassword} (${professionalUser.role})`)
   console.log(`- Servicio institucional destacado: ${serviceOne?.name ?? 'No encontrado'}`)
   console.log(`- Servicio operativo destacado: ${serviceThree?.name ?? 'No encontrado'}`)
 }

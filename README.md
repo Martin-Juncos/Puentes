@@ -244,7 +244,7 @@ npm run build
 
 | Rol | Email | Password |
 | --- | --- | --- |
-| `ADMIN` | `admin@puentes.local` | `Puentes2026!` |
+| `ADMIN` | `prof.mcjuncos@gmail.com` | `Cordoba2020` |
 | `COORDINATION` | `coordinacion@puentes.local` | `Puentes2026!` |
 | `SECRETARY` | `secretaria@puentes.local` | `Puentes2026!` |
 | `PROFESSIONAL` | `profesional@puentes.local` | `Puentes2026!` |
