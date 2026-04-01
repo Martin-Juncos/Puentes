@@ -26,101 +26,107 @@ const normalizeMediaKey = (value = '') =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '')
 
+const MEDIA_ROOT = '/media'
+const BRANDING_ROOT = `${MEDIA_ROOT}/branding`
+const INSTITUTIONAL_ROOT = `${MEDIA_ROOT}/institutional`
+const HOME_HIGHLIGHTS_ROOT = `${MEDIA_ROOT}/home/highlights`
+const TEAM_ROOT = `${MEDIA_ROOT}/team`
+
 export const media = {
   logo: {
-    src: '/media/logo.png',
+    src: `${BRANDING_ROOT}/logo.png`,
     alt: 'Marca institucional de Puentes',
   },
   homeHero: {
-    src: '/media/20.jpg',
+    src: `${INSTITUTIONAL_ROOT}/home-hero.jpg`,
     alt: 'Espacio de orientacion y acompanamiento familiar en Puentes',
   },
   servicesHero: {
-    src: '/media/1.jpg',
+    src: `${INSTITUTIONAL_ROOT}/services-hero.jpg`,
     alt: 'Servicios institucionales de Puentes para el trabajo interdisciplinario',
   },
   loginPanel: {
-    src: '/media/2.jpg',
+    src: `${INSTITUTIONAL_ROOT}/login-panel.jpg`,
     alt: 'Acceso institucional al panel privado de Puentes',
   },
   teamSupport: {
-    src: '/media/3.jpg',
+    src: `${INSTITUTIONAL_ROOT}/team-support.jpg`,
     alt: 'Equipo profesional y trabajo articulado en Puentes',
   },
   aboutHero: {
-    src: '/media/4.jpg',
+    src: `${INSTITUTIONAL_ROOT}/about-hero.jpg`,
     alt: 'Identidad institucional y acompanamiento del centro Puentes',
   },
   newsTeaser: {
-    src: '/media/5.jpg',
+    src: `${INSTITUTIONAL_ROOT}/news-teaser.jpg`,
     alt: 'Espacio preparado para novedades y recursos institucionales',
   },
   trustSupport: {
-    src: '/media/6.jpg',
+    src: `${INSTITUTIONAL_ROOT}/trust-support.jpg`,
     alt: 'Clima de confianza, escucha y acompanamiento en Puentes',
   },
   aboutSupport: {
-    src: '/media/7.jpg',
+    src: `${INSTITUTIONAL_ROOT}/about-support.jpg`,
     alt: 'Trabajo con familias y continuidad institucional en Puentes',
   },
   approachHero: {
-    src: '/media/8.jpg',
+    src: `${INSTITUTIONAL_ROOT}/approach-hero.jpg`,
     alt: 'Modalidad de acompanamiento interdisciplinario en Puentes',
   },
   contactHero: {
-    src: '/media/9.jpg',
+    src: `${INSTITUTIONAL_ROOT}/contact-hero.jpg`,
     alt: 'Espacio de contacto y acompanamiento institucional de Puentes',
   },
   banner1: {
-    src: '/media/banner1.png',
+    src: `${HOME_HIGHLIGHTS_ROOT}/interdisciplinary-look.jpg`,
     alt: 'Material de acompanamiento y juego terapeutico en Puentes',
   },
   banner2: {
-    src: '/media/banner2.png',
+    src: `${HOME_HIGHLIGHTS_ROOT}/family-work.jpg`,
     alt: 'Trabajo con familias y acompanamiento institucional en Puentes',
   },
   banner3: {
-    src: '/media/banner3.png',
+    src: `${HOME_HIGHLIGHTS_ROOT}/initial-guidance.jpg`,
     alt: 'Espacio preparado para orientacion y desarrollo infantil en Puentes',
   },
   banner4: {
-    src: '/media/banner4.png',
+    src: `${HOME_HIGHLIGHTS_ROOT}/follow-up-continuity.jpg`,
     alt: 'Recursos de apoyo y seguimiento continuo en Puentes',
   },
   banner5: {
-    src: '/media/banner5.png',
+    src: `${HOME_HIGHLIGHTS_ROOT}/share-your-concern.jpg`,
     alt: 'Primer acercamiento y acompanamiento institucional en Puentes',
   },
   banner6: {
-    src: '/media/banner6.png',
+    src: `${HOME_HIGHLIGHTS_ROOT}/professional-guidance.jpg`,
     alt: 'Orientacion compartida con familias y profesionales en Puentes',
   },
   banner7: {
-    src: '/media/banner7.png',
+    src: `${HOME_HIGHLIGHTS_ROOT}/first-step-coordination.jpg`,
     alt: 'Coordinacion del primer paso y trabajo articulado en Puentes',
   },
   aboutInstitutionalTrust: {
-    src: '/media/12.jpg',
+    src: `${INSTITUTIONAL_ROOT}/about-institutional-trust.jpg`,
     alt: 'Presencia institucional confiable y acompanamiento profesional en Puentes',
   },
   aboutFollowUp: {
-    src: '/media/14.jpg',
+    src: `${INSTITUTIONAL_ROOT}/about-follow-up.jpg`,
     alt: 'Seguimiento consistente y situado en los procesos de acompanamiento de Puentes',
   },
   approachDevelopmentSupport: {
-    src: '/media/16.jpg',
+    src: `${INSTITUTIONAL_ROOT}/approach-development-support.jpg`,
     alt: 'Acompanamiento del desarrollo infantil en Puentes',
   },
   approachInterdisciplinaryWork: {
-    src: '/media/17.jpg',
+    src: `${INSTITUTIONAL_ROOT}/approach-interdisciplinary-work.jpg`,
     alt: 'Trabajo interdisciplinario con equipo y familias en Puentes',
   },
   approachOperationalFollowUp: {
-    src: '/media/18.jpg',
+    src: `${INSTITUTIONAL_ROOT}/approach-operational-follow-up.jpg`,
     alt: 'Seguimiento operativo y profesional claro en Puentes',
   },
   approachInstitutionalCommunication: {
-    src: '/media/19.jpg',
+    src: `${INSTITUTIONAL_ROOT}/approach-institutional-communication.jpg`,
     alt: 'Comunicacion institucional cercana y consistente en Puentes',
   },
 }
@@ -133,7 +139,7 @@ export const getProfessionalPhoto = (fullName) => {
   }
 
   return {
-    src: `/media/team/${normalizedKey}.jpg`,
+    src: `${TEAM_ROOT}/${normalizedKey}.jpg`,
     alt: `Retrato profesional de ${fullName} en Puentes`,
   }
 }
