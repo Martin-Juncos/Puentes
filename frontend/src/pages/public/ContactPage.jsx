@@ -12,8 +12,8 @@ const fallbackSettings = {
   centerName: 'Puentes',
   address: 'Espana 930, Goya, Corrientes',
   institutionalEmail: 'contacto@puentes.local',
-  institutionalPhone: '+54 11 5555 0000',
-  whatsappUrl: 'https://wa.me/5491100000000?text=Hola%20Puentes',
+  institutionalPhone: '+54 9 3777 679100',
+  whatsappUrl: 'https://wa.me/5493777679100?text=Hola%20Puentes',
   businessHoursSummary: 'Lunes a viernes de 8 a 20 h.',
 }
 

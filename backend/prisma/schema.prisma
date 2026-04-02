@@ -350,8 +350,8 @@ model AppSettings {
   id                            String   @id
   centerName                    String   @default("Puentes")
   institutionalEmail            String   @default("contacto@puentes.local")
-  institutionalPhone            String   @default("+54 11 5555 0000")
-  whatsappUrl                   String   @default("https://wa.me/5491100000000?text=Hola%20Puentes")
+  institutionalPhone            String   @default("+54 9 3777 679100")
+  whatsappUrl                   String   @default("https://wa.me/5493777679100?text=Hola%20Puentes")
   address                       String   @default("Buenos Aires, Argentina")
   businessHoursSummary          String   @default("Lunes a viernes de 8 a 20 h.")
   defaultServiceDurationMinutes Int      @default(60)
