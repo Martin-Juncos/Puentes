@@ -16,6 +16,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatedBrandLockup } from '@/components/ui/AnimatedBrandLockup'
 import { Button } from '@/components/ui/Button'
 import { FloatingWhatsAppButton } from '@/components/ui/FloatingWhatsAppButton'
+import { IdentityTextStack } from '@/components/ui/IdentityTextStack'
 import { ModalShell } from '@/components/ui/ModalShell'
 import { publicNavigation } from '@/constants/navigation'
 import { media } from '@/constants/media'
@@ -146,7 +147,7 @@ export const PublicLayout = () => {
               <>
                 <Button
                   as={NavLink}
-                  className={cn(desktopAuthActionClass, 'h-auto justify-start gap-2.5 text-left')}
+                  className={cn(desktopAuthActionClass, 'h-auto min-w-0 max-w-full justify-start gap-2.5 text-left')}
                   size="sm"
                   to="/app/dashboard"
                   variant="outline"
@@ -154,14 +155,14 @@ export const PublicLayout = () => {
                   <div className="flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)] transition-colors duration-200 group-hover:bg-white/16 group-hover:text-white">
                     <FiUser aria-hidden="true" className="size-3.5" />
                   </div>
-                  <div className="hidden sm:flex sm:flex-col sm:gap-0">
-                    <p className="mt-3 text-[0.9rem] font-semibold leading-none text-[var(--color-primary)] transition-colors duration-200 group-hover:text-white">
-                      {user.fullName}
-                    </p>
-                    <p className="-mt-1.5 text-[0.55rem] uppercase tracking-[0.16em] leading-none text-[rgba(47,93,115,0.62)] transition-colors duration-200 group-hover:text-white/78">
-                      {ROLE_LABELS[user.role]}
-                    </p>
-                  </div>
+                  <IdentityTextStack
+                    className="hidden sm:grid sm:max-w-[12rem]"
+                    subtitle={ROLE_LABELS[user.role]}
+                    subtitleClassName="text-[0.55rem] tracking-[0.16em] transition-colors duration-200 group-hover:text-white/78"
+                    title={user.fullName}
+                    titleClassName="text-[0.9rem] transition-colors duration-200 group-hover:text-white"
+                    truncate
+                  />
                 </Button>
                 <Button
                   className={cn(desktopAuthActionClass, 'gap-2.5')}
@@ -254,12 +255,13 @@ export const PublicLayout = () => {
                       <div className="flex size-7 items-center justify-center rounded-full bg-[rgba(47,93,115,0.08)] text-[var(--color-primary)]">
                         <FiUser aria-hidden="true" className="size-3.5" />
                       </div>
-                      <div className="flex flex-col gap-0">
-                        <p className="text-[0.95rem] font-semibold leading-none text-[var(--color-primary)]">{user.fullName}</p>
-                        <p className="text-[0.58rem] uppercase tracking-[0.14em] leading-none text-[rgba(47,93,115,0.62)]">
-                          {ROLE_LABELS[user.role]}
-                        </p>
-                      </div>
+                      <IdentityTextStack
+                        className="gap-0.5"
+                        subtitle={ROLE_LABELS[user.role]}
+                        subtitleClassName="text-[0.58rem] tracking-[0.14em]"
+                        title={user.fullName}
+                        titleClassName="text-[0.95rem]"
+                      />
                     </div>
                     <Button as={NavLink} onClick={() => setIsMobileNavOpen(false)} to="/app/dashboard" variant="outline">
                       Ir al panel

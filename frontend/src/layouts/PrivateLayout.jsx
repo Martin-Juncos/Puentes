@@ -5,6 +5,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { NotificationsPanel } from '@/components/private/NotificationsPanel'
 import { Button } from '@/components/ui/Button'
+import { IdentityTextStack } from '@/components/ui/IdentityTextStack'
 import { privateNavigation } from '@/constants/navigation'
 import { media } from '@/constants/media'
 import { ROLE_LABELS } from '@/constants/roles'
@@ -125,12 +126,14 @@ export const PrivateLayout = () => {
       <div className="flex size-7 items-center justify-center rounded-full bg-white text-[var(--color-primary)]">
         <FiUser aria-hidden="true" className="size-3.5" />
       </div>
-      <div className="flex flex-col gap-0">
-        <p className="text-[0.95rem] font-semibold leading-none text-[var(--color-primary)]">{user.fullName}</p>
-        <p className="text-[0.58rem] uppercase tracking-[0.14em] leading-none text-[rgba(47,93,115,0.65)]">
-          {ROLE_LABELS[user.role]}
-        </p>
-      </div>
+      <IdentityTextStack
+        className="gap-0.5"
+        subtitle={ROLE_LABELS[user.role]}
+        subtitleClassName="text-[0.58rem] tracking-[0.14em] text-[rgba(47,93,115,0.65)]"
+        title={user.fullName}
+        titleClassName="text-[0.95rem]"
+        truncate
+      />
     </div>
   )
 
