@@ -41,6 +41,9 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Generar cliente de Prisma
+        run: npm run prisma:generate --workspace backend
+
       - name: Ejecutar lint
         run: npm run lint
 
