@@ -5,6 +5,7 @@ import { PanelAccessNotice } from '@/components/private/PanelAccessNotice'
 import { PanelSectionHeader } from '@/components/private/PanelSectionHeader'
 import { PanelTableHeader } from '@/components/private/PanelTableHeader'
 import { SelectionStateCard } from '@/components/private/SelectionStateCard'
+import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDeleteModal } from '@/components/ui/ConfirmDeleteModal'
 import { DataTable } from '@/components/ui/DataTable'
@@ -73,7 +74,11 @@ export const ServicesAdminPage = () => {
   const [defaultServiceDuration, setDefaultServiceDuration] = useState(60)
   const [successModal, setSuccessModal] = useState(successModalInitial)
 
-  const { data: services, reload } = useAsyncData(() => servicesService.listManage(), [])
+  const {
+    data: services,
+    error: servicesError,
+    reload,
+  } = useAsyncData(() => servicesService.listManage(), [])
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -311,6 +316,12 @@ export const ServicesAdminPage = () => {
           de un perfil disciplinar según el abordaje institucional.
         </p>
       </PanelCard>
+
+      {servicesError ? (
+        <Alert title="No pudimos cargar los servicios operativos" tone="error">
+          {servicesError.message}
+        </Alert>
+      ) : null}
 
       <div className="grid gap-6 2xl:grid-cols-[1fr_1fr]">
         <PanelCard className={!canManage ? 'bg-[rgba(47,93,115,0.04)]' : ''}>

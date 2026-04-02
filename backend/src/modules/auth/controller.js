@@ -5,7 +5,7 @@ import { getSessionUser, login } from './service.js'
 
 const cookieOptions = {
   httpOnly: true,
-  sameSite: 'lax',
+  sameSite: env.cookieSameSite,
   secure: env.cookieSecure || env.isProduction,
   path: '/',
 }

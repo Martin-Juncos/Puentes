@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { FiEdit2, FiUserCheck } from 'react-icons/fi'
 
 import { PageHeader } from '@/components/private/PageHeader'
+import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DataTable } from '@/components/ui/DataTable'
@@ -38,7 +39,11 @@ export const ProfessionalsPage = () => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const canManage = ['ADMIN', 'COORDINATION'].includes(user.role)
 
-  const { data: professionals, reload } = useAsyncData(() => professionalsService.listManage(), [])
+  const {
+    data: professionals,
+    error: professionalsError,
+    reload,
+  } = useAsyncData(() => professionalsService.listManage(), [])
 
   const selectedProfessional = useMemo(
     () => professionals.find((professional) => professional.user.id === form.userId) ?? null,
@@ -94,6 +99,12 @@ export const ProfessionalsPage = () => {
         title="Perfiles del equipo"
         meta={selectedProfessional ? <Badge variant="neutral">Editando: {selectedProfessional.user.fullName}</Badge> : null}
       />
+
+      {professionalsError ? (
+        <Alert title="No pudimos cargar los perfiles profesionales" tone="error">
+          {professionalsError.message}
+        </Alert>
+      ) : null}
 
       <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <PanelCard variant="form">
@@ -228,7 +239,7 @@ export const ProfessionalsPage = () => {
             </form>
           )}
 
-          {canManage && professionals.length === 0 ? (
+          {canManage && professionals.length === 0 && !professionalsError ? (
             <EmptyState
               className="mt-6"
               description="Creá primero usuarios y luego completá sus perfiles profesionales desde este módulo."

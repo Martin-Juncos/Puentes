@@ -19,6 +19,7 @@ export const buildDashboardSections = ({
   summary,
   upcomingSessions,
   users,
+  usersValue,
 }) => ({
   agenda: {
     key: 'agenda',
@@ -159,7 +160,7 @@ export const buildDashboardSections = ({
   users: {
     key: 'users',
     label: 'Usuarios',
-    value: users.length,
+    value: usersValue,
     description: 'Usuarios del sistema, con su rol actual y estado de acceso.',
     rows: users,
     emptyText: canViewUsers
