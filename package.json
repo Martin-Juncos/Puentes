@@ -18,7 +18,9 @@
     "lint": "npm run lint --workspace frontend && npm run lint --workspace backend",
     "test": "npm run test --workspace frontend && npm run test --workspace backend",
     "prisma:migrate": "npm run prisma:migrate --workspace backend",
-    "prisma:seed": "npm run prisma:seed --workspace backend"
+    "prisma:migrate:deploy": "npm run prisma:migrate:deploy --workspace backend",
+    "prisma:seed": "npm run prisma:seed --workspace backend",
+    "bootstrap:admin": "npm run bootstrap:admin --workspace backend"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
