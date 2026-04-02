@@ -1,6 +1,12 @@
 import { z } from 'zod'
 
-import { idParamSchema, stripHtmlToText } from '../../utils/validation.js'
+import { idParamSchema, preprocessOptionalString, stripHtmlToText } from '../../utils/validation.js'
+
+const messageContextTypeSchema = z.enum(['CONSULTA', 'REPORTE', 'INFORMACION'])
+const optionalMessageContextTypeSchema = z.preprocess(
+  (value) => (value === '' ? undefined : value),
+  messageContextTypeSchema.optional(),
+)
 
 const messageBodySchema = z.string().trim().superRefine((value, context) => {
   if (stripHtmlToText(value).length < 2) {
@@ -13,15 +19,15 @@ const messageBodySchema = z.string().trim().superRefine((value, context) => {
 
 export const messageThreadsQuerySchema = {
   query: z.object({
-    childId: z.string().trim().min(1).optional(),
+    childId: preprocessOptionalString(z.string().trim().min(1)),
   }),
 }
 
 export const messageRecipientsQuerySchema = {
   query: z
     .object({
-      childId: z.string().trim().min(1).optional(),
-      contextType: z.enum(['CONSULTA', 'REPORTE', 'INFORMACION']).optional(),
+      childId: preprocessOptionalString(z.string().trim().min(1)),
+      contextType: optionalMessageContextTypeSchema,
     })
     .superRefine((value, context) => {
       if (!value.childId && !value.contextType) {
@@ -41,8 +47,8 @@ export const getMessageThreadSchema = {
 export const createMessageThreadSchema = {
   body: z
     .object({
-      childId: z.string().trim().min(1).optional(),
-      contextType: z.enum(['CONSULTA', 'REPORTE', 'INFORMACION']).optional(),
+      childId: preprocessOptionalString(z.string().trim().min(1)),
+      contextType: optionalMessageContextTypeSchema,
       subject: z.string().trim().min(3, 'El asunto debe tener al menos 3 caracteres.').max(160),
       participantUserIds: z.array(z.string().trim().min(1)).min(1, 'Debes seleccionar al menos un destinatario.'),
       priority: z.enum(['NORMAL', 'HIGH']).default('NORMAL'),

@@ -99,6 +99,16 @@ const parseComposeContextValue = (value) => {
   }
 }
 
+const resolveComposeErrorMessage = (error) => {
+  const firstDetail = error.details?.[0]
+
+  if (firstDetail?.message) {
+    return firstDetail.message
+  }
+
+  return error.message
+}
+
 export const MessagesPage = () => {
   const { user } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -262,7 +272,7 @@ export const MessagesPage = () => {
           return
         }
 
-        setComposeError(error.message)
+        setComposeError(resolveComposeErrorMessage(error))
         setComposeRecipients([])
       } finally {
         if (isActive) {
@@ -390,7 +400,7 @@ export const MessagesPage = () => {
       setIsSuccessModalOpen(true)
       emitNotificationsSync()
     } catch (error) {
-      setComposeError(error.message)
+      setComposeError(resolveComposeErrorMessage(error))
     } finally {
       setIsCreatingThread(false)
     }
@@ -413,7 +423,7 @@ export const MessagesPage = () => {
       await loadThreads({ silent: true })
       emitNotificationsSync()
     } catch (error) {
-      setReplyError(error.message)
+      setReplyError(resolveComposeErrorMessage(error))
     } finally {
       setIsSendingReply(false)
     }
