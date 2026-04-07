@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FiClipboard, FiMessageSquare, FiTrash2, FiUserPlus } from 'react-icons/fi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { PanelAccessNotice } from '@/components/private/PanelAccessNotice'
 import { PanelSectionHeader } from '@/components/private/PanelSectionHeader'
@@ -125,6 +125,7 @@ const successModalInitial = {
 export const ChildrenPage = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [childCreateForm, setChildCreateForm] = useState(childCreateInitial)
   const [childUpdateForm, setChildUpdateForm] = useState(childUpdateInitial)
   const [assignmentForm, setAssignmentForm] = useState(assignmentInitial)
@@ -138,11 +139,13 @@ export const ChildrenPage = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const [resolutionActionKey, setResolutionActionKey] = useState('')
   const [successModal, setSuccessModal] = useState(successModalInitial)
+  const lastAutoSelectedChildIdRef = useRef('')
 
   const { data: children, reload } = useAsyncData(() => childrenService.list(), [])
   const { data: families } = useAsyncData(() => familiesService.list(), [])
   const { data: professionals } = useAsyncData(() => professionalsService.listManage(), [])
   const { data: services } = useAsyncData(() => servicesService.listManage(), [])
+  const childIdFromUrl = searchParams.get('childId') ?? ''
 
   const canManageChildren = ['ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'].includes(user.role)
   const selectedChild = useMemo(
@@ -168,10 +171,25 @@ export const ChildrenPage = () => {
       [field]: event.target.value,
     }))
 
-  const selectChildForUpdate = (child) => {
+  const selectChildForUpdate = useCallback((child) => {
     setChildUpdateForm(buildChildUpdateForm(child))
     setChildUpdateError('')
-  }
+  }, [])
+
+  useEffect(() => {
+    if (!childIdFromUrl || lastAutoSelectedChildIdRef.current === childIdFromUrl) {
+      return
+    }
+
+    const childFromUrl = children.find((currentChild) => currentChild.id === childIdFromUrl)
+
+    if (!childFromUrl) {
+      return
+    }
+
+    selectChildForUpdate(childFromUrl)
+    lastAutoSelectedChildIdRef.current = childIdFromUrl
+  }, [childIdFromUrl, children, selectChildForUpdate])
 
   const openChildMessages = useCallback(
     (childId) => {
@@ -249,7 +267,7 @@ export const ChildrenPage = () => {
         ),
       },
     ],
-    [childUpdateForm.id, openChildMessages],
+    [childUpdateForm.id, openChildMessages, selectChildForUpdate],
   )
 
   const handleChildSelection = (event) => {

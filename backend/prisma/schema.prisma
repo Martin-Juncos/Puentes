@@ -82,6 +82,7 @@ enum MessageThreadContextType {
 enum NotificationType {
   MESSAGE_NEW
   THREAD_ASSIGNED
+  CHILD_CERTIFICATE_EXPIRING
 }
 
 model User {
@@ -289,6 +290,7 @@ model Notification {
   type        NotificationType
   title       String
   bodyPreview String?
+  dedupeKey   String?
   threadId    String?
   childId     String?
   actorUserId String?
@@ -302,6 +304,7 @@ model Notification {
   @@index([userId, readAt, createdAt])
   @@index([threadId])
   @@index([childId])
+  @@unique([userId, dedupeKey])
 }
 
 model AttendanceRecord {

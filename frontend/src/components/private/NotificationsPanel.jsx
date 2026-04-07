@@ -79,6 +79,8 @@ export const NotificationsPanel = ({
                 className={`mt-1 flex size-9 shrink-0 items-center justify-center rounded-full ${
                   notification.type === 'THREAD_ASSIGNED'
                     ? 'bg-[rgba(167,196,181,0.28)] text-[var(--color-primary)]'
+                    : notification.type === 'CHILD_CERTIFICATE_EXPIRING'
+                      ? 'bg-[rgba(221,211,195,0.4)] text-[#6d5948]'
                     : 'bg-[rgba(217,140,122,0.16)] text-[#8b4b3d]'
                 }`}
               >

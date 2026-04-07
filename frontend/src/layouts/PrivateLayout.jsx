@@ -12,6 +12,7 @@ import { ROLE_LABELS } from '@/constants/roles'
 import { useAuth } from '@/hooks/useAuth'
 import { usePanelNotifications } from '@/hooks/usePanelNotifications'
 import { cn } from '@/utils/cn'
+import { getNotificationNavigationTarget } from '@/utils/notificationRouting'
 
 const MotionDiv = motion.div
 const rolesWithMessaging = ['COORDINATION', 'SECRETARY', 'PROFESSIONAL']
@@ -78,23 +79,7 @@ export const PrivateLayout = () => {
     }
 
     closeNotifications()
-
-    if (!canUseMessaging) {
-      navigate('/app/dashboard')
-      return
-    }
-
-    if (notification.threadId) {
-      navigate(`/app/mensajes?threadId=${notification.threadId}`)
-      return
-    }
-
-    if (notification.childId) {
-      navigate(`/app/mensajes?childId=${notification.childId}&compose=1`)
-      return
-    }
-
-    navigate('/app/mensajes')
+    navigate(getNotificationNavigationTarget({ canUseMessaging, notification }))
   }
 
   const renderNavigationLinks = () =>

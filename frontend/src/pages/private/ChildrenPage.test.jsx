@@ -74,9 +74,9 @@ const child = {
   assignments: [],
 }
 
-const renderPage = async () => {
+const renderPage = async ({ initialEntries = ['/app/ninos'] } = {}) => {
   render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={initialEntries}>
       <ChildrenPage />
     </MemoryRouter>,
   )
@@ -214,5 +214,17 @@ describe('ChildrenPage', () => {
         status: 'ACTIVE',
       }),
     )
+  })
+
+  it('preselecciona el caso cuando entra con childId por query string', async () => {
+    await renderPage({ initialEntries: [`/app/ninos?childId=${child.id}`] })
+
+    await waitFor(() =>
+      expect(within(getPanelCard('Actualizar o eliminar')).getByDisplayValue('Mateo')).toBeInTheDocument(),
+    )
+
+    expect(
+      within(getPanelCard('Actualizar o eliminar')).getByDisplayValue('Junta Medica Provincial'),
+    ).toBeInTheDocument()
   })
 })
