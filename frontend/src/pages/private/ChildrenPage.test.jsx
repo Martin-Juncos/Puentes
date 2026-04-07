@@ -85,6 +85,7 @@ const renderPage = async ({ initialEntries = ['/app/ninos'] } = {}) => {
 }
 
 const getPanelCard = (title) => screen.getByText(title).closest('.surface-card')
+const getEditModal = () => screen.getByText('Actualizar o eliminar').closest('.modal-panel')
 
 describe('ChildrenPage', () => {
   beforeEach(() => {
@@ -119,7 +120,7 @@ describe('ChildrenPage', () => {
     await renderPage()
 
     const createForm = within(getPanelCard('Alta de niño o niña'))
-      .getByRole('button', { name: /guardar ni/i })
+      .getByRole('button', { name: /guardar niño/i })
       .closest('form')
 
     expect(within(createForm).getByText('Certificado de discapacidad')).toBeInTheDocument()
@@ -134,7 +135,7 @@ describe('ChildrenPage', () => {
     await renderPage()
 
     const createForm = within(getPanelCard('Alta de niño o niña'))
-      .getByRole('button', { name: /guardar ni/i })
+      .getByRole('button', { name: /guardar niño/i })
       .closest('form')
 
     fireEvent.change(within(createForm).getByLabelText('Nombre'), {
@@ -176,20 +177,14 @@ describe('ChildrenPage', () => {
     )
   })
 
-  it('hidrata y reenvia los datos del certificado al editar un caso', async () => {
+  it('abre el modal desde la tabla e hidrata los datos del certificado al editar', async () => {
     await renderPage()
 
-    const updateCard = getPanelCard('Actualizar o eliminar')
+    fireEvent.click(screen.getAllByRole('button', { name: 'Editar' })[0])
 
-    fireEvent.change(within(updateCard).getByRole('combobox'), {
-      target: { value: child.id },
-    })
+    await waitFor(() => expect(getEditModal()).toBeInTheDocument())
 
-    await waitFor(() =>
-      expect(screen.getAllByText('Certificado de discapacidad')).toHaveLength(2),
-    )
-
-    const updateForm = within(updateCard).getByRole('button', { name: /guardar cambios/i }).closest('form')
+    const updateForm = within(getEditModal()).getByRole('button', { name: /guardar cambios/i }).closest('form')
 
     expect(within(updateForm).getByLabelText('Fecha de emisión')).toHaveValue('2026-03-01')
     expect(within(updateForm).getByLabelText('Fecha de vencimiento')).toHaveValue('2027-03-01')
@@ -216,15 +211,12 @@ describe('ChildrenPage', () => {
     )
   })
 
-  it('preselecciona el caso cuando entra con childId por query string', async () => {
+  it('preselecciona el caso y abre el modal cuando entra con childId por query string', async () => {
     await renderPage({ initialEntries: [`/app/ninos?childId=${child.id}`] })
 
-    await waitFor(() =>
-      expect(within(getPanelCard('Actualizar o eliminar')).getByDisplayValue('Mateo')).toBeInTheDocument(),
-    )
+    await waitFor(() => expect(getEditModal()).toBeInTheDocument())
 
-    expect(
-      within(getPanelCard('Actualizar o eliminar')).getByDisplayValue('Junta Medica Provincial'),
-    ).toBeInTheDocument()
+    expect(within(getEditModal()).getByDisplayValue('Mateo')).toBeInTheDocument()
+    expect(within(getEditModal()).getByDisplayValue('Junta Medica Provincial')).toBeInTheDocument()
   })
 })

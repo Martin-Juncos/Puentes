@@ -11,6 +11,7 @@ import { ConfirmDeleteModal } from '@/components/ui/ConfirmDeleteModal'
 import { DataTable } from '@/components/ui/DataTable'
 import { Field } from '@/components/ui/Field'
 import { FormErrorAlert } from '@/components/ui/FormErrorAlert'
+import { ModalShell } from '@/components/ui/ModalShell'
 import { PanelCard } from '@/components/ui/PanelCard'
 import { SuccessFeedbackModal } from '@/components/ui/SuccessFeedbackModal'
 import { useAuth } from '@/hooks/useAuth'
@@ -71,10 +72,12 @@ const buildChildUpdateForm = (child) => ({
 })
 
 const DisabilityCertificateFields = ({ form, onChange }) => (
-  <div className="md:col-span-2 grid gap-4 rounded-lg border border-[rgba(47,93,115,0.12)] p-4">
+  <div className="grid gap-4 rounded-lg border border-[rgba(47,93,115,0.12)] p-4 md:col-span-2">
     <div className="space-y-1">
       <p className="field-label">Certificado de discapacidad</p>
-      <p className="text-sm text-slate-500">Completá estos datos si el caso cuenta con certificado vigente.</p>
+      <p className="text-sm text-slate-500">
+        Completá estos datos si el caso cuenta con certificado vigente.
+      </p>
     </div>
     <div className="grid gap-4 md:grid-cols-3">
       <Field label="Fecha de emisión">
@@ -137,17 +140,19 @@ export const ChildrenPage = () => {
   const [deleteStatusNotice, setDeleteStatusNotice] = useState(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isChildEditModalOpen, setIsChildEditModalOpen] = useState(false)
   const [resolutionActionKey, setResolutionActionKey] = useState('')
   const [successModal, setSuccessModal] = useState(successModalInitial)
   const lastAutoSelectedChildIdRef = useRef('')
 
-  const { data: children, reload } = useAsyncData(() => childrenService.list(), [])
-  const { data: families } = useAsyncData(() => familiesService.list(), [])
-  const { data: professionals } = useAsyncData(() => professionalsService.listManage(), [])
-  const { data: services } = useAsyncData(() => servicesService.listManage(), [])
+  const { data: children = [], reload } = useAsyncData(() => childrenService.list(), [])
+  const { data: families = [] } = useAsyncData(() => familiesService.list(), [])
+  const { data: professionals = [] } = useAsyncData(() => professionalsService.listManage(), [])
+  const { data: services = [] } = useAsyncData(() => servicesService.listManage(), [])
   const childIdFromUrl = searchParams.get('childId') ?? ''
 
   const canManageChildren = ['ADMIN', 'COORDINATION', 'SECRETARY', 'PROFESSIONAL'].includes(user.role)
+
   const selectedChild = useMemo(
     () => children.find((child) => child.id === childUpdateForm.id) ?? null,
     [children, childUpdateForm.id],
@@ -176,6 +181,24 @@ export const ChildrenPage = () => {
     setChildUpdateError('')
   }, [])
 
+  const openChildEditModal = useCallback(
+    (child) => {
+      selectChildForUpdate(child)
+      setChildUpdateError('')
+      setIsChildEditModalOpen(true)
+    },
+    [selectChildForUpdate],
+  )
+
+  const closeChildEditModal = useCallback(() => {
+    if (isDeleting) {
+      return
+    }
+
+    setChildUpdateError('')
+    setIsChildEditModalOpen(false)
+  }, [isDeleting])
+
   useEffect(() => {
     if (!childIdFromUrl || lastAutoSelectedChildIdRef.current === childIdFromUrl) {
       return
@@ -187,9 +210,9 @@ export const ChildrenPage = () => {
       return
     }
 
-    selectChildForUpdate(childFromUrl)
+    openChildEditModal(childFromUrl)
     lastAutoSelectedChildIdRef.current = childIdFromUrl
-  }, [childIdFromUrl, children, selectChildForUpdate])
+  }, [childIdFromUrl, children, openChildEditModal])
 
   const openChildMessages = useCallback(
     (childId) => {
@@ -245,11 +268,14 @@ export const ChildrenPage = () => {
           <div className="flex flex-wrap gap-2">
             <Button
               className="px-3 py-2 text-xs"
-              onClick={() => selectChildForUpdate(row)}
+              onClick={(event) => {
+                event.stopPropagation()
+                openChildEditModal(row)
+              }}
               type="button"
               variant="outline"
             >
-              {childUpdateForm.id === row.id ? 'Seleccionado' : 'Editar'}
+              Editar
             </Button>
             <Button
               className="gap-1 px-3 py-2 text-xs"
@@ -267,20 +293,8 @@ export const ChildrenPage = () => {
         ),
       },
     ],
-    [childUpdateForm.id, openChildMessages, selectChildForUpdate],
+    [openChildEditModal, openChildMessages],
   )
-
-  const handleChildSelection = (event) => {
-    const nextChild = children.find((child) => child.id === event.target.value)
-
-    if (!nextChild) {
-      setChildUpdateForm(childUpdateInitial)
-      setChildUpdateError('')
-      return
-    }
-
-    selectChildForUpdate(nextChild)
-  }
 
   const closeSuccessModal = () => {
     setSuccessModal(successModalInitial)
@@ -342,11 +356,13 @@ export const ChildrenPage = () => {
       const childName = assignmentChild
         ? `${assignmentChild.firstName} ${assignmentChild.lastName}`.trim()
         : ''
+
       await childrenService.assignProfessional(assignmentForm.childId, {
         professionalId: assignmentForm.professionalId,
         serviceId: assignmentForm.serviceId || undefined,
         notes: assignmentForm.notes,
       })
+
       setAssignmentForm(assignmentInitial)
       setAssignmentError('')
       await reload()
@@ -387,6 +403,7 @@ export const ChildrenPage = () => {
       setDeleteErrorDetails(null)
       setDeleteStatusNotice(null)
       setIsDeleteModalOpen(false)
+      setIsChildEditModalOpen(false)
       await reload()
     } catch (error) {
       setDeleteError(error.message)
@@ -582,17 +599,17 @@ export const ChildrenPage = () => {
           )}
         </PanelCard>
 
-      <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
-        <PanelSectionHeader
-          description="Las asignaciones se definen desde secretarÃ­a o coordinaciÃ³n para sostener una agenda centralizada."
-          icon={FiUserPlus}
-          title="Asignar profesional"
+        <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
+          <PanelSectionHeader
+            description="Las asignaciones se definen desde secretaría o coordinación para sostener una agenda centralizada."
+            icon={FiUserPlus}
+            title="Asignar profesional"
           />
 
           {!canManageChildren ? (
             <PanelAccessNotice>
-              Esta secciÃ³n queda visible para consulta, pero las asignaciones nuevas no estÃ¡n habilitadas
-              para perfiles profesionales.
+              Esta sección queda visible para consulta, pero las asignaciones nuevas no están
+              habilitadas para perfiles profesionales.
             </PanelAccessNotice>
           ) : (
             <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleAssignmentSubmit}>
@@ -640,7 +657,7 @@ export const ChildrenPage = () => {
                   ))}
                 </select>
               </Field>
-              <Field label="Notas de asignaciÃ³n">
+              <Field label="Notas de asignación">
                 <textarea
                   className="field-input min-h-24"
                   onChange={updateAssignmentField('notes')}
@@ -660,52 +677,65 @@ export const ChildrenPage = () => {
             </form>
           )}
         </PanelCard>
+      </div>
 
-        <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)] xl:col-span-2' : 'xl:col-span-2'}>
-          <PanelSectionHeader
-            actions={
-              selectedChild && canManageChildren ? (
-                <Button
-                  className="px-4 py-2"
-                  onClick={() => {
-                    setChildUpdateForm(childUpdateInitial)
-                    setChildUpdateError('')
-                  }}
-                  type="button"
-                  variant="ghost"
-                >
-                  Limpiar selección
-                </Button>
-              ) : null
+      <PanelCard>
+        <PanelTableHeader
+          countLabel={`${children.length} casos`}
+          description="Hacé clic sobre una fila para abrir el caso en edición."
+          title="Casos registrados"
+        />
+
+        <div className="mt-6">
+          <DataTable
+            columns={childColumns}
+            getRowClassName={(row) =>
+              childUpdateForm.id === row.id
+                ? 'bg-[rgba(47,93,115,0.06)] ring-1 ring-inset ring-[rgba(47,93,115,0.12)]'
+                : ''
             }
-            description="Seleccioná un caso para cargar sus datos en edición."
-            title="Actualizar o eliminar"
+            onRowClick={openChildEditModal}
+            rows={children}
           />
+        </div>
+      </PanelCard>
 
-          {!canManageChildren ? (
-            <PanelAccessNotice>
-              La edición y la baja de casos solo están disponibles para secretaría, coordinación y
-              administración.
-            </PanelAccessNotice>
-          ) : (
-            <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleChildUpdate}>
-              <Field
-                hint="También podés hacer clic sobre una fila del listado inferior."
-                label="Caso seleccionado"
-              >
-                <select className="field-input" onChange={handleChildSelection} value={childUpdateForm.id}>
-                  <option value="">Seleccionar caso</option>
-                  {children.map((child) => (
-                    <option key={child.id} value={child.id}>
-                      {child.firstName} {child.lastName}
-                    </option>
-                  ))}
-                </select>
-              </Field>
+      <ModalShell
+        closeLabel="Cerrar edición del caso"
+        isOpen={isChildEditModalOpen && Boolean(selectedChild)}
+        maxWidthClassName="max-w-5xl"
+        onClose={closeChildEditModal}
+        panelClassName="max-h-[90vh] overflow-y-auto"
+      >
+        {selectedChild ? (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                Caso seleccionado
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-semibold text-[#2f5d73]">Actualizar o eliminar</h2>
+                  <p className="text-sm text-slate-500">
+                    Editá todos los datos del caso desde este modal y resolvé su baja si hace
+                    falta.
+                  </p>
+                </div>
+                <Button className="px-4 py-2" onClick={closeChildEditModal} type="button" variant="ghost">
+                  Cerrar
+                </Button>
+              </div>
+            </div>
 
-              <SelectionStateCard
-                action={
-                  selectedChild ? (
+            {!canManageChildren ? (
+              <PanelAccessNotice>
+                La edición y la baja de casos solo están disponibles para secretaría,
+                coordinación y administración.
+              </PanelAccessNotice>
+            ) : (
+              <>
+                <SelectionStateCard
+                  action={
                     <Button
                       className="gap-2 px-3 py-2 text-xs"
                       onClick={() => openChildMessages(selectedChild.id)}
@@ -715,22 +745,15 @@ export const ChildrenPage = () => {
                       <FiMessageSquare aria-hidden="true" className="size-4" />
                       Abrir mensajes
                     </Button>
-                  ) : null
-                }
-                emptyText="Seleccioná un caso para habilitar la edición."
-                lines={
-                  selectedChild
-                    ? [
-                        `Familia: ${selectedChild.family.displayName}`,
-                        `Asignaciones: ${selectedChild.assignments.length}`,
-                      ]
-                    : []
-                }
-                title={selectedChild ? `${selectedChild.firstName} ${selectedChild.lastName}` : ''}
-              />
+                  }
+                  lines={[
+                    `Familia: ${selectedChild.family.displayName}`,
+                    `Asignaciones: ${selectedChild.assignments.length}`,
+                  ]}
+                  title={`${selectedChild.firstName} ${selectedChild.lastName}`}
+                />
 
-              {selectedChild ? (
-                <>
+                <form className="grid gap-4 md:grid-cols-2" onSubmit={handleChildUpdate}>
                   <Field label="Nombre">
                     <input
                       className="field-input"
@@ -792,142 +815,38 @@ export const ChildrenPage = () => {
                       value={childUpdateForm.notes}
                     />
                   </Field>
-                </>
-              ) : null}
 
-              {selectedChild ? (
-                <DisabilityCertificateFields form={childUpdateForm} onChange={updateChildField} />
-              ) : null}
+                  <DisabilityCertificateFields form={childUpdateForm} onChange={updateChildField} />
 
-              {childUpdateError ? (
-                <FormErrorAlert className="md:col-span-2">{childUpdateError}</FormErrorAlert>
-              ) : null}
+                  {childUpdateError ? (
+                    <FormErrorAlert className="md:col-span-2">{childUpdateError}</FormErrorAlert>
+                  ) : null}
 
-              {selectedChild ? (
-                <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-between">
-                  <Button type="submit" variant="secondary">
-                    Guardar cambios
-                  </Button>
-                  <Button
-                    className="px-4 py-3 text-[#8b4b3d] hover:bg-[rgba(217,140,122,0.12)]"
-                    onClick={() => {
-                      setDeleteError('')
-                      setDeleteErrorDetails(null)
-                      setDeleteStatusNotice(null)
-                      setIsDeleteModalOpen(true)
-                    }}
-                    type="button"
-                    variant="ghost"
-                  >
-                    <FiTrash2 aria-hidden="true" className="mr-2 size-4" />
-                    Eliminar caso
-                  </Button>
-                </div>
-              ) : null}
-            </form>
-          )}
-        </PanelCard>
-      </div>
-
-      <PanelCard className="hidden">
-        <PanelSectionHeader
-          description="Las asignaciones se definen desde secretaría o coordinación para sostener una agenda centralizada."
-          icon={FiUserPlus}
-          title="Asignar profesional"
-        />
-
-        {!canManageChildren ? (
-          <PanelAccessNotice>
-            Esta sección queda visible para consulta, pero las asignaciones nuevas no están habilitadas
-            para perfiles profesionales.
-          </PanelAccessNotice>
-        ) : (
-          <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleAssignmentSubmit}>
-            <Field label="Caso">
-              <select
-                className="field-input"
-                onChange={updateAssignmentField('childId')}
-                required
-                value={assignmentForm.childId}
-              >
-                <option value="">Seleccionar</option>
-                {children.map((child) => (
-                  <option key={child.id} value={child.id}>
-                    {child.firstName} {child.lastName}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Profesional">
-              <select
-                className="field-input"
-                onChange={updateAssignmentField('professionalId')}
-                required
-                value={assignmentForm.professionalId}
-              >
-                <option value="">Seleccionar</option>
-                {professionals.map((professional) => (
-                  <option key={professional.id} value={professional.id}>
-                    {professional.user.fullName}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Servicio">
-              <select
-                className="field-input"
-                onChange={updateAssignmentField('serviceId')}
-                value={assignmentForm.serviceId}
-              >
-                <option value="">Opcional</option>
-                {services.map((service) => (
-                  <option key={service.id} value={service.id}>
-                    {service.name}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Notas de asignación">
-              <textarea
-                className="field-input min-h-24"
-                onChange={updateAssignmentField('notes')}
-                value={assignmentForm.notes}
-              />
-            </Field>
-
-            {assignmentError ? (
-              <FormErrorAlert className="md:col-span-2">{assignmentError}</FormErrorAlert>
-            ) : null}
-
-            <div className="md:col-span-2">
-              <Button type="submit" variant="secondary">
-                Asignar profesional
-              </Button>
-            </div>
-          </form>
-        )}
-      </PanelCard>
-
-      <PanelCard>
-        <PanelTableHeader
-          countLabel={`${children.length} casos`}
-          description="Hacé clic sobre una fila para cargar el caso en actualización."
-          title="Casos registrados"
-        />
-
-        <div className="mt-6">
-          <DataTable
-            columns={childColumns}
-            getRowClassName={(row) =>
-              childUpdateForm.id === row.id
-                ? 'bg-[rgba(47,93,115,0.06)] ring-1 ring-inset ring-[rgba(47,93,115,0.12)]'
-                : ''
-            }
-            onRowClick={selectChildForUpdate}
-            rows={children}
-          />
-        </div>
-      </PanelCard>
+                  <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:justify-between">
+                    <Button type="submit" variant="secondary">
+                      Guardar cambios
+                    </Button>
+                    <Button
+                      className="px-4 py-3 text-[#8b4b3d] hover:bg-[rgba(217,140,122,0.12)]"
+                      onClick={() => {
+                        setDeleteError('')
+                        setDeleteErrorDetails(null)
+                        setDeleteStatusNotice(null)
+                        setIsDeleteModalOpen(true)
+                      }}
+                      type="button"
+                      variant="ghost"
+                    >
+                      <FiTrash2 aria-hidden="true" className="mr-2 size-4" />
+                      Eliminar caso
+                    </Button>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+        ) : null}
+      </ModalShell>
 
       <ConfirmDeleteModal
         key={`${selectedChild?.id ?? 'empty'}-${isDeleteModalOpen ? 'open' : 'closed'}`}
