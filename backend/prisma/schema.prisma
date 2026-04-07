@@ -153,23 +153,26 @@ model Family {
 }
 
 model Child {
-  id          String                      @id @default(cuid())
-  firstName   String
-  lastName    String
-  birthDate   DateTime
-  schoolName  String?
-  notes       String?
-  status      ChildStatus                 @default(ACTIVE)
-  familyId    String
-  createdAt   DateTime                    @default(now())
-  updatedAt   DateTime                    @updatedAt
-  family      Family                      @relation(fields: [familyId], references: [id], onDelete: Cascade)
-  assignments ChildProfessionalAssignment[]
-  sessions    Session[]
-  payments    PaymentRecord[]
-  followUps   FollowUpNote[]
-  messageThreads MessageThread[]
-  notifications Notification[]
+  id                             String                      @id @default(cuid())
+  firstName                      String
+  lastName                       String
+  birthDate                      DateTime
+  schoolName                     String?
+  notes                          String?
+  disabilityCertificateIssuedAt  DateTime?
+  disabilityCertificateExpiresAt DateTime?
+  disabilityCertificateIssuedBy  String?
+  status                         ChildStatus                 @default(ACTIVE)
+  familyId                       String
+  createdAt                      DateTime                    @default(now())
+  updatedAt                      DateTime                    @updatedAt
+  family                         Family                      @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  assignments                    ChildProfessionalAssignment[]
+  sessions                       Session[]
+  payments                       PaymentRecord[]
+  followUps                      FollowUpNote[]
+  messageThreads                 MessageThread[]
+  notifications                  Notification[]
 
   @@index([lastName])
 }

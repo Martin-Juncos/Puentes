@@ -28,6 +28,9 @@ const childCreateInitial = {
   familyId: '',
   schoolName: '',
   notes: '',
+  disabilityCertificateIssuedAt: '',
+  disabilityCertificateExpiresAt: '',
+  disabilityCertificateIssuedBy: '',
 }
 
 const childUpdateInitial = {
@@ -38,6 +41,9 @@ const childUpdateInitial = {
   familyId: '',
   schoolName: '',
   notes: '',
+  disabilityCertificateIssuedAt: '',
+  disabilityCertificateExpiresAt: '',
+  disabilityCertificateIssuedBy: '',
   status: 'ACTIVE',
 }
 
@@ -48,16 +54,55 @@ const assignmentInitial = {
   notes: '',
 }
 
+const formatDateInputValue = (value) => (value ? new Date(value).toISOString().slice(0, 10) : '')
+
 const buildChildUpdateForm = (child) => ({
   id: child.id,
   firstName: child.firstName ?? '',
   lastName: child.lastName ?? '',
-  birthDate: child.birthDate ? new Date(child.birthDate).toISOString().slice(0, 10) : '',
+  birthDate: formatDateInputValue(child.birthDate),
   familyId: child.family?.id ?? '',
   schoolName: child.schoolName ?? '',
   notes: child.notes ?? '',
+  disabilityCertificateIssuedAt: formatDateInputValue(child.disabilityCertificateIssuedAt),
+  disabilityCertificateExpiresAt: formatDateInputValue(child.disabilityCertificateExpiresAt),
+  disabilityCertificateIssuedBy: child.disabilityCertificateIssuedBy ?? '',
   status: child.status ?? 'ACTIVE',
 })
+
+const DisabilityCertificateFields = ({ form, onChange }) => (
+  <div className="md:col-span-2 grid gap-4 rounded-lg border border-[rgba(47,93,115,0.12)] p-4">
+    <div className="space-y-1">
+      <p className="field-label">Certificado de discapacidad</p>
+      <p className="text-sm text-slate-500">Completá estos datos si el caso cuenta con certificado vigente.</p>
+    </div>
+    <div className="grid gap-4 md:grid-cols-3">
+      <Field label="Fecha de emisión">
+        <input
+          className="field-input"
+          onChange={onChange('disabilityCertificateIssuedAt')}
+          type="date"
+          value={form.disabilityCertificateIssuedAt}
+        />
+      </Field>
+      <Field label="Fecha de vencimiento">
+        <input
+          className="field-input"
+          onChange={onChange('disabilityCertificateExpiresAt')}
+          type="date"
+          value={form.disabilityCertificateExpiresAt}
+        />
+      </Field>
+      <Field label="Emitido por">
+        <input
+          className="field-input"
+          onChange={onChange('disabilityCertificateIssuedBy')}
+          value={form.disabilityCertificateIssuedBy}
+        />
+      </Field>
+    </div>
+  </div>
+)
 
 const childStatusLabels = {
   ACTIVE: 'Activo',
@@ -257,6 +302,9 @@ export const ChildrenPage = () => {
         familyId: childUpdateForm.familyId,
         schoolName: childUpdateForm.schoolName,
         notes: childUpdateForm.notes,
+        disabilityCertificateIssuedAt: childUpdateForm.disabilityCertificateIssuedAt,
+        disabilityCertificateExpiresAt: childUpdateForm.disabilityCertificateExpiresAt,
+        disabilityCertificateIssuedBy: childUpdateForm.disabilityCertificateIssuedBy,
         status: childUpdateForm.status,
       })
 
@@ -503,6 +551,8 @@ export const ChildrenPage = () => {
                 />
               </Field>
 
+              <DisabilityCertificateFields form={childCreateForm} onChange={updateCreateField} />
+
               {childCreateError ? (
                 <FormErrorAlert className="md:col-span-2">{childCreateError}</FormErrorAlert>
               ) : null}
@@ -646,6 +696,10 @@ export const ChildrenPage = () => {
                     />
                   </Field>
                 </>
+              ) : null}
+
+              {selectedChild ? (
+                <DisabilityCertificateFields form={childUpdateForm} onChange={updateChildField} />
               ) : null}
 
               {childUpdateError ? (
