@@ -564,7 +564,86 @@ export const ChildrenPage = () => {
           )}
         </PanelCard>
 
-        <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
+      <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
+        <PanelSectionHeader
+          description="Las asignaciones se definen desde secretarÃ­a o coordinaciÃ³n para sostener una agenda centralizada."
+          icon={FiUserPlus}
+          title="Asignar profesional"
+          />
+
+          {!canManageChildren ? (
+            <PanelAccessNotice>
+              Esta secciÃ³n queda visible para consulta, pero las asignaciones nuevas no estÃ¡n habilitadas
+              para perfiles profesionales.
+            </PanelAccessNotice>
+          ) : (
+            <form className="mt-6 grid gap-4 md:grid-cols-2" onSubmit={handleAssignmentSubmit}>
+              <Field label="Caso">
+                <select
+                  className="field-input"
+                  onChange={updateAssignmentField('childId')}
+                  required
+                  value={assignmentForm.childId}
+                >
+                  <option value="">Seleccionar</option>
+                  {children.map((child) => (
+                    <option key={child.id} value={child.id}>
+                      {child.firstName} {child.lastName}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Profesional">
+                <select
+                  className="field-input"
+                  onChange={updateAssignmentField('professionalId')}
+                  required
+                  value={assignmentForm.professionalId}
+                >
+                  <option value="">Seleccionar</option>
+                  {professionals.map((professional) => (
+                    <option key={professional.id} value={professional.id}>
+                      {professional.user.fullName}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Servicio">
+                <select
+                  className="field-input"
+                  onChange={updateAssignmentField('serviceId')}
+                  value={assignmentForm.serviceId}
+                >
+                  <option value="">Opcional</option>
+                  {services.map((service) => (
+                    <option key={service.id} value={service.id}>
+                      {service.name}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Notas de asignaciÃ³n">
+                <textarea
+                  className="field-input min-h-24"
+                  onChange={updateAssignmentField('notes')}
+                  value={assignmentForm.notes}
+                />
+              </Field>
+
+              {assignmentError ? (
+                <FormErrorAlert className="md:col-span-2">{assignmentError}</FormErrorAlert>
+              ) : null}
+
+              <div className="md:col-span-2">
+                <Button type="submit" variant="secondary">
+                  Asignar profesional
+                </Button>
+              </div>
+            </form>
+          )}
+        </PanelCard>
+
+        <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)] xl:col-span-2' : 'xl:col-span-2'}>
           <PanelSectionHeader
             actions={
               selectedChild && canManageChildren ? (
@@ -732,7 +811,7 @@ export const ChildrenPage = () => {
         </PanelCard>
       </div>
 
-      <PanelCard className={!canManageChildren ? 'bg-[rgba(47,93,115,0.04)]' : ''}>
+      <PanelCard className="hidden">
         <PanelSectionHeader
           description="Las asignaciones se definen desde secretaría o coordinación para sostener una agenda centralizada."
           icon={FiUserPlus}
