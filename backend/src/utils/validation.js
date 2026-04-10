@@ -15,6 +15,51 @@ export const optionalDateSchema = z.preprocess(
   z.date().optional(),
 )
 
+const explicitDateTimeOffsetPattern = /(Z|[+-]\d{2}:\d{2})$/
+const invalidDate = new Date(Number.NaN)
+
+const parseExplicitDateTime = (value) => {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? undefined : value
+  }
+
+  if (typeof value !== 'string') {
+    return value
+  }
+
+  const normalizedValue = value.trim()
+
+  if (!normalizedValue || !explicitDateTimeOffsetPattern.test(normalizedValue)) {
+    return undefined
+  }
+
+  const parsedDate = new Date(normalizedValue)
+
+  return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate
+}
+
+export const requiredExplicitDateTimeSchema = z.preprocess(
+  (value) => parseExplicitDateTime(value) ?? invalidDate,
+  z.date({
+    error: 'Debes enviar una fecha y hora válida con zona horaria explícita.',
+  }),
+)
+
+export const optionalExplicitDateTimeSchema = z.preprocess(
+  (value) => {
+    if (value === '' || value === undefined) {
+      return undefined
+    }
+
+    return parseExplicitDateTime(value) ?? invalidDate
+  },
+  z
+    .date({
+      error: 'Debes enviar una fecha y hora válida con zona horaria explícita.',
+    })
+    .optional(),
+)
+
 export const stripHtmlToText = (value = '') =>
   value
     .replace(/<br\s*\/?>/gi, ' ')

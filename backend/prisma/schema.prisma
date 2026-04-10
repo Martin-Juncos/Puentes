@@ -200,8 +200,8 @@ model Session {
   professionalId  String
   serviceId       String
   createdByUserId String
-  startsAt        DateTime
-  endsAt          DateTime
+  startsAt        DateTime         @db.Timestamptz(3)
+  endsAt          DateTime         @db.Timestamptz(3)
   status          SessionStatus    @default(SCHEDULED)
   adminNotes      String?
   internalNotes   String?

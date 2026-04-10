@@ -3,8 +3,10 @@ import { z } from 'zod'
 import {
   idParamSchema,
   optionalDateSchema,
+  optionalExplicitDateTimeSchema,
   preprocessNullableString,
   preprocessOptionalString,
+  requiredExplicitDateTimeSchema,
 } from '../../utils/validation.js'
 
 export const sessionQuerySchema = {
@@ -23,8 +25,8 @@ export const createSessionSchema = {
     childId: z.string().trim().min(1),
     professionalId: z.string().trim().min(1),
     serviceId: z.string().trim().min(1),
-    startsAt: z.coerce.date(),
-    endsAt: z.coerce.date().optional(),
+    startsAt: requiredExplicitDateTimeSchema,
+    endsAt: optionalExplicitDateTimeSchema,
     adminNotes: preprocessOptionalString(),
     internalNotes: preprocessOptionalString(),
   }),
@@ -37,8 +39,8 @@ export const updateSessionSchema = {
       childId: z.string().trim().min(1).optional(),
       professionalId: z.string().trim().min(1).optional(),
       serviceId: z.string().trim().min(1).optional(),
-      startsAt: z.coerce.date().optional(),
-      endsAt: z.coerce.date().optional(),
+      startsAt: optionalExplicitDateTimeSchema,
+      endsAt: optionalExplicitDateTimeSchema,
       status: z.enum(['SCHEDULED', 'COMPLETED', 'CANCELED', 'RESCHEDULED']).optional(),
       adminNotes: preprocessNullableString(),
       internalNotes: preprocessNullableString(),

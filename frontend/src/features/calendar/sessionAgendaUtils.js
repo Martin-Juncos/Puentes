@@ -49,6 +49,35 @@ export const successModalInitial = {
 
 const padDatePart = (value) => String(value).padStart(2, '0')
 
+const parseDateTimeLocalValue = (value) => {
+  if (!value || typeof value !== 'string') {
+    return undefined
+  }
+
+  const [datePart, timePart] = value.split('T')
+
+  if (!datePart || !timePart) {
+    return undefined
+  }
+
+  const [year, month, day] = datePart.split('-').map(Number)
+  const [hours, minutes] = timePart.split(':').map(Number)
+
+  if ([year, month, day, hours, minutes].some((part) => !Number.isInteger(part))) {
+    return undefined
+  }
+
+  const date = new Date(year, month - 1, day, hours, minutes, 0, 0)
+
+  return Number.isNaN(date.getTime()) ? undefined : date
+}
+
+export const toApiDateTimeValue = (value) => {
+  const date = parseDateTimeLocalValue(value)
+
+  return date ? date.toISOString() : undefined
+}
+
 export const toDateTimeLocalValue = (value) => {
   if (!value) {
     return ''
@@ -84,12 +113,13 @@ export const buildEndsAtValue = (startsAt, durationMinutes) => {
   }
 
   const duration = Number(durationMinutes)
+  const startsAtDate = parseDateTimeLocalValue(startsAt)
 
-  if (!Number.isFinite(duration) || duration <= 0) {
+  if (!Number.isFinite(duration) || duration <= 0 || !startsAtDate) {
     return undefined
   }
 
-  return toDateTimeLocalValue(new Date(new Date(startsAt).getTime() + duration * 60000))
+  return new Date(startsAtDate.getTime() + duration * 60000).toISOString()
 }
 
 export const getSessionTitle = (session) => `${session.child.firstName} ${session.child.lastName}`
@@ -116,7 +146,7 @@ export const buildSessionPayload = (form, { includeStatus = false } = {}) => ({
   childId: form.childId,
   professionalId: form.professionalId,
   serviceId: form.serviceId,
-  startsAt: form.startsAt,
+  startsAt: toApiDateTimeValue(form.startsAt),
   endsAt: buildEndsAtValue(form.startsAt, form.durationMinutes),
   status: includeStatus ? form.status : undefined,
   adminNotes: form.adminNotes,
